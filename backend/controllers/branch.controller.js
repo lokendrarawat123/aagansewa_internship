@@ -1,6 +1,7 @@
 import db from "../config/db_connect.js";
+import { removeImg } from "../utils/removeImg.js";
 
-export const addProvince = async (req, res) => {
+export const addProvince = async (req, res, next) => {
   try {
     const { name } = req.body; // getting data from the fronted or req.body
     // console.log(req.body);
@@ -40,12 +41,12 @@ export const addProvince = async (req, res) => {
       message: `${name} province  added succesfully`,
     });
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 };
 
 //for getting province
-export const getProvince = async (req, res) => {
+export const getProvince = async (req, res, next) => {
   try {
     //left join for getting province and district
     const [allProvince] = await db.execute(
@@ -65,7 +66,7 @@ export const getProvince = async (req, res) => {
       provinces: allProvince,
     });
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 };
 
@@ -108,7 +109,7 @@ export const getProvince = async (req, res) => {
 //       message: "province updated",
 //     });
 //   } catch (error) {
-//     console.log(error);
+//next(error);
 //   }
 // };
 export const deleteProvince = async (req, res, next) => {
@@ -130,7 +131,7 @@ export const deleteProvince = async (req, res, next) => {
       message: `${existProvince.province_name} province delete successfulyy`,
     });
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 };
 
@@ -171,25 +172,27 @@ export const addDistrict = async (req, res, next) => {
       [district_name, province_id]
     );
     res.status(201).json({
-      message: `${district_name} is added successfully`,
+      message: `${district_name} district is added successfully`,
     });
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 };
+//get district api
 export const getDistrict = async (req, res, next) => {
   try {
     const [allDistrict] = await db.execute(
-      "select * from district order by district_name asc"
+      "select * from district order by district_id asc"
     );
     res.status(200).json({
       message: "success",
       allDistrict: allDistrict,
     });
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 };
+//delete district api
 export const deleteDistrict = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -205,7 +208,7 @@ export const deleteDistrict = async (req, res, next) => {
 
     if (existing.length === 0) {
       return res.status(409).json({
-        message: `district not found  for delete by this ${id}`,
+        message: `district not found  for delete by this ${id}th id`,
       });
     }
     const existDistrict = existing[0];
@@ -214,7 +217,7 @@ export const deleteDistrict = async (req, res, next) => {
       message: `${existDistrict.district_name} district delete successfully`,
     });
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 };
 
@@ -237,9 +240,10 @@ export const addBranch = async (req, res, next) => {
       });
     }
     const [existing] = await db.execute(
-      "select district_id from district where district_id = ? ",
+      "select * from district where district_id = ? ",
       [district_id]
     );
+    console.log(existing[0].district_name);
     if (existing.length === 0) {
       return res.status(404).json({
         message: "district id is not exist",
@@ -250,12 +254,13 @@ export const addBranch = async (req, res, next) => {
       [branch_name, district_id, remarks]
     );
     res.status(201).json({
-      message: `${branch_name} branch added successfully`,
+      message: `${branch_name} branch added successfully ${existing[0].district_name}`,
     });
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 };
+//delete branch api
 export const deleteBranch = async (req, res, next) => {
   try {
     const { branch_id } = req.params;
@@ -279,25 +284,94 @@ export const deleteBranch = async (req, res, next) => {
       message: `${exist_district.branch_name} branch delete successfully`,
     });
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 };
+//get branch api
 export const getBranch = async (req, res, next) => {
   try {
     const [all_branch] = await db.execute(`
       SELECT  
       d.district_name,
       b.branch_id,
-      b.branch_name,
+      b.branch_name
       from district d 
       left join branch b
-      ON b.brach_id = d.district_id
+      ON b.branch_id = d.district_id
       `);
     res.status(200).json({
       message: "successfully displayed",
-      branch: branch,
+      branch: all_branch,
     });
   } catch (error) {
-    console.log(error);
+    next(error);
+  }
+};
+
+//inquiry api
+//add inquiry
+export const addInquiry = async (req, res) => {
+  try {
+    const { name, email, phone, address, branch_id, description } = req.body; // getting data from the fronted or req.body
+    //return msg for the if any field is missing
+    if (!name || !phone || !address || !branch_id) {
+      return res
+        .status(400)
+        .json({ message: "please provide province all field " });
+    }
+
+    //3. insert in inquiry table
+    await db.execute(
+      `INSERT INTO inquiry (name, phone, address, email, description, branch_id) 
+       VALUES (?, ?, ?, ?, ?, ?)`,
+      [name, phone, address, email || null, description || null, branch_id]
+    );
+
+    res.status(201).json({
+      message: "Inquiry submitted successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+//delete inquiry
+export const deleteInquiry = async (req, res, next) => {
+  try {
+    const { inquiry_id } = req.params;
+
+    // Check if id is provided
+    if (!inquiry_id) {
+      return res.status(400).json({ message: "Inquiry ID is required" });
+    }
+    const [result] = await db.execute(
+      "select inquiry_id from inquiry where inquiry_id = ? ",
+      [inquiry_id]
+    );
+
+    if (result.length === 0) {
+      return res.status(404).json({ message: "Inquiry not found" });
+    }
+
+    // Delete from DB
+    await db.execute("DELETE FROM inquiry WHERE inquiry_id = ?", [inquiry_id]);
+
+    res.status(200).json({ message: "Inquiry deleted successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+//get inquiry api
+export const getInquiry = async (req, res, next) => {
+  try {
+    const allInquiry = await db.execute(
+      "select * from inquiry order by created_at desc"
+    );
+
+    res.status(200).json({
+      message: "success fully displayed inquiry",
+      allInquiry: addInquiry,
+    });
+  } catch (error) {
+    next(error);
   }
 };

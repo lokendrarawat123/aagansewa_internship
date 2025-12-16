@@ -1,0 +1,16 @@
+Most Used HTTP Status Codes (API-friendly)
+Code	Name	Meaning / Use Case
+200 OK	Success	Request succeeded (GET, PUT, DELETE). Returns data.
+201 Created	Created	New resource created (POST). Returns new resource ID.
+204 No Content	No Content	Request succeeded, but no data returned (DELETE or PUT).
+400 Bad Request	Client error	Invalid request, missing required fields, validation errors.
+401 Unauthorized	Authentication error	User not logged in or token invalid.
+403 Forbidden	Forbidden	User logged in but not allowed to perform action.
+404 Not Found	Not Found	Resource (ID) doesn’t exist.
+409 Conflict	Conflict	Duplicate record or conflicting request.
+422 Unprocessable Entity	Validation error	Semantic errors (e.g., invalid email format).
+429 Too Many Requests	Rate limiting	Too many requests in a short period.
+500 Internal Server Error	Server error	Generic server-side failure.
+502 Bad Gateway	Server error	Upstream server error (if using proxy).
+503 Service Unavailable	Server error	Server temporarily unavailable or maintenance.
+504 Gateway Timeout	Server error	Upstream server timed out.

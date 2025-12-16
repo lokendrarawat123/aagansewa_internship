@@ -1,0 +1,30 @@
+2xx – Success (Client request succeeded)
+Code	Name	Meaning / Use Case
+200 OK	OK	General success (GET, PUT, DELETE). Returns data.
+201 Created	Created	New resource successfully created (POST).
+202 Accepted	Accepted	Request accepted but not processed yet (async tasks).
+204 No Content	No Content	Success, but no data returned (DELETE or PUT).
+206 Partial Content	Partial Content	Returning part of a resource (e.g., video streaming).
+4xx – Client Errors (Bad request from client)
+Code	Name	Meaning / Use Case
+400 Bad Request	Bad Request	Missing fields, invalid input, malformed request.
+401 Unauthorized	Unauthorized	Authentication required or invalid token.
+403 Forbidden	Forbidden	Authenticated but user doesn’t have permission.
+404 Not Found	Not Found	Resource (like inquiry, branch) does not exist.
+405 Method Not Allowed	Method Not Allowed	HTTP method not allowed (POST on GET-only endpoint).
+406 Not Acceptable	Not Acceptable	Content type not acceptable.
+409 Conflict	Conflict	Duplicate record or data conflict.
+411 Length Required	Length Required	Content-Length header missing in request.
+413 Payload Too Large	Payload Too Large	Request body too big.
+415 Unsupported Media Type	Unsupported Media Type	Wrong content-type.
+422 Unprocessable Entity	Unprocessable Entity	Validation error / semantic error (e.g., invalid email).
+429 Too Many Requests	Too Many Requests	Rate-limiting exceeded.
+431 Request Header Fields Too Large	Request Header Fields Too Large	Headers too big.
+5xx – Server Errors (Server failed)
+Code	Name	Meaning / Use Case
+500 Internal Server Error	Internal Server Error	Generic server-side error.
+501 Not Implemented	Not Implemented	Feature not supported.
+502 Bad Gateway	Bad Gateway	Invalid response from upstream server / proxy error.
+503 Service Unavailable	Service Unavailable	Server temporarily unavailable / maintenance.
+504 Gateway Timeout	Gateway Timeout	Upstream server did not respond in time.
+505 HTTP Version Not Supported	HTTP Version Not Suppo
