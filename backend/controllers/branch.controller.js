@@ -7,16 +7,6 @@ export const addProvince = async (req, res, next) => {
     // console.log(req.body);
     // 1. check name is provided or not
     // console.log(name);
-    const province_number = "";
-    if (name == "sudurpaschim" || "Sudurpaschim" || "SUDURPASCHIM") {
-      province_number = 7;
-    }
-    if (name == "Karnali" || "karnali" || "KARNALI") {
-      province_number = 6;
-    }
-    if (name == "LUMBINI" || "Lumbini" || "lumbini") {
-      province_number = 5;
-    }
 
     if (!name) {
       return res.status(400).json({ message: "please provide province name " });
@@ -147,7 +137,7 @@ export const addDistrict = async (req, res, next) => {
 
     //check  that district is already exist or not
     const [existing] = await db.execute(
-      "select district_name  from district where district_name=?",
+      "select district_name  from district where district_name = ?",
       [district_name]
     );
     //check the province is exist or not
@@ -181,12 +171,44 @@ export const addDistrict = async (req, res, next) => {
 //get district api
 export const getDistrict = async (req, res, next) => {
   try {
-    const [allDistrict] = await db.execute(
-      "select * from district order by district_id asc"
-    );
+    //   const { id } = req.params;
+
+    //   if (id) {
+    //     const [district] = await db.execute(
+    //       `
+    //      SELECT
+    // d.district_id,
+    // d.district_name,
+    // GROUP_CONCAT(b.branch_name) as branches
+    // FROM district d
+    // LEFT JOIN branch b ON d.district_id = b.district_id
+    //  WHERE d.district_id = ?
+    // GROUP BY d.district_id,d.district_name`,
+    //       [id]
+    //     );
+    //     if (district.length === 0) {
+    //       return res.status(404).json({
+    //         message: "district not found",
+    //       });
+    //     }
+    //     res.status(200).json({
+    //       message: "sucess",
+    //       district: district[0],
+    //     });
+    //   }
+    const [allDistrict] = await db.execute(`
+     SELECT 
+  d.district_id,
+  d.district_name,
+  GROUP_CONCAT(b.branch_name) as branches
+  FROM district d
+  LEFT JOIN branch b ON d.district_id = b.district_id
+   
+  GROUP BY d.district_id,d.district_name`);
+
     res.status(200).json({
       message: "success",
-      allDistrict: allDistrict,
+      allDistricts: allDistrict,
     });
   } catch (error) {
     next(error);
@@ -254,7 +276,7 @@ export const addBranch = async (req, res, next) => {
       [branch_name, district_id, remarks]
     );
     res.status(201).json({
-      message: `${branch_name} branch added successfully ${existing[0].district_name}`,
+      message: `${branch_name} branch added successfully in ${existing[0].district_name}`,
     });
   } catch (error) {
     next(error);
@@ -263,23 +285,24 @@ export const addBranch = async (req, res, next) => {
 //delete branch api
 export const deleteBranch = async (req, res, next) => {
   try {
-    const { branch_id } = req.params;
-    if (!branch_id) {
-      res.status(409).json({
-        message: "provide the id which brach you want to delete",
+    const { id } = req.params;
+    console.log(id);
+    if (!id) {
+      return res.status(409).json({
+        message: "provide  id ",
       });
     }
     const [existing] = await db.execute(
-      "select id,branch_name from branch where branch_id = ? ",
-      [branch_id]
+      "select branch_id,branch_name from branch where branch_id = ? ",
+      [id]
     );
     const exist_district = existing[0];
     if (existing.length === 0) {
-      res.status(404).json({
-        message: `branch not found by ${branch_id}th id`,
+      return res.status(404).json({
+        message: `branch not found by ${id}th id`,
       });
     }
-    await db.execute("delete from branch where branch_id = ?", [branch_id]);
+    await db.execute("delete from branch where branch_id = ?", [id]);
     res.status(200).json({
       message: `${exist_district.branch_name} branch delete successfully`,
     });
@@ -290,86 +313,11 @@ export const deleteBranch = async (req, res, next) => {
 //get branch api
 export const getBranch = async (req, res, next) => {
   try {
-    const [all_branch] = await db.execute(`
-      SELECT  
-      d.district_name,
-      b.branch_id,
-      b.branch_name
-      from district d 
-      left join branch b
-      ON b.branch_id = d.district_id
-      `);
+    const [all_branch] = await db.execute(`select * from branch 
+     `);
     res.status(200).json({
       message: "successfully displayed",
       branch: all_branch,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-//inquiry api
-//add inquiry
-export const addInquiry = async (req, res) => {
-  try {
-    const { name, email, phone, address, branch_id, description } = req.body; // getting data from the fronted or req.body
-    //return msg for the if any field is missing
-    if (!name || !phone || !address || !branch_id) {
-      return res
-        .status(400)
-        .json({ message: "please provide province all field " });
-    }
-
-    //3. insert in inquiry table
-    await db.execute(
-      `INSERT INTO inquiry (name, phone, address, email, description, branch_id) 
-       VALUES (?, ?, ?, ?, ?, ?)`,
-      [name, phone, address, email || null, description || null, branch_id]
-    );
-
-    res.status(201).json({
-      message: "Inquiry submitted successfully",
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-//delete inquiry
-export const deleteInquiry = async (req, res, next) => {
-  try {
-    const { inquiry_id } = req.params;
-
-    // Check if id is provided
-    if (!inquiry_id) {
-      return res.status(400).json({ message: "Inquiry ID is required" });
-    }
-    const [result] = await db.execute(
-      "select inquiry_id from inquiry where inquiry_id = ? ",
-      [inquiry_id]
-    );
-
-    if (result.length === 0) {
-      return res.status(404).json({ message: "Inquiry not found" });
-    }
-
-    // Delete from DB
-    await db.execute("DELETE FROM inquiry WHERE inquiry_id = ?", [inquiry_id]);
-
-    res.status(200).json({ message: "Inquiry deleted successfully" });
-  } catch (error) {
-    next(error);
-  }
-};
-//get inquiry api
-export const getInquiry = async (req, res, next) => {
-  try {
-    const allInquiry = await db.execute(
-      "select * from inquiry order by created_at desc"
-    );
-
-    res.status(200).json({
-      message: "success fully displayed inquiry",
-      allInquiry: addInquiry,
     });
   } catch (error) {
     next(error);

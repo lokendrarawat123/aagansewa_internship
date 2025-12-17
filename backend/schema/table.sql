@@ -20,9 +20,12 @@ CREATE TABLE services(
     service_name VARCHAR(150),
     description varchar(255),
     service_image varchar(255)
+    staff_id int
     branch_id INT,
     FOREIGN KEY (branch_id)
       REFERENCES branch(branch_id) 
+      FOREIGN KEY (staff_id)
+      REFERENCES staff(staff_id) 
 );
 CREATE TABLE inquiry (
     inquiry_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -51,9 +54,41 @@ CREATE TABLE gallery (
 
     FOREIGN KEY (branch_id)
         REFERENCES branch(branch_id)
-        ON DELETE CASCADE,
-
+        
     FOREIGN KEY (staff_id)
         REFERENCES staff(staff_id)
         
+);
+CREATE TABLE staff (
+    staff_id INT AUTO_INCREMENT PRIMARY KEY,
+
+    name VARCHAR(100) NOT NULL,
+    position VARCHAR(100) NOT NULL,
+    email VARCHAR(150) UNIQUE,
+    phone VARCHAR(20),
+
+    role VARCHAR(50) NOT NULL DEFAULT 'staff',
+    description TEXT,
+
+    branch_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_staff_branch
+    FOREIGN KEY (branch_id)
+    REFERENCES branch(branch_id)
+   
+);
+
+create table trusted_costumer (
+    costumer_id int AUTO_INCREMENT primary key,
+    name varchar(255) null,
+    image text
+
+);
+create table review (
+    review_id int AUTO_INCREMENT primary key,
+    name varchar (255) null,
+    position varchar(255) null,
+    description varchar(255) null
+
 );

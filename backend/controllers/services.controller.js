@@ -1,16 +1,18 @@
 import db from "../config/db_connect.js";
 import { removeImg } from "../utils/removeImg.js";
+import { compressImg } from "../utils/sharphandler.js";
 
 //add service api
 export const addServices = async (req, res, next) => {
   try {
     //for getting img we use req.file
-    const service_image = req.file;
-    console.log(service_image);
+    const service_image = req.files;
+   
     const { service_name, description, branch_id } = req.body;
+    console.log(service_name, branch_id, description);
     if (!service_image || !service_name || !branch_id) {
-      if (req.file) {
-        removeImg(req.file.path);
+      if (req.files) {
+        removeImg(req.files.path);
       }
       return res.status(400).json({
         message: "please provide all input ",
@@ -21,8 +23,8 @@ export const addServices = async (req, res, next) => {
       [service_name]
     );
     if (result.length > 0) {
-      if (req.file) {
-        removeImg(req.file.path);
+      if (req.files) {
+        removeImg(req.files.path);
       }
 
       return res.status(409).json({
@@ -34,15 +36,20 @@ export const addServices = async (req, res, next) => {
       [branch_id]
     );
     if (existBranch.length === 0) {
-      if (req.file) {
-        removeImg(req.file.path);
+      if (req.files) {
+        removeImg(req.files.path);
       }
 
       return res.status(404).json({
         message: `Invalid branch ID: ${branch_id}. Branch does not exist.`,
       });
     }
-    let imagePath = `uploads/services/${req.file.filename}`;
+    let imagePath = "";
+    if (req.files) {
+      const outputPath = `uploads/services/school-${req.files.filename}`;
+      await compressImg(req.files.path, outputPath);
+      imagePath = outputPath;
+    }
 
     await db.execute(
       "insert into services (service_name,service_image,branch_id,description) values (?,?,?,?)",
@@ -52,8 +59,8 @@ export const addServices = async (req, res, next) => {
       message: `${service_name} service has been successfully added to the ${existBranch[0].branch_name} branch.`,
     });
   } catch (error) {
-    if (req.file) {
-      removeImg(req.file.path);
+    if (req.files) {
+      removeImg(req.files.path);
     }
     next(error);
   }
@@ -107,7 +114,7 @@ export const updateService = async (req, res, next) => {
     //get update service id from req.params
     const { service_id } = req.params;
     //get service image from the req.file
-    const service_image = req.file;
+    const service_image = req.files;
     // get update form data from the req.body
     const { service_name, description } = req.body;
     const [result] = await db.execute(
@@ -115,8 +122,8 @@ export const updateService = async (req, res, next) => {
       [service_id]
     );
     if (result.length === 0) {
-      if (req.file) {
-        removeImg(req.file.path);
+      if (req.files) {
+        removeImg(req.files.path);
       }
       return res.status(404).json({
         message: `${service_name} service is not found `,
@@ -126,7 +133,7 @@ export const updateService = async (req, res, next) => {
     const updateServiceName = service_name || oldService.service_name;
     const updateDescription = description || oldService.description;
     let updateServiceImage = oldService.service_image;
-    if (req.file) {
+    if (req.files) {
       updateServiceImage = `uploads/services/${req.file.filename}`;
       if (oldService.service_image) {
         removeImg(

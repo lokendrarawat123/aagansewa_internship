@@ -10,9 +10,13 @@ import { uploadService } from "../utils/multerHandler.js";
 
 const serviceRouter = express.Router();
 
-serviceRouter.post("/add-services", uploadService.single("image"), addServices);
+serviceRouter.post(
+  "/add-services",
+  uploadService.array("image", 20),
+  addServices
+);
 serviceRouter.get("/get-services", getServices);
-serviceRouter.delete("/delete-services", deleteService);
-serviceRouter.patch("/update-services", updateService);
+serviceRouter.delete("/delete-services/:id", deleteService);
+serviceRouter.patch("/update-services/:id", updateService);
 
 export default serviceRouter;
