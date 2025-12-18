@@ -6,23 +6,37 @@ export const addTrustedCostumer = async (req, res, next) => {
   try {
     const { name } = req.body;
     const trusted_image = req.file;
+   
 
     if (!name || !trusted_image) {
+      if (req.file) {
+        removeImg(req.file.path);
+      }
       return res.status(400).json({ message: "Name and image are required" });
     }
 
     // compress and save
-    const imagePath = `uploads/trusted/${trusted_image.filename}`;
-    await compressImg(trusted_image.path, imagePath);
+
+    let imagePath = "";
+    if (req.file) {
+      const outputPath = `uploads/costumer/school-${req.file.filename}`;
+      await compressImg(req.file.path, outputPath);
+      imagePath = outputPath;
+    }
+    // const photopath = `uploads/trusted/${trusted_image.filename}`;
+    // await compressImg(trusted_image.path, imagePath);
 
     // save to DB
     await db.execute(
-      "INSERT INTO trusted_customers (name, image) VALUES (?, ?)",
-      [name, outputPath]
+      "INSERT INTO trusted_costumer (name, image) VALUES (?, ?)",
+      [name, imagePath]
     );
 
     res.status(201).json({ message: "Trusted customer added successfully" });
   } catch (error) {
+    if (req.file) {
+      removeImg(req.file.path);
+    }
     next(error);
   }
 };
@@ -30,7 +44,7 @@ export const getTrustedCustomers = async (req, res, next) => {
   try {
     // Fetch all trusted customers
     const [customers] = await db.execute(
-      "SELECT * FROM trusted_customers ORDER BY created_at DESC"
+      "SELECT * FROM  trusted_costumer ORDER BY created_at DESC"
     );
 
     if (customers.length === 0) {
@@ -38,7 +52,7 @@ export const getTrustedCustomers = async (req, res, next) => {
     }
 
     res.status(200).json({
-      message: "Trusted customers fetched successfully",
+      message: "Trusted costumer fetched successfully",
       trustedCustomers: customers,
     });
   } catch (error) {
@@ -56,7 +70,7 @@ export const deleteTrustedCustomer = async (req, res, next) => {
 
     // Check if customer exists
     const [result] = await db.execute(
-      "SELECT name, image FROM trusted_customers WHERE id = ?",
+      "SELECT name, image FROM trusted_costumer WHERE costumer_id = ?",
       [id]
     );
 
@@ -72,10 +86,12 @@ export const deleteTrustedCustomer = async (req, res, next) => {
     }
 
     // Delete from database
-    await db.execute("DELETE FROM trusted_customers WHERE id = ?", [id]);
+    await db.execute("DELETE FROM trusted_costumer WHERE costumer_id = ?", [
+      id,
+    ]);
 
     res.status(200).json({
-      message: `${customer.name} has been deleted successfully`,
+      message: `${customer.name} name's costomer has been deleted successfully`,
     });
   } catch (error) {
     next(error);
@@ -87,13 +103,13 @@ export const addReview = async (req, res, next) => {
   try {
     const { name, position, description } = req.body;
 
-    if (!name || !position || !description) {
+    if (!name || !description) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
     await db.execute(
       "INSERT INTO review (name, position, description) VALUES (?, ?, ?)",
-      [name, position, description]
+      [name, position || null, description]
     );
 
     res.status(201).json({ message: "Review added successfully" });
@@ -139,7 +155,7 @@ export const deleteReview = async (req, res, next) => {
     await db.execute("DELETE FROM review WHERE review_id = ?", [id]);
 
     res.status(200).json({
-      message: `${result[0].name} review deleted successfully`,
+      message: `${result[0].name}'s review deleted successfully`,
     });
   } catch (error) {
     next(error);
@@ -184,8 +200,8 @@ export const addInquiry = async (req, res, next) => {
 //delete inquiry
 export const deleteInquiry = async (req, res, next) => {
   try {
-    const { inquiry_id } = req.params;
-    console.log(inquiry_id);
+    const { id } = req.params;
+    const inquiry_id = id;
 
     // Check if id is provided
     if (!inquiry_id) {

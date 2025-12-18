@@ -13,8 +13,9 @@ export const addStaff = async (req, res, next) => {
       service_id,
       branch_id,
     } = req.body;
+    console.log(req.body);
 
-    if (!name || !position || !role || !service_id || !branch_id) {
+    if (!name || !position || !role || !branch_id) {
       return res
         .status(400)
         .json({ message: "Please provide all required fields" });
@@ -46,7 +47,7 @@ export const addStaff = async (req, res, next) => {
         phone || null,
         role,
         description || null,
-        service_id,
+        service_id || null,
         branch_id,
       ]
     );
@@ -60,9 +61,7 @@ export const addStaff = async (req, res, next) => {
 // Get all staff
 export const getStaff = async (req, res, next) => {
   try {
-    const [staffList] = await db.execute(
-      "SELECT * FROM staff ORDER BY created_at DESC"
-    );
+    const [staffList] = await db.execute("SELECT * FROM staff ");
     res.status(200).json({
       message: "Staff fetched successfully",
       staff: staffList,

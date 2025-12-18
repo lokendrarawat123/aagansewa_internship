@@ -10,6 +10,8 @@ import siteRouter from "./routes/site.routes.js";
 dotenv.config();
 const app = express();
 app.use(express.json()); //it is use for the  the  json
+app.use("/uploads", express.static("uploads"));
+app.use(express.urlencoded({ extended: true }));
 const port = process.env.PORT;
 app.use("/api/branch", branchRouter);
 app.use("/api/services", serviceRouter);
@@ -18,7 +20,6 @@ app.use("/api/gallery", galleryRouter);
 app.use("/api/site", siteRouter);
 app.use("/api/auth", authRouter);
 
-app.use("/uploads", express.static("uploads"));
 try {
   db.connect();
 

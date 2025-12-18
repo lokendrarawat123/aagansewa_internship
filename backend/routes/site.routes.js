@@ -16,11 +16,11 @@ const siteRouter = express.Router();
 
 siteRouter.post(
   "/add-trusted-costumer",
-  uploadCostumer.single("trusted_image"), // single image
+  uploadCostumer.single("image"), // single image
   addTrustedCostumer
 );
 siteRouter.get("/get-trusted-costumer", getTrustedCustomers);
-siteRouter.delete("/delete-trusted-costumer:id", deleteTrustedCustomer);
+siteRouter.delete("/delete-trusted-costumer/:id", deleteTrustedCustomer);
 
 siteRouter.post("/review/add-review", addReview);
 siteRouter.get("/review/get-review", getReview);

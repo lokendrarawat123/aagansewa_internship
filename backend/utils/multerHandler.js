@@ -9,7 +9,6 @@ const serviceStorage = multer.diskStorage({
     cb(null, uniqueSuffix + "-" + file.originalname);
   },
 });
-
 export const uploadService = multer({ storage: serviceStorage });
 
 //for gallery image

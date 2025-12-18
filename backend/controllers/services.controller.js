@@ -6,13 +6,12 @@ import { compressImg } from "../utils/sharphandler.js";
 export const addServices = async (req, res, next) => {
   try {
     //for getting img we use req.file
-    const service_image = req.files;
-   
+    const image = req.file;
+
     const { service_name, description, branch_id } = req.body;
-    console.log(service_name, branch_id, description);
-    if (!service_image || !service_name || !branch_id) {
-      if (req.files) {
-        removeImg(req.files.path);
+    if (!image || !service_name || !branch_id) {
+      if (req.file) {
+        removeImg(req.file.path);
       }
       return res.status(400).json({
         message: "please provide all input ",
@@ -23,10 +22,9 @@ export const addServices = async (req, res, next) => {
       [service_name]
     );
     if (result.length > 0) {
-      if (req.files) {
-        removeImg(req.files.path);
+      if (req.file) {
+        removeImg(req.file.path);
       }
-
       return res.status(409).json({
         message: `${service_name} service already exists.`,
       });
@@ -36,8 +34,8 @@ export const addServices = async (req, res, next) => {
       [branch_id]
     );
     if (existBranch.length === 0) {
-      if (req.files) {
-        removeImg(req.files.path);
+      if (req.file) {
+        removeImg(req.file.path);
       }
 
       return res.status(404).json({
@@ -45,9 +43,9 @@ export const addServices = async (req, res, next) => {
       });
     }
     let imagePath = "";
-    if (req.files) {
-      const outputPath = `uploads/services/school-${req.files.filename}`;
-      await compressImg(req.files.path, outputPath);
+    if (req.file) {
+      const outputPath = `uploads/services/school-${req.file.filename}`;
+      await compressImg(req.file.path, outputPath);
       imagePath = outputPath;
     }
 
@@ -59,9 +57,10 @@ export const addServices = async (req, res, next) => {
       message: `${service_name} service has been successfully added to the ${existBranch[0].branch_name} branch.`,
     });
   } catch (error) {
-    if (req.files) {
-      removeImg(req.files.path);
+    if (req.file) {
+      removeImg(req.file.path);
     }
+
     next(error);
   }
 };
@@ -83,24 +82,25 @@ export const getServices = async (req, res, next) => {
 export const deleteService = async (req, res, next) => {
   try {
     // first get the id from req.params which service will delete
-    const { service_id } = req.params;
+    const { id } = req.params;
+    console.log(id);
     // check the service id provide or not
     if (!service_id) {
       return res.status(400).json({
-        message: "please provide id of deleting service ",
+        message: "please provide id of deleteing service  ",
       });
     }
     // check provided service id is exist or not
     const [result] = await db.execute(
-      "select id, service_name from services where service_id = ? ",
-      [service_id]
+      "select service_id, service_name from services where service_id = ? ",
+      [id]
     );
     if (result.length === 0) {
       return res.status(404).json({
-        message: `service is not exist in this ${service_id} id`,
+        message: `service is not exist in this ${id} id`,
       });
     }
-    await db.execute("delete from services where service_id = ?", [service_id]);
+    await db.execute("delete from services where service_id = ?", [id]);
     res.status(200).json({
       message: `${result[0].service_name} service was deleted successfully`,
     });

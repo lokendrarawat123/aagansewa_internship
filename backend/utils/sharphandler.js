@@ -9,6 +9,6 @@ export const compressImg = async (inputPath, outputPath) => {
     await fs.unlink(inputPath);
     return outputPath;
   } catch (error) {
-    console(error);
+    console.log(error);
   }
 };

@@ -2,23 +2,26 @@ import db from "../config/db_connect.js";
 import { compressImg } from "../utils/sharphandler.js";
 import { removeImg } from "../utils/removeImg.js";
 
-// Add Gallery
 export const addGallery = async (req, res, next) => {
   try {
-    const { title, gallery_date, location, branch_id, staff_id } = req.body;
-    const file = req.files;
+    const { title, gallery_date, location, branch_id } = req.body;
+    const images = req.files; // array of files
 
     if (
       !title ||
       !gallery_date ||
       !location ||
       !branch_id ||
-      !staff_id ||
-      !file
+      !images ||
+      images.length === 0
     ) {
-      return res
-        .status(400)
-        .json({ message: "All fields including image are required" });
+      for (const i of images) {
+        removeImg(i.path);
+      }
+
+      return res.status(400).json({
+        message: "All fields including at least one image are required",
+      });
     }
 
     // Check if branch exists
@@ -26,29 +29,41 @@ export const addGallery = async (req, res, next) => {
       "SELECT * FROM branch WHERE branch_id = ?",
       [branch_id]
     );
-    if (branch.length === 0)
+    if (branch.length === 0) {
+      for (const i of images) {
+        removeImg(i.path);
+      }
+
       return res.status(404).json({ message: "Branch not found" });
+    }
 
-    // Check if staff exists
-    const [staff] = await db.execute("SELECT * FROM staff WHERE staff_id = ?", [
-      staff_id,
-    ]);
-    if (staff.length === 0)
-      return res.status(404).json({ message: "Staff not found" });
+    // Compress and save all images
+    const imagePaths = [];
+    for (const i of images) {
+      const outputPath = `uploads/gallery/${i.filename}`; // i is a variable
+      await compressImg(i.path, outputPath);
+      imagePaths.push(outputPath);
+    }
 
-    // Compress and save image
-    const outputPath = `uploads/gallery/${file.filename}`;
-    await compressImg(file.path, outputPath);
-
-    // Insert into DB
+    // it is use for separating images path by comma.
+    const imageStiring = imagePaths.join(",");
+    // Save gallery info in DB
+    // Option 1: save multiple images as JSON in one column
     await db.execute(
-      "INSERT INTO gallery (title, gallery_date, location, branch_id, staff_id, image) VALUES (?, ?, ?, ?, ?, ?)",
-      [title, gallery_date, location, branch_id, staff_id, outputPath]
+      `INSERT INTO gallery (title, gallery_date, location, branch_id, image)
+       VALUES (?, ?, ?, ?,  ?)`,
+      [title, gallery_date, location, branch_id, imageStiring]
     );
 
-    res.status(201).json({ message: "Gallery added successfully" });
+    res.status(201).json({
+      message: "photos are  added successfully",
+      images: imagePaths,
+    });
   } catch (error) {
-    if (req.file) removeImg(req.file.path);
+    for (const i of images) {
+      removeImg(i.path);
+    }
+
     next(error);
   }
 };
@@ -73,48 +88,48 @@ export const getGallery = async (req, res, next) => {
 };
 
 // Update Gallery
-export const updateGallery = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const { title, gallery_date, location, branch_id, staff_id } = req.body;
-    const file = req.files;
+// export const updateGallery = async (req, res, next) => {
+//   try {
+//     const { id } = req.params;
+//     const { title, gallery_date, location, branch_id, staff_id } = req.body;
+//     const file = req.files;
 
-    const [existing] = await db.execute(
-      "SELECT * FROM gallery WHERE gallery_id = ?",
-      [id]
-    );
-    if (existing.length === 0)
-      return res.status(404).json({ message: "Gallery entry not found" });
+//     const [existing] = await db.execute(
+//       "SELECT * FROM gallery WHERE gallery_id = ?",
+//       [id]
+//     );
+//     if (existing.length === 0)
+//       return res.status(404).json({ message: "Gallery entry not found" });
 
-    const oldGallery = existing[0];
-    let imagePath = oldGallery.image;
+//     const oldGallery = existing[0];
+//     let imagePath = oldGallery.image;
 
-    // If new image is uploaded
-    if (file) {
-      imagePath = `uploads/gallery/${file.filename}`;
-      await compressImg(file.path, imagePath);
-      if (oldGallery.image) removeImg(oldGallery.image);
-    }
+//     // If new image is uploaded
+//     if (file) {
+//       imagePath = `uploads/gallery/${file.filename}`;
+//       await compressImg(file.path, imagePath);
+//       if (oldGallery.image) removeImg(oldGallery.image);
+//     }
 
-    await db.execute(
-      "UPDATE gallery SET title = ?, gallery_date = ?, location = ?, branch_id = ?, staff_id = ?, image = ? WHERE gallery_id = ?",
-      [
-        title || oldGallery.title,
-        gallery_date || oldGallery.gallery_date,
-        location || oldGallery.location,
-        branch_id || oldGallery.branch_id,
-        staff_id || oldGallery.staff_id,
-        imagePath,
-        id,
-      ]
-    );
+//     await db.execute(
+//       "UPDATE gallery SET title = ?, gallery_date = ?, location = ?, branch_id = ?, staff_id = ?, image = ? WHERE gallery_id = ?",
+//       [
+//         title || oldGallery.title,
+//         gallery_date || oldGallery.gallery_date,
+//         location || oldGallery.location,
+//         branch_id || oldGallery.branch_id,
+//         staff_id || oldGallery.staff_id,
+//         imagePath,
+//         id,
+//       ]
+//     );
 
-    res.status(200).json({ message: "Gallery updated successfully" });
-  } catch (error) {
-    if (req.files) removeImg(req.files.path);
-    next(error);
-  }
-};
+//     res.status(200).json({ message: "Gallery updated successfully" });
+//   } catch (error) {
+//     if (req.files) removeImg(req.files.path);
+//     next(error);
+//   }
+// };
 
 // Delete Gallery
 export const deleteGallery = async (req, res, next) => {

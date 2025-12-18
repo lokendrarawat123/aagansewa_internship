@@ -4,7 +4,6 @@ import {
   addGallery,
   deleteGallery,
   getGallery,
-  updateGallery,
 } from "../controllers/gallery.controller.js";
 const galleryRouter = express.Router();
 galleryRouter.post(
@@ -14,6 +13,5 @@ galleryRouter.post(
 );
 galleryRouter.get("/get-Gallery", getGallery);
 galleryRouter.delete("/delete-Gallery/:id", deleteGallery);
-galleryRouter.patch("/update-Gallery/:id", updateGallery);
 
 export default galleryRouter;
