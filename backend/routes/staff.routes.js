@@ -4,6 +4,8 @@ import {
   getStaff,
   updateStaff,
   deleteStaff,
+  login,
+  logout,
 } from "../controllers/staff.controller.js";
 
 const staffRouter = express.Router();
@@ -19,5 +21,7 @@ staffRouter.patch("/update-staff/:id", updateStaff);
 
 // Delete staff
 staffRouter.delete("/delete-staff/:id", deleteStaff);
+staffRouter.post("login", login);
+staffRouter.post("login", logout);
 
 export default staffRouter;
