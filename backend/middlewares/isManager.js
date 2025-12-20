@@ -1,8 +1,8 @@
-export const isAdmin = (req, res, next) => {
+export const isManager = (req, res, next) => {
   const { role } = req.user;
   if (role !== "manager") {
     return res.status(401).json({
-      message: "Access denied.Manager only",
+      message: "unauthhorized!!!!!!!!!!!!",
     });
   }
   next();
