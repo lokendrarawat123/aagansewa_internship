@@ -7,11 +7,13 @@ import authRouter from "./routes/auth.routes.js";
 import staffRouter from "./routes/staff.routes.js";
 import galleryRouter from "./routes/gallery.routes.js";
 import siteRouter from "./routes/site.routes.js";
+import cookieParser from "cookie-parser";
 dotenv.config();
 const app = express();
 app.use(express.json()); //it is use for the  the  json
 app.use("/uploads", express.static("uploads"));
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 const port = process.env.PORT;
 app.use("/api/branch", branchRouter);
 app.use("/api/services", serviceRouter);

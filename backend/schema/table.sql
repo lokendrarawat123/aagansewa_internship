@@ -59,25 +59,7 @@ CREATE TABLE gallery (
         REFERENCES staff(staff_id)
         
 );
-CREATE TABLE staff (
-    staff_id INT AUTO_INCREMENT PRIMARY KEY,
 
-    name VARCHAR(100) NOT NULL,
-    position VARCHAR(100) NOT NULL,
-    email VARCHAR(150) UNIQUE,
-    phone VARCHAR(20),
-
-    role VARCHAR(50) NOT NULL DEFAULT 'staff',
-    description TEXT,
-
-    branch_id INT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT fk_staff_branch
-    FOREIGN KEY (branch_id)
-    REFERENCES branch(branch_id)
-   
-);
 
 create table trusted_costumer (
     costumer_id int AUTO_INCREMENT primary key,
@@ -92,3 +74,32 @@ create table review (
     description varchar(255) null
 
 );
+CREATE TABLE staff (
+    staff_id INT AUTO_INCREMENT PRIMARY KEY,
+
+    name VARCHAR(100) NOT NULL,
+    position VARCHAR(100) NULL,
+    email VARCHAR(150) NOT NULL UNIQUE,
+    password varchar(100) not null,
+    phone VARCHAR(20)null,
+
+    role VARCHAR(50) DEFAULT 'staff',
+    description TEXT,
+
+    service_id INT NOT NULL,
+    branch_id INT NOT NULL,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_staff_service
+      FOREIGN KEY (service_id)
+      REFERENCES services(service_id),
+      
+
+
+    CONSTRAINT fk_staff_branch
+      FOREIGN KEY (branch_id)
+      REFERENCES branch(branch_id)
+    
+);
+

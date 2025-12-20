@@ -5,7 +5,7 @@ export const isLogin = async (req, res, next) => {
     const token = req.cookies.token;
     // console.log(token);
     if (!token) {
-      res.status(401).json({
+      return res.status(401).json({
         message: " sorry, login first :you are not login",
       });
     }
@@ -13,8 +13,9 @@ export const isLogin = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.secrete_key);
     // console.log(decoded);
     req.user = decoded;
+
     next();
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 };

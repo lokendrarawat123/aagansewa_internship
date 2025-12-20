@@ -10,9 +10,10 @@ import {
   getDistrict,
   getProvince,
 } from "../controllers/branch.controller.js";
+import { isLogin } from "../middlewares/isLogin.js";
 
 const branchRouter = express.Router();
-branchRouter.post("/add-province", addProvince);
+branchRouter.post("/add-province", isLogin, addProvince);
 branchRouter.get("/get-province", getProvince);
 branchRouter.delete("/delete-province/:id", deleteProvince);
 branchRouter.post("/add-district", addDistrict);
