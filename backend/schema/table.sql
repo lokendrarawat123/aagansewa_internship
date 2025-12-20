@@ -102,4 +102,11 @@ CREATE TABLE staff (
       REFERENCES branch(branch_id)
     
 );
+ALTER TABLE services
+ADD CONSTRAINT fk_services_created_by
+FOREIGN KEY (created_by)
+REFERENCES staff(staff_id)
+ON DELETE SET NULL;
 
+ALTER TABLE services
+ADD COLUMN created_by INT NULL;
