@@ -8,7 +8,7 @@ import {
   updateManager,
 } from "../controllers/auth.controller.js";
 import { isLogin } from "../middlewares/isLogin.js";
-import { isManager } from "../middlewares/isManager.js";
+
 import { isAdmin } from "../middlewares/isAdmin.js";
 
 const authRouter = express.Router();

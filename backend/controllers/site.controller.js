@@ -6,7 +6,6 @@ export const addTrustedCostumer = async (req, res, next) => {
   try {
     const { name } = req.body;
     const trusted_image = req.file;
-   
 
     if (!name || !trusted_image) {
       if (req.file) {

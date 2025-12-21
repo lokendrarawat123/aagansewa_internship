@@ -190,9 +190,6 @@ export const deleteStaff = async (req, res, next) => {
   }
 };
 
-import db from "../config/db_connect.js";
-import nodemailer from "nodemailer";
-
 export const forgotPassword = async (req, res, next) => {
   try {
     const { email } = req.body;
@@ -252,7 +249,6 @@ export const verifyCode = async (req, res, next) => {
   }
 };
 
-
 export const resetPassword = async (req, res, next) => {
   try {
     const { code, newPassword } = req.body;
@@ -289,7 +285,6 @@ export const login = async (req, res, next) => {
 
     // console.log(req.body);
     const { email, password, role } = req.body;
-    
 
     if (!email || !password) {
       return res.status(400).json({ message: "All  inputs are  required" });
@@ -363,4 +358,3 @@ export const logout = async (req, res, next) => {
     next(error);
   }
 };
-

@@ -132,18 +132,22 @@ export const updateService = async (req, res, next) => {
     const oldService = result[0];
     const updateServiceName = service_name || oldService.service_name;
     const updateDescription = description || oldService.description;
-    let updateServiceImage = oldService.service_image;
-    if (req.files) {
-      updateServiceImage = `uploads/services/${req.file.filename}`;
+
+    let imagePath = "";
+    if (req.file) {
+      const outputPath = `uploads/services/school-${req.file.filename}`;
+      await compressImg(req.file.path, outputPath);
+      imagePath = outputPath;
       if (oldService.service_image) {
         removeImg(
           `uploads/services/${oldService.service_image.split("/").pop()}`
         );
       }
     }
+
     await db.execute(
       "UPDATE services set service_name=?,service_image=?,description=? where service_id=?",
-      [updateServiceName, updateServiceImage, updateDescription, service_id]
+      [updateServiceName, imagePath, updateDescription, service_id]
     );
     res.status(200).json({
       message: `${updateServiceName} service is updated successfully`,

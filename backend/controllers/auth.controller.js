@@ -12,7 +12,6 @@ export const login = async (req, res, next) => {
 
     // console.log(req.body);
     const { email, password, role } = req.body;
-    
 
     if (!email || !password) {
       return res.status(400).json({ message: "All  inputs are  required" });
@@ -64,13 +63,27 @@ export const login = async (req, res, next) => {
       secure: false,
       sameSite: "strict",
     });
+    const [userid] = await db.execute(
+      "select user_id from users where email = ? ",
+      [email]
+    );
+
+    const [branch] = await db.execute(
+      `SELECT 
+  u.user_id,
+  u.name,
+  u.role,
+  b.branch_name
+FROM users u
+LEFT JOIN branch b ON u.branch_id = b.branch_id where u.email=?
+`,
+      [email]
+    );
+
     //else success
     res.status(200).json({
       message: "login success",
-      user: {
-        name: user.name,
-        role: user.role,
-      },
+      user: branch,
     });
   } catch (error) {
     next(error);
@@ -147,7 +160,9 @@ export const addManager = async (req, res, next) => {
 // Get all staff
 export const getManager = async (req, res, next) => {
   try {
-    const [manager] = await db.execute("SELECT * FROM users ");
+    const [manager] = await db.execute("SELECT * FROM users where role = ? ", [
+      "manager",
+    ]);
     res.status(200).json({
       message: "Manager fetched successfully",
       managers: manager,
