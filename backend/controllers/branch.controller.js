@@ -128,6 +128,7 @@ export const deleteProvince = async (req, res, next) => {
 // districts api
 export const addDistrict = async (req, res, next) => {
   try {
+    console.log(req.body);
     const { district_name, province_id } = req.body;
     if (!district_name || !province_id) {
       return res.status(404).json({
@@ -171,45 +172,23 @@ export const addDistrict = async (req, res, next) => {
 //get district api
 export const getDistrict = async (req, res, next) => {
   try {
-    //   const { id } = req.params;
-
-    //   if (id) {
-    //     const [district] = await db.execute(
-    //       `
-    //      SELECT
-    // d.district_id,
-    // d.district_name,
-    // GROUP_CONCAT(b.branch_name) as branches
-    // FROM district d
-    // LEFT JOIN branch b ON d.district_id = b.district_id
-    //  WHERE d.district_id = ?
-    // GROUP BY d.district_id,d.district_name`,
-    //       [id]
-    //     );
-    //     if (district.length === 0) {
-    //       return res.status(404).json({
-    //         message: "district not found",
-    //       });
-    //     }
-    //     res.status(200).json({
-    //       message: "sucess",
-    //       district: district[0],
-    //     });
-    //   }
-    const [allDistrict] = await db.execute(`
+    const { role, email } = req.user;
+    if (role === "admin") {
+      const [allDistrict] = await db.execute(`
      SELECT 
-  d.district_id,
-  d.district_name,
-  GROUP_CONCAT(b.branch_name) as branches
-  FROM district d
-  LEFT JOIN branch b ON d.district_id = b.district_id
+     d.district_id,
+      d.district_name,
+      GROUP_CONCAT(b.branch_name) as branches
+      FROM district d
+      LEFT JOIN branch b ON d.district_id = b.district_id
    
-  GROUP BY d.district_id,d.district_name`);
+     GROUP BY d.district_id,d.district_name`);
 
-    res.status(200).json({
-      message: "success",
-      allDistricts: allDistrict,
-    });
+      res.status(200).json({
+        message: "success",
+        allDistricts: allDistrict,
+      });
+    }
   } catch (error) {
     next(error);
   }
@@ -271,6 +250,7 @@ export const addBranch = async (req, res, next) => {
         message: "district id is not exist",
       });
     }
+    const { role, email } = req.user; // fetch data from req.user which is logged user
     await db.execute(
       "insert into branch (branch_name,district_id,remarks) values (?,?,?)",
       [branch_name, district_id, remarks]
@@ -286,7 +266,7 @@ export const addBranch = async (req, res, next) => {
 export const deleteBranch = async (req, res, next) => {
   try {
     const { id } = req.params;
-    console.log(id);
+    // console.log(id);
     if (!id) {
       return res.status(409).json({
         message: "provide  id ",

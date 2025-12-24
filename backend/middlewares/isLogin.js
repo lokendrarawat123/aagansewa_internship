@@ -13,7 +13,6 @@ export const isLogin = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.secrete_key);
     // console.log(decoded);
     req.user = decoded;
-   
 
     next();
   } catch (error) {

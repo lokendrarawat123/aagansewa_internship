@@ -18,7 +18,7 @@ branchRouter.post("/add-province", isLogin, isAdmin, addProvince);
 branchRouter.get("/get-province", isLogin, isAdmin, getProvince);
 branchRouter.delete("/delete-province/:id", isLogin, addBranch, deleteProvince);
 branchRouter.post("/add-district", isLogin, isAdmin, addDistrict);
-branchRouter.get("/get-district/:id", isLogin, isAdmin, getDistrict);
+branchRouter.get("/get-district", isLogin, isAdmin, getDistrict);
 branchRouter.delete("/delete-district/:id", isLogin, isAdmin, deleteDistrict);
 branchRouter.post("/add-branch", isLogin, isAdmin, addBranch);
 branchRouter.get("/get-branch", isLogin, getBranch);

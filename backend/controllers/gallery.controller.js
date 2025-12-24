@@ -3,18 +3,15 @@ import { compressImg } from "../utils/sharphandler.js";
 import { removeImg } from "../utils/removeImg.js";
 
 export const addGallery = async (req, res, next) => {
+  let images = [];
   try {
     const { title, gallery_date, location, branch_id } = req.body;
-    const images = req.files; // array of files
+    images = req.files; // array of files
+    const { role, email } = req.user;
+    console.log(images);
+    console.log(req.files);
 
-    if (
-      !title ||
-      !gallery_date ||
-      !location ||
-      !branch_id ||
-      !images ||
-      images.length === 0
-    ) {
+    if (!title || !gallery_date || !location || !branch_id || !images) {
       for (const i of images) {
         removeImg(i.path);
       }
@@ -49,6 +46,20 @@ export const addGallery = async (req, res, next) => {
     const imageStiring = imagePaths.join(",");
     // Save gallery info in DB
     // Option 1: save multiple images as JSON in one column
+    if (role === "manager") {
+      const [id] = await db.execute(
+        "select  branch_id from users where email=? ",
+        [email]
+      );
+
+      const userBranch_id = id[0].branch_id;
+
+      if (branch_id != userBranch_id) {
+        return res.status(403).json({
+          message: "!!!!!!!!!!!!!!! Access denied ",
+        });
+      }
+    }
     await db.execute(
       `INSERT INTO gallery (title, gallery_date, location, branch_id, image)
        VALUES (?, ?, ?, ?,  ?)`,
@@ -71,17 +82,35 @@ export const addGallery = async (req, res, next) => {
 // Get all gallery entries
 export const getGallery = async (req, res, next) => {
   try {
-    const [galleries] = await db.execute(
-      "SELECT * FROM gallery ORDER BY created_at DESC"
-    );
+    const { role, email } = req.user;
+    if (role === "manager") {
+      const [id] = await db.execute(
+        "select  branch_id from users where email=? ",
+        [email]
+      );
+      const userBranch_id = id[0].branch_id;
+      const [galleries] = await db.execute(
+        "SELECT * FROM gallery WHERE branch_id=? ORDER BY created_at DESC",
+        [userBranch_id]
+      );
+      res.status(200).json({
+        message: "Gallery fetched successfully",
+        photots: galleries,
+      });
+    }
+    if (role === "adnin") {
+      const [galleries] = await db.execute(
+        "SELECT * FROM gallery ORDER BY created_at DESC"
+      );
 
-    if (galleries.length === 0)
-      return res.status(404).json({ message: "No gallery entries found" });
+      if (galleries.length === 0)
+        return res.status(404).json({ message: "No gallery entries found" });
 
-    res.status(200).json({
-      message: "Gallery fetched successfully",
-      galleries,
-    });
+      res.status(200).json({
+        message: "Gallery fetched successfully",
+        photots: galleries,
+      });
+    }
   } catch (error) {
     next(error);
   }
@@ -135,11 +164,25 @@ export const getGallery = async (req, res, next) => {
 export const deleteGallery = async (req, res, next) => {
   try {
     const { id } = req.params;
+    const { role, email } = req.user;
+    if (role === "manager") {
+      const [id] = await db.execute(
+        "select  branch_id from users where email=? ",
+        [email]
+      );
+      const userBranch_id = id[0].branch_id;
 
+      if (id === userBranch_id) {
+        return res.status(403).json({
+          message: "!!!!!!!!!!!!!!! Access denied ",
+        });
+      }
+    }
     const [existing] = await db.execute(
       "SELECT * FROM gallery WHERE gallery_id = ?",
       [id]
     );
+
     if (existing.length === 0)
       return res.status(404).json({ message: "Gallery entry not found" });
 

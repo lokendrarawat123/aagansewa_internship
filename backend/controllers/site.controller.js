@@ -226,13 +226,45 @@ export const deleteInquiry = async (req, res, next) => {
 //get inquiry api
 export const getInquiry = async (req, res, next) => {
   try {
-    const [allInquiry] = await db.execute(
-      "select * from inquiry order by created_at desc"
-    );
+    const { email, role } = req.user;
+
+    let allInquiry = [];
+
+    // admin → all inquiries
+    if (role === "admin") {
+      const [rows] = await db.execute(
+        "SELECT * FROM inquiry ORDER BY created_at DESC"
+      );
+      allInquiry = rows;
+    }
+
+    // manager → own branch inquiries
+    if (role === "manager") {
+      // get manager branch
+      const [branchRows] = await db.execute(
+        "SELECT branch_id FROM users WHERE email = ?",
+        [email]
+      );
+
+      if (branchRows.length === 0 || !branchRows[0].branch_id) {
+        return res.status(400).json({
+          message: "Branch not assigned to this manager",
+        });
+      }
+
+      const branch_id = branchRows[0].branch_id;
+
+      const [rows] = await db.execute(
+        "SELECT * FROM inquiry WHERE branch_id = ? ORDER BY created_at DESC",
+        [branch_id]
+      );
+
+      allInquiry = rows;
+    }
 
     res.status(200).json({
-      message: "success fully displayed inquiry",
-      allInquiry: allInquiry,
+      message: "Successfully displayed inquiry",
+      allInquiry,
     });
   } catch (error) {
     next(error);

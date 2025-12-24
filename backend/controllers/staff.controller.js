@@ -3,6 +3,7 @@ import db from "../config/db_connect.js";
 
 // Add Staff
 export const addStaff = async (req, res, next) => {
+  console.log(req.body);
   try {
     const {
       name,
@@ -75,11 +76,32 @@ export const addStaff = async (req, res, next) => {
 // Get all staff
 export const getStaff = async (req, res, next) => {
   try {
-    const [staffList] = await db.execute("SELECT * FROM staff ");
-    res.status(200).json({
-      message: "Staff fetched successfully",
-      staff: staffList,
-    });
+    const { email, role } = req.user;
+    if (role === "admin") {
+      const [staffList] = await db.execute("SELECT * FROM staff ");
+      res.status(200).json({
+        message: "Staff fetched successfully ",
+        staff: staffList,
+      });
+    } else if (role === "manager") {
+      const [id] = await db.execute(
+        "select branch_id from  users where email = ?",
+        [email]
+      );
+      const branch_id = id[0].branch_id;
+      const [staffList] = await db.execute(
+        "SELECT * FROM staff where branch_id = ?",
+        [branch_id]
+      );
+      res.status(200).json({
+        message: "Staff fetched successfully",
+        staff: staffList,
+      });
+    } else {
+      return res.status(403).json({
+        message: "acceess denied",
+      });
+    }
   } catch (error) {
     next(error);
   }
@@ -334,7 +356,8 @@ export const login = async (req, res, next) => {
     res.cookie("token", token, {
       httpOnly: true,
       secure: false,
-      sameSite: "strict",
+      sameSite: "none",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // for 7 day
     });
     //else success
     res.status(200).json({

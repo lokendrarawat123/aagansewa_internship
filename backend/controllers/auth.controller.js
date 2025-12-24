@@ -43,10 +43,11 @@ export const login = async (req, res, next) => {
     //for genarate token for cookies
     //it takes 3 things
     // i.your details 2.secret key 3. expire time
+
     const token = await jwt.sign(
       {
         //details
-        id: user.id,
+        id: user.user_id,
         name: user.name,
         email: user.email,
         role: user.role,
@@ -62,18 +63,16 @@ export const login = async (req, res, next) => {
       httpOnly: true,
       secure: false,
       sameSite: "strict",
+      maxAge: 24 * 60 * 60 * 1000, // for one day limit in milisecond
     });
-    const [userid] = await db.execute(
-      "select user_id from users where email = ? ",
-      [email]
-    );
 
     const [branch] = await db.execute(
       `SELECT 
   u.user_id,
   u.name,
   u.role,
-  b.branch_name
+  b.branch_name,
+  b.branch_id
 FROM users u
 LEFT JOIN branch b ON u.branch_id = b.branch_id where u.email=?
 `,

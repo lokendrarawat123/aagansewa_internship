@@ -7,12 +7,20 @@ import {
   updateService,
 } from "../controllers/services.controller.js";
 import { uploadService } from "../utils/multerHandler.js";
+import { isLogin } from "../middlewares/isLogin.js";
+import { isAdmin } from "../middlewares/isAdmin.js";
+import { isManager } from "../middlewares/isManager.js";
 
 const serviceRouter = express.Router();
 
-serviceRouter.post("/add-services", uploadService.single("image"), addServices);
-serviceRouter.get("/get-services", getServices);
-serviceRouter.delete("/delete-services/:id", deleteService);
-serviceRouter.patch("/update-services/:id", updateService);
+serviceRouter.post(
+  "/add-services",
+  isLogin,
+  uploadService.single("image"),
+  addServices
+);
+serviceRouter.get("/get-services", isLogin, getServices);
+serviceRouter.delete("/delete-services/:id", isLogin, deleteService);
+serviceRouter.patch("/update-services/:id", isLogin, updateService);
 
 export default serviceRouter;

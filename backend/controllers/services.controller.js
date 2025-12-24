@@ -6,9 +6,27 @@ import { compressImg } from "../utils/sharphandler.js";
 export const addServices = async (req, res, next) => {
   try {
     //for getting img we use req.file
-    const image = req.file;
-
     const { service_name, description, branch_id } = req.body;
+    console.log(req.file);
+    const image = req.file;
+    const { role, email } = req.user;
+
+    if (role === "manager") {
+      const [id] = await db.execute(
+        "select branch_id from users where email=?",
+        [email]
+      );
+      const branch_id = id[0].branch_id;
+      if (branch_id != req.body.branch_id) {
+        if (req.file) {
+          removeImg(req.file.path);
+        }
+        return res.status(403).json({
+          message: "!!!!!!!!!!!!!!! Access denied ",
+        });
+      }
+    }
+
     if (!image || !service_name || !branch_id) {
       if (req.file) {
         removeImg(req.file.path);
@@ -67,13 +85,33 @@ export const addServices = async (req, res, next) => {
 //get services api
 export const getServices = async (req, res, next) => {
   try {
-    const [allServices] = await db.execute(
-      "select * from services order by created_at desc"
-    );
-    res.status(200).json({
-      message: "service displayed succesfully",
-      allServices: allServices,
-    });
+    const { email, role, id } = req.user;
+    // console.log(req.user);
+
+    if (role === "admin") {
+      const [allServices] = await db.execute(
+        "select * from services order by created_at desc"
+      );
+      return res.status(200).json({
+        message: "service displayed succesfully",
+        allServices: allServices,
+      });
+    }
+    if (role === "manager") {
+      const [id] = await db.execute(
+        "select branch_id from users where email = ? ",
+        [email]
+      );
+      const branch_id = id[0].branch_id;
+      const [allInquiry] = await db.execute(
+        "select * from services where branch_id=?",
+        [branch_id]
+      );
+      return res.status(200).json({
+        message: "successfully fetched inquiry",
+        allSevices: allInquiry,
+      });
+    }
   } catch (error) {
     next(error);
   }
@@ -151,6 +189,22 @@ export const updateService = async (req, res, next) => {
     );
     res.status(200).json({
       message: `${updateServiceName} service is updated successfully`,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// api for public services
+export const publicGetServices = async (req, res, next) => {
+  try {
+    const [allServices] = await db.execute(
+      "select * from services order by created_at desc"
+    );
+
+    return res.status(200).json({
+      message: "service displayed succesfully",
+      allServices: allServices,
     });
   } catch (error) {
     next(error);
