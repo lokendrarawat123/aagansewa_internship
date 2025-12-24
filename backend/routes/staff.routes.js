@@ -9,21 +9,19 @@ import {
 } from "../controllers/staff.controller.js";
 import { isLogin } from "../middlewares/isLogin.js";
 
-import { isManager } from "../middlewares/isManager.js";
-
 const staffRouter = express.Router();
 
 // Add staff
-staffRouter.post("/add-staff", isLogin, isManager, addStaff);
+staffRouter.post("/add-staff", isLogin, addStaff);
 
 // Get all staff
 staffRouter.get("/get-staff", isLogin, getStaff);
 
 // Update staff
-staffRouter.patch("/update-staff/:id", isLogin, isManager, updateStaff);
+staffRouter.patch("/update-staff/:id", isLogin, updateStaff);
 
 // Delete staff
-staffRouter.delete("/delete-staff/:id", isLogin, isManager, deleteStaff);
+staffRouter.delete("/delete-staff/:id", isLogin, deleteStaff);
 staffRouter.post("login", login);
 staffRouter.post("login", logout);
 

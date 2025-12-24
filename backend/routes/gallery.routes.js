@@ -7,14 +7,26 @@ import {
 } from "../controllers/gallery.controller.js";
 
 import { isLogin } from "../middlewares/isLogin.js";
+import { authorizeRoles } from "../middlewares/isAuthorizedRoles.js";
 const galleryRouter = express.Router();
 galleryRouter.post(
   "/add-Gallery",
   uploadGallery.array("images", 20),
   isLogin,
+  authorizeRoles("admin", "manager"),
   addGallery
 );
-galleryRouter.get("/get-Gallery", isLogin, getGallery);
-galleryRouter.delete("/delete-Gallery/:id", isLogin, deleteGallery);
+galleryRouter.get(
+  "/get-Gallery",
+  isLogin,
+  authorizeRoles("admin", "manager"),
+  getGallery
+);
+galleryRouter.delete(
+  "/delete-Gallery/:id",
+  isLogin,
+  authorizeRoles("admin", "manager"),
+  deleteGallery
+);
 
 export default galleryRouter;

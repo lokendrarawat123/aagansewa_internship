@@ -7,25 +7,8 @@ export const addServices = async (req, res, next) => {
   try {
     //for getting img we use req.file
     const { service_name, description, branch_id } = req.body;
-    console.log(req.file);
-    const image = req.file;
-    const { role, email } = req.user;
 
-    if (role === "manager") {
-      const [id] = await db.execute(
-        "select branch_id from users where email=?",
-        [email]
-      );
-      const branch_id = id[0].branch_id;
-      if (branch_id != req.body.branch_id) {
-        if (req.file) {
-          removeImg(req.file.path);
-        }
-        return res.status(403).json({
-          message: "!!!!!!!!!!!!!!! Access denied ",
-        });
-      }
-    }
+    const image = req.file;
 
     if (!image || !service_name || !branch_id) {
       if (req.file) {
@@ -85,33 +68,15 @@ export const addServices = async (req, res, next) => {
 //get services api
 export const getServices = async (req, res, next) => {
   try {
-    const { email, role, id } = req.user;
     // console.log(req.user);
 
-    if (role === "admin") {
-      const [allServices] = await db.execute(
-        "select * from services order by created_at desc"
-      );
-      return res.status(200).json({
-        message: "service displayed succesfully",
-        allServices: allServices,
-      });
-    }
-    if (role === "manager") {
-      const [id] = await db.execute(
-        "select branch_id from users where email = ? ",
-        [email]
-      );
-      const branch_id = id[0].branch_id;
-      const [allInquiry] = await db.execute(
-        "select * from services where branch_id=?",
-        [branch_id]
-      );
-      return res.status(200).json({
-        message: "successfully fetched inquiry",
-        allSevices: allInquiry,
-      });
-    }
+    const [allServices] = await db.execute(
+      "select * from services order by created_at desc"
+    );
+    return res.status(200).json({
+      message: "service displayed succesfully",
+      allServices: allServices,
+    });
   } catch (error) {
     next(error);
   }
@@ -198,13 +163,26 @@ export const updateService = async (req, res, next) => {
 // api for public services
 export const publicGetServices = async (req, res, next) => {
   try {
-    const [allServices] = await db.execute(
-      "select * from services order by created_at desc"
-    );
-
+    const { province_id, district_id, branch_id } = req.query;
+    // console.log(req.query);
+    let query = "";
+    let params = [];
+    if (province_id && !district_id && !branch_id) {
+      query = "select * from district where province_id=?";
+      params = [province_id];
+    } else if (province_id && district_id && !branch_id) {
+      query = "select * from branch where district_id =?";
+      params = [district_id, province_id];
+    } else if (province_id && district_id && branch_id) {
+      query = "select * from services where branch_id =?";
+      params = [province_id, district_id, branch_id];
+    } else {
+      query = "select * from services order by created_at desc";
+    }
+    const [result] = await db.execute(query, params);
     return res.status(200).json({
       message: "service displayed succesfully",
-      allServices: allServices,
+      allServices: result,
     });
   } catch (error) {
     next(error);

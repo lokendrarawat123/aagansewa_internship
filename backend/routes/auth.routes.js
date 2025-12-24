@@ -9,21 +9,31 @@ import {
 } from "../controllers/auth.controller.js";
 import { isLogin } from "../middlewares/isLogin.js";
 
-import { isAdmin } from "../middlewares/isAdmin.js";
+import { authorizeRoles } from "../middlewares/isAuthorizedRoles.js";
 
 const authRouter = express.Router();
 authRouter.post("/login", login);
 authRouter.post("/logout", logout);
 // Add manager
-authRouter.post("/add-manager", isLogin, isAdmin, addManager);
+authRouter.post("/add-manager", isLogin, authorizeRoles("admin"), addManager);
 
 // Get all manager
-authRouter.get("/get-manager", isLogin, isAdmin, getManager);
+authRouter.get("/get-manager", isLogin, authorizeRoles("admin"), getManager);
 
 // Update manager
-authRouter.patch("/update-manager/:id", isLogin, isAdmin, updateManager);
+authRouter.patch(
+  "/update-manager/:id",
+  isLogin,
+  authorizeRoles("admin"),
+  updateManager
+);
 
 // Delete manager
-authRouter.delete("/delete-manager/:id", isLogin, isAdmin, deleteManager);
+authRouter.delete(
+  "/delete-manager/:id",
+  isLogin,
+  authorizeRoles("admin"),
+  deleteManager
+);
 
 export default authRouter;

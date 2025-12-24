@@ -176,13 +176,22 @@ export const getDistrict = async (req, res, next) => {
     if (role === "admin") {
       const [allDistrict] = await db.execute(`
      SELECT 
-     d.district_id,
-      d.district_name,
-      GROUP_CONCAT(b.branch_name) as branches
-      FROM district d
-      LEFT JOIN branch b ON d.district_id = b.district_id
-   
-     GROUP BY d.district_id,d.district_name`);
+  d.district_id,
+  d.district_name,
+  p.province_id,
+  p.province_name,
+  GROUP_CONCAT(b.branch_name) AS branches
+FROM district d
+LEFT JOIN province p 
+  ON d.province_id = p.province_id
+LEFT JOIN branch b 
+  ON d.district_id = b.district_id
+GROUP BY 
+  d.district_id,
+  d.district_name,
+  p.province_id,
+  p.province_name;
+`);
 
       res.status(200).json({
         message: "success",
