@@ -8,8 +8,6 @@ import {
 } from "../controllers/services.controller.js";
 import { uploadService } from "../utils/multerHandler.js";
 import { isLogin } from "../middlewares/isLogin.js";
-import { isAdmin } from "../middlewares/isAdmin.js";
-import { isManager } from "../middlewares/isManager.js";
 
 const serviceRouter = express.Router();
 
