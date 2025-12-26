@@ -172,10 +172,10 @@ export const publicGetServices = async (req, res, next) => {
       params = [province_id];
     } else if (province_id && district_id && !branch_id) {
       query = "select * from branch where district_id =?";
-      params = [district_id, province_id];
+      params = [district_id];
     } else if (province_id && district_id && branch_id) {
       query = "select * from services where branch_id =?";
-      params = [province_id, district_id, branch_id];
+      params = [ branch_id];
     } else {
       query = "select * from services order by created_at desc";
     }

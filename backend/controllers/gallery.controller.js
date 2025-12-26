@@ -7,10 +7,8 @@ export const addGallery = async (req, res, next) => {
   try {
     const { title, gallery_date, location, branch_id } = req.body;
     images = req.files; // array of files
-    const { role, email } = req.user;
-    console.log(images);
-    console.log(req.files);
 
+    console.log(req.user.branch_id);
     if (!title || !gallery_date || !location || !branch_id || !images) {
       for (const i of images) {
         removeImg(i.path);
@@ -46,20 +44,7 @@ export const addGallery = async (req, res, next) => {
     const imageStiring = imagePaths.join(",");
     // Save gallery info in DB
     // Option 1: save multiple images as JSON in one column
-    if (role === "manager") {
-      const [id] = await db.execute(
-        "select  branch_id from users where email=? ",
-        [email]
-      );
 
-      const userBranch_id = id[0].branch_id;
-
-      if (branch_id != userBranch_id) {
-        return res.status(403).json({
-          message: "!!!!!!!!!!!!!!! Access denied ",
-        });
-      }
-    }
     await db.execute(
       `INSERT INTO gallery (title, gallery_date, location, branch_id, image)
        VALUES (?, ?, ?, ?,  ?)`,

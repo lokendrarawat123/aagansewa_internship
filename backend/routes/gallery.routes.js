@@ -8,12 +8,15 @@ import {
 
 import { isLogin } from "../middlewares/isLogin.js";
 import { authorizeRoles } from "../middlewares/isAuthorizedRoles.js";
+import { authorizeBranchAccess } from "../middlewares/branchAceess.js";
 const galleryRouter = express.Router();
 galleryRouter.post(
   "/add-Gallery",
-  uploadGallery.array("images", 20),
   isLogin,
   authorizeRoles("admin", "manager"),
+  uploadGallery.array("images", 20),
+  authorizeBranchAccess,
+
   addGallery
 );
 galleryRouter.get(

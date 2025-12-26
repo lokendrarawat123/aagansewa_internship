@@ -51,6 +51,7 @@ export const login = async (req, res, next) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        branch_id: user.branch_id,
       },
       //secrete key
       dot,
