@@ -29,6 +29,7 @@ galleryRouter.delete(
   "/delete-Gallery/:id",
   isLogin,
   authorizeRoles("admin", "manager"),
+
   deleteGallery
 );
 

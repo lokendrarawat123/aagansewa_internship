@@ -6,6 +6,7 @@ export const authorizeBranchAccess = (req, res, next) => {
   // Manager can access only their own branch
   if (req.user.role === "manager") {
     // Check branch_id from body or params
+
     const branchId = req.body.branch_id || req.params.branch_id;
 
     if (!branchId) {

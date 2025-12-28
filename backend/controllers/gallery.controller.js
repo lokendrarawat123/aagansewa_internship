@@ -8,7 +8,6 @@ export const addGallery = async (req, res, next) => {
     const { title, gallery_date, location, branch_id } = req.body;
     images = req.files; // array of files
 
-    console.log(req.user.branch_id);
     if (!title || !gallery_date || !location || !branch_id || !images) {
       for (const i of images) {
         removeImg(i.path);
@@ -35,7 +34,7 @@ export const addGallery = async (req, res, next) => {
     // Compress and save all images
     const imagePaths = [];
     for (const i of images) {
-      const outputPath = `uploads/gallery/${i.filename}`; // i is a variable
+      const outputPath = `uploads/gallery/compressed-${i.filename}`; // i is a variable
       await compressImg(i.path, outputPath);
       imagePaths.push(outputPath);
     }
@@ -83,7 +82,7 @@ export const getGallery = async (req, res, next) => {
         photots: galleries,
       });
     }
-    if (role === "adnin") {
+    if (role === "admin") {
       const [galleries] = await db.execute(
         "SELECT * FROM gallery ORDER BY created_at DESC"
       );
@@ -149,27 +148,20 @@ export const getGallery = async (req, res, next) => {
 export const deleteGallery = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { role, email } = req.user;
-    if (role === "manager") {
-      const [id] = await db.execute(
-        "select  branch_id from users where email=? ",
-        [email]
-      );
-      const userBranch_id = id[0].branch_id;
-
-      if (id === userBranch_id) {
-        return res.status(403).json({
-          message: "!!!!!!!!!!!!!!! Access denied ",
-        });
-      }
-    }
     const [existing] = await db.execute(
       "SELECT * FROM gallery WHERE gallery_id = ?",
       [id]
     );
-
     if (existing.length === 0)
       return res.status(404).json({ message: "Gallery entry not found" });
+    if (req.user.role === "manager") {
+      req.params.branch_id = existing[0].branch_id;
+      if (req.params.branch_id !== req.user.branch_id) {
+        return res.status(403).json({
+          message: "you can only access own branch",
+        });
+      }
+    }
 
     const gallery = existing[0];
 
