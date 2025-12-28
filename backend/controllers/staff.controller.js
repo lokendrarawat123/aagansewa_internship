@@ -77,31 +77,31 @@ export const addStaff = async (req, res, next) => {
 export const getStaff = async (req, res, next) => {
   try {
     const { email, role } = req.user;
-    if (role === "admin") {
-      const [staffList] = await db.execute("SELECT * FROM staff ");
-      res.status(200).json({
-        message: "Staff fetched successfully ",
-        staff: staffList,
-      });
-    } else if (role === "manager") {
+
+    if (role === "manager") {
       const [id] = await db.execute(
         "select branch_id from  users where email = ?",
         [email]
       );
       const branch_id = id[0].branch_id;
-      const [staffList] = await db.execute(
+      const [branchStaffList] = await db.execute(
         "SELECT * FROM staff where branch_id = ?",
         [branch_id]
       );
+
+      const [staffList] = await db.execute(
+        "SELECT * FROM staff  where branch_id=?",
+        [branch_id]
+      );
       res.status(200).json({
-        message: "Staff fetched successfully",
+        message: " Staff fetched successfully ",
         staff: staffList,
       });
-    } else {
-      return res.status(403).json({
-        message: "acceess denied",
-      });
     }
+    res.status(200).json({
+      message: "Staff fetched successfully",
+      staff: staffList,
+    });
   } catch (error) {
     next(error);
   }

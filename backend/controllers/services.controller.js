@@ -68,12 +68,28 @@ export const addServices = async (req, res, next) => {
 //get services api
 export const getServices = async (req, res, next) => {
   try {
+    const { branch_id } = req.user;
     // console.log(req.user);
+    if (req.user.role === "manager") {
+      const [branchService] = await db.execute(
+        "select * from services where branch_id=?",
+        [branch_id]
+      );
+      if (branchService.length === 0) {
+        return res.status(403).json({
+          message: "service not found",
+        });
+      }
 
+      return res.status(200).json({
+        message: ` your ${branchService[0].branch_id} th services are fetched successfully`,
+        services: branchService,
+      });
+    }
     const [allServices] = await db.execute(
       "select * from services order by created_at desc"
     );
-    return res.status(200).json({
+    res.status(200).json({
       message: "service displayed succesfully",
       allServices: allServices,
     });
@@ -86,22 +102,30 @@ export const deleteService = async (req, res, next) => {
   try {
     // first get the id from req.params which service will delete
     const { id } = req.params;
-    console.log(id);
+
     // check the service id provide or not
-    if (!service_id) {
+    if (!id) {
       return res.status(400).json({
         message: "please provide id of deleteing service  ",
       });
     }
     // check provided service id is exist or not
     const [result] = await db.execute(
-      "select service_id, service_name from services where service_id = ? ",
+      "select service_id, service_name , branch_id from services where service_id = ? ",
       [id]
     );
     if (result.length === 0) {
       return res.status(404).json({
         message: `service is not exist in this ${id} id`,
       });
+    }
+    if (req.user.role === "manager") {
+      req.params.branch_id = result[0].branch_id;
+      if (req.params.branch_id !== req.user.branch_id) {
+        return res.status(403).json({
+          message: "you can only access own branch",
+        });
+      }
     }
     await db.execute("delete from services where service_id = ?", [id]);
     res.status(200).json({
@@ -131,6 +155,15 @@ export const updateService = async (req, res, next) => {
       return res.status(404).json({
         message: `${service_name} service is not found `,
       });
+    }
+    if (req.user.role === "manager") {
+      // for the access only own branch
+      req.params.branch_id = result[0].branch_id;
+      if (req.params.branch_id !== req.user.branch_id) {
+        return res.status(403).json({
+          message: "you can only access own branch",
+        });
+      }
     }
     const oldService = result[0];
     const updateServiceName = service_name || oldService.service_name;
@@ -175,7 +208,7 @@ export const publicGetServices = async (req, res, next) => {
       params = [district_id];
     } else if (province_id && district_id && branch_id) {
       query = "select * from services where branch_id =?";
-      params = [ branch_id];
+      params = [branch_id];
     } else {
       query = "select * from services order by created_at desc";
     }

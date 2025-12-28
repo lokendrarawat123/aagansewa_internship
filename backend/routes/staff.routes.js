@@ -8,6 +8,7 @@ import {
   logout,
 } from "../controllers/staff.controller.js";
 import { isLogin } from "../middlewares/isLogin.js";
+import { authorizeRoles } from "../middlewares/isAuthorizedRoles.js";
 
 const staffRouter = express.Router();
 
@@ -21,7 +22,14 @@ staffRouter.get("/get-staff", isLogin, getStaff);
 staffRouter.patch("/update-staff/:id", isLogin, updateStaff);
 
 // Delete staff
-staffRouter.delete("/delete-staff/:id", isLogin, deleteStaff);
+staffRouter.delete(
+  "/delete-staff/:id",
+
+  isLogin,
+
+  authorizeRoles("manager"),
+  deleteStaff
+);
 staffRouter.post("login", login);
 staffRouter.post("login", logout);
 
