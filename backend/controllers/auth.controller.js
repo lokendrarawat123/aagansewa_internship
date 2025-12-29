@@ -24,7 +24,7 @@ export const login = async (req, res, next) => {
     // console.log(result[0]);
     // console.log(typeof result);
     if (result.length === 0) {
-      res.status(400).json({
+      return res.status(400).json({
         message: `user not found this email ${email}`,
       });
     }
@@ -35,7 +35,7 @@ export const login = async (req, res, next) => {
     const isMatch = await bcrypt.compare(password, user.password);
     // console.log(isMatch);
     if (!isMatch) {
-      res.status(401).json({
+      return res.status(401).json({
         message: "invalid crendial",
       });
     }
@@ -72,6 +72,7 @@ export const login = async (req, res, next) => {
   u.user_id,
   u.name,
   u.role,
+  u.email,
   b.branch_name,
   b.branch_id
 FROM users u
@@ -79,11 +80,11 @@ LEFT JOIN branch b ON u.branch_id = b.branch_id where u.email=?
 `,
       [email]
     );
-
+    const users = branch[0];
     //else success
     res.status(200).json({
       message: "login success",
-      user: branch,
+      user: users,
     });
   } catch (error) {
     next(error);

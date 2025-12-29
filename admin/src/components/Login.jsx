@@ -1,7 +1,15 @@
 import { useState } from "react";
-import Input from "./shared/input";
+import Input from "./shared/Input";
+import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { useSignInMutation } from "../redux/features/authSlice";
+import { useNavigate } from "react-router-dom";
+import { setUser } from "../redux/features/authState";
 
 const Login = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [login] = useSignInMutation();
   const [data, setData] = useState({
     email: "",
     password: "",
@@ -13,10 +21,23 @@ const Login = () => {
       [id]: value,
     }));
   };
-  const name = data.email.split("@")[0];
-  const handleSubmit = (e) => {
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert(`hello ${name}`);
+    if (!data.email || !data.password) {
+      toast.error("please fill all the fields");
+      return;
+    }
+    try {
+      const res = await login(data).unwrap(); //calling login api throuh redux
+      toast.success(res.message || "logged in");
+
+      dispatch(setUser(res?.user));
+      console.log(res);
+      // navigate("/dashboard");
+    } catch (error) {
+      toast.error(error.data?.message || "something went wrong ");
+    }
   };
 
   return (
