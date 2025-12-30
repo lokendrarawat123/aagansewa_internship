@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import { useSignInMutation } from "../redux/features/authSlice";
 import { useNavigate } from "react-router-dom";
 import { setUser } from "../redux/features/authState";
+import { useEffect } from "react";
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -28,13 +29,14 @@ const Login = () => {
       toast.error("please fill all the fields");
       return;
     }
+
     try {
       const res = await login(data).unwrap(); //calling login api throuh redux
       toast.success(res.message || "logged in");
 
       dispatch(setUser(res?.user));
       console.log(res);
-      // navigate("/dashboard");
+      navigate("/admin/dashboard");
     } catch (error) {
       toast.error(error.data?.message || "something went wrong ");
     }

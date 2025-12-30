@@ -3,7 +3,7 @@ export const authApi = indexSlice.injectEndpoints({
   endpoints: (builder) => ({
     signOut: builder.mutation({
       query: () => ({
-        url: "/auth/signout",
+        url: "/auth/logout",
         method: "POST",
       }),
       providesTags: ["auth"],

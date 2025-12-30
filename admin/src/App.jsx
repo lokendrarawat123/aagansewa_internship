@@ -1,17 +1,12 @@
-import Login from "./components/Login";
+import { RouterProvider } from "react-router-dom";
+import { router } from "./router/Index";
 import { ToastContainer } from "react-toastify";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Dashboard from "./components/Dashboard";
+
 const App = () => {
   return (
     <>
-      <Router>
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-        </Routes>
-        <ToastContainer />
-      </Router>
+      <RouterProvider router={router} />
+      <ToastContainer />
     </>
   );
 };
