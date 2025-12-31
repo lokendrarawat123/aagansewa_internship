@@ -1,16 +1,24 @@
 import { useState } from "react";
 import Input from "./shared/Input";
 import { toast } from "react-toastify";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useSignInMutation } from "../redux/features/authSlice";
 import { useNavigate } from "react-router-dom";
 import { setUser } from "../redux/features/authState";
 import { useEffect } from "react";
 
 const Login = () => {
+  const isAuth = useSelector((state) => state.user.isAuth);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [login] = useSignInMutation();
+  //for the if user is already login then user no need to login
+  useEffect(() => {
+    if (isAuth) {
+      navigate("/admin/dashboard");
+    }
+  }, [isAuth, navigate]);
   const [data, setData] = useState({
     email: "",
     password: "",
@@ -35,7 +43,7 @@ const Login = () => {
       toast.success(res.message || "logged in");
 
       dispatch(setUser(res?.user));
-      console.log(res);
+
       navigate("/admin/dashboard");
     } catch (error) {
       toast.error(error.data?.message || "something went wrong ");

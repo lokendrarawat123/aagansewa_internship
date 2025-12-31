@@ -1,4 +1,4 @@
-import { MapPin, Layers, Building2, LogOut } from "lucide-react";
+import { MapPin, Layers, Building2, LogOut, House } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { logout } from "../../redux/features/authState";
 import { toast } from "react-toastify";
@@ -14,13 +14,19 @@ const Sidebar = ({ active, setActive }) => {
     try {
       const res = await signout().unwrap();
       toast.success(res.message || "logout");
+      dispatch(logout());
       navigate("/");
     } catch (error) {
       toast.error(error.data?.message || "logout failed");
     }
-    dispatch(logout());
   };
   const menu = [
+    {
+      name: "Dashboard",
+      key: "dashboard",
+      icon: <House size={18} />,
+      path: "dashboard",
+    },
     {
       name: "Province Management",
       key: "province",

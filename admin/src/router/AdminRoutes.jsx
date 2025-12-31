@@ -1,4 +1,6 @@
 import Dashboard from "../components/Dashboard";
+import BranchDashboard from "../components/pages/branch/BranchDashboard";
+import Districtdashboard from "../components/pages/district/Districtdashboard";
 import ProvinceDashboard from "../components/pages/province/ProvinceDashboard";
 
 export const adminRoutes = [
@@ -12,10 +14,10 @@ export const adminRoutes = [
   },
   {
     path: "district-dashboard",
-    element: <ProvinceDashboard />,
+    element: <Districtdashboard />,
   },
   {
     path: "branch-dashboard",
-    element: <ProvinceDashboard />,
+    element: <BranchDashboard />,
   },
 ];

@@ -3,10 +3,15 @@ import AdminLayout from "../layout/AdminLayout";
 import { adminRoutes } from "./AdminRoutes";
 import Login from "../components/Login";
 import NotFound from "../components/shared/NotFound";
+import Guard from "./Guard";
 export const router = createBrowserRouter([
   {
     path: "/admin",
-    element: <AdminLayout />,
+    element: (
+      <Guard>
+        <AdminLayout />
+      </Guard>
+    ),
     children: adminRoutes,
   },
   {
