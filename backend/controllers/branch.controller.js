@@ -115,6 +115,16 @@ export const deleteProvince = async (req, res, next) => {
         message: `province not found with this ${id}th id`,
       });
     }
+    const [districts] = await db.execute(
+      "SELECT district_id FROM district WHERE province_id = ?",
+      [id]
+    );
+
+    if (districts.length > 0) {
+      return res.status(400).json({
+        message: "You can't delete this province because it has districts",
+      });
+    }
     const existProvince = existing[0];
     await db.execute("delete  from province where province_id=?", [id]);
     res.status(200).json({
@@ -225,6 +235,7 @@ export const deleteDistrict = async (req, res, next) => {
     await db.execute("delete  from district where district_id=?", [id]);
     res.status(200).json({
       message: `${existDistrict.district_name} district delete successfully`,
+      
     });
   } catch (error) {
     next(error);
