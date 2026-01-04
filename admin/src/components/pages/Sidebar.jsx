@@ -45,6 +45,12 @@ const Sidebar = ({ active, setActive }) => {
       icon: <Building2 size={18} />,
       path: "/admin/branch-dashboard",
     },
+    {
+      name: "Manager  Management",
+      key: "Manager",
+      icon: <MapPin size={18} />,
+      path: "/admin/manager-dashboard",
+    },
   ];
 
   return (
