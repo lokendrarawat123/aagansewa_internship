@@ -28,7 +28,45 @@ export const provinceApi = indexSlice.injectEndpoints({
         url: "/branch/get-district",
         method: "GET",
       }),
-      providesTags: ["province"],
+      providesTags: ["district"],
+    }),
+    addDistrict: builder.mutation({
+      query: (data) => ({
+        url: "/branch/add-district",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["district"],
+    }),
+    deleteDistrict: builder.mutation({
+      query: (id) => ({
+        url: `/branch/delete-district/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["district"],
+    }),
+    // ADDED: Branch APIs
+    getBranch: builder.query({
+      query: () => ({
+        url: "/branch/get-branch",
+        method: "GET",
+      }),
+      providesTags: ["branch"],
+    }),
+    addBranch: builder.mutation({
+      query: (data) => ({
+        url: "/branch/add-branch",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["branch"],
+    }),
+    deleteBranch: builder.mutation({
+      query: (id) => ({
+        url: `/branch/delete-branch/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["branch"],
     }),
   }),
 });
@@ -37,4 +75,10 @@ export const {
   useAddProvinceMutation,
   useDeleteProvinceMutation,
   useGetDistrictQuery,
+  useAddDistrictMutation,
+  useDeleteDistrictMutation,
+  // ADDED: Branch hooks
+  useGetBranchQuery,
+  useAddBranchMutation,
+  useDeleteBranchMutation,
 } = provinceApi;

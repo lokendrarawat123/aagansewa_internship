@@ -1,5 +1,4 @@
 import db from "../config/db_connect.js";
-import { removeImg } from "../utils/removeImg.js";
 
 export const addProvince = async (req, res, next) => {
   try {
@@ -235,7 +234,6 @@ export const deleteDistrict = async (req, res, next) => {
     await db.execute("delete  from district where district_id=?", [id]);
     res.status(200).json({
       message: `${existDistrict.district_name} district delete successfully`,
-      
     });
   } catch (error) {
     next(error);
