@@ -1,1 +1,7 @@
 @import "tailwindcss";
+
+@import url("https://fonts.googleapis.com/css2?family=Archivo+Black&family=Bebas+Neue&display=swap");
+
+.font-bebas {
+  font-family: "Archivo", cursive;
+}

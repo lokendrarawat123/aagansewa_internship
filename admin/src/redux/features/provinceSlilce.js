@@ -45,7 +45,6 @@ export const provinceApi = indexSlice.injectEndpoints({
       }),
       invalidatesTags: ["district"],
     }),
-    // ADDED: Branch APIs
     getBranch: builder.query({
       query: () => ({
         url: "/branch/get-branch",
@@ -68,6 +67,37 @@ export const provinceApi = indexSlice.injectEndpoints({
       }),
       invalidatesTags: ["branch"],
     }),
+    // ADDED: Manager APIs
+    getManager: builder.query({
+      query: () => ({
+        url: "/auth/get-manager",
+        method: "GET",
+      }),
+      providesTags: ["manager"],
+    }),
+    addManager: builder.mutation({
+      query: (data) => ({
+        url: "/auth/add-manager",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["manager"],
+    }),
+    updateManager: builder.mutation({
+      query: ({ id, ...data }) => ({
+        url: `/auth/update-manager/${id}`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: ["manager"],
+    }),
+    deleteManager: builder.mutation({
+      query: (id) => ({
+        url: `/auth/delete-manager/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["manager"],
+    }),
   }),
 });
 export const {
@@ -77,8 +107,12 @@ export const {
   useGetDistrictQuery,
   useAddDistrictMutation,
   useDeleteDistrictMutation,
-  // ADDED: Branch hooks
   useGetBranchQuery,
   useAddBranchMutation,
   useDeleteBranchMutation,
+  // ADDED: Manager hooks
+  useGetManagerQuery,
+  useAddManagerMutation,
+  useUpdateManagerMutation,
+  useDeleteManagerMutation,
 } = provinceApi;

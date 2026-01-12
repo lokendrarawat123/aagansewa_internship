@@ -1,4 +1,4 @@
-import { MapPin, Layers, Building2, LogOut, House } from "lucide-react";
+import { MapPin, Layers, Building2, LogOut, House, Users } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { logout } from "../../redux/features/authState";
 import { toast } from "react-toastify";
@@ -46,15 +46,15 @@ const Sidebar = ({ active, setActive }) => {
       path: "/admin/branch-dashboard",
     },
     {
-      name: "Manager  Management",
-      key: "Manager",
-      icon: <MapPin size={18} />,
+      name: "Manager Management",
+      key: "manager",
+      icon: <Users size={18} />,
       path: "/admin/manager-dashboard",
     },
   ];
 
   return (
-    <aside className="w-64 h-screen bg-slate-900 text-slate-200 flex flex-col shadow-xl">
+    <aside className="fixed-0w-64 h-screen bg-slate-900 text-slate-200 flex flex-col shadow-xl">
       {/* Brand */}
       <div className="px-6 py-5 text-xl font-semibold border-b border-slate-700">
         Admin Panel
