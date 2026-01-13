@@ -43,9 +43,12 @@ const Navbar = () => {
               <FaTimes />
             </button>
 
-            <Link to="/">
-              <li className="font-medium text-blue-700">Home</li>
-            </Link>
+            <li className="font-medium text-primary-orange">
+              {" "}
+              <Link to="/" className="hover:text-secondary-blue">
+                Home{" "}
+              </Link>
+            </li>
 
             {/* Branches Dropdown */}
             <li

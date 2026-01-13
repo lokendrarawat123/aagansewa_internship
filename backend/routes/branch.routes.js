@@ -39,12 +39,7 @@ branchRouter.post(
   authorizeRoles("admin"),
   addDistrict
 );
-branchRouter.get(
-  "/get-district",
-  isLogin,
-  authorizeRoles("admin"),
-  getDistrict
-);
+branchRouter.get("/get-district", getDistrict);
 branchRouter.delete(
   "/delete-district/:id",
   isLogin,

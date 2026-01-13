@@ -181,9 +181,7 @@ export const addDistrict = async (req, res, next) => {
 //get district api
 export const getDistrict = async (req, res, next) => {
   try {
-    const { role, email } = req.user;
-    if (role === "admin") {
-      const [allDistrict] = await db.execute(`
+    const [allDistrict] = await db.execute(`
      SELECT 
   d.district_id,
   d.district_name,
@@ -202,11 +200,10 @@ GROUP BY
   p.province_name;
 `);
 
-      res.status(200).json({
-        message: "success",
-        allDistricts: allDistrict,
-      });
-    }
+    res.status(200).json({
+      message: "success",
+      allDistricts: allDistrict,
+    });
   } catch (error) {
     next(error);
   }

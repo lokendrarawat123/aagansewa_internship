@@ -1,7 +1,10 @@
+@import url("https://fonts.googleapis.com/css2?family=Archivo+Black&family=Bebas+Neue&display=swap");
 @import "tailwindcss";
 
-@import url("https://fonts.googleapis.com/css2?family=Archivo+Black&family=Bebas+Neue&display=swap");
-
 .font-bebas {
-  font-family: "Archivo", cursive;
+  font-family: "Bebas Neue", cursive;
+}
+@theme {
+  --color-primamary-orange: #ff6900;
+  --color-secondary-blue: #061a32;
 }
