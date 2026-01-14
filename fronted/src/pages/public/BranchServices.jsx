@@ -1,48 +1,20 @@
 // src/components/Services.jsx
 import React from "react";
-
-// Dummy services data
-const services = [
-  {
-    id: 1,
-    title: "House Cleaning",
-    description: "Professional home and apartment cleaning service.",
-    icon: "🧹",
-  },
-  {
-    id: 2,
-    title: "Plumbing",
-    description: "Leak fixing, pipe installation & maintenance.",
-    icon: "🚰",
-  },
-  {
-    id: 3,
-    title: "Electrician",
-    description: "Wiring, lighting & electrical repair services.",
-    icon: "💡",
-  },
-  {
-    id: 4,
-    title: "AC Repair",
-    description: "AC servicing, repair and installation.",
-    icon: "❄️",
-  },
-  {
-    id: 5,
-    title: "Carpentry",
-    description: "Furniture repair and custom wood work.",
-    icon: "🪚",
-  },
-  {
-    id: 6,
-    title: "Painting",
-    description: "Interior & exterior house painting service.",
-    icon: "🎨",
-  },
-];
+import { useGetServiceByBranchQuery } from "../../redux/features/districtSlice";
+import { useLocation } from "react-router-dom";
 
 const Services = () => {
-    
+  const { state } = useLocation();
+  const branchId = state?.branchId;
+  console.log(branchId);
+  const { data, isLoading, error } = useGetServiceByBranchQuery(branchId);
+
+  if (isLoading) {
+    return <div>Loading...........</div>;
+  }
+
+  const services = data?.data || [];
+
   return (
     <section className="py-16 bg-gray-50">
       <div className="max-w-7xl mx-auto px-6">

@@ -6,32 +6,47 @@ import About from "./About";
 import Contact from "./Contact";
 import Select from "../../components/shared/Select";
 import { useNavigate } from "react-router-dom";
-import { useGetDistrictQuery } from "../../redux/features/districtSlice";
+import {
+  useGetAllDistrictQuery,
+  useGetBranchByDistrictQuery,
+} from "../../redux/features/districtSlice";
 
 const Home = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [selectedPlace, setSelectedPlace] = useState("");
+  // const districts = [{ value: "kathmandu", label: "Kathmandu" }];
+  const { isLoading, data, error } = useGetAllDistrictQuery();
+  const { data: branchData } = useGetBranchByDistrictQuery(selectedDistrict, {
+    skip: !selectedDistrict,
+  });
 
-  const districts = [{ value: "kathmandu", label: "Kathmandu" }];
   const navigate = useNavigate();
-  const { isLoading, data, error } = useGetDistrictQuery();
-  const district = data?.districts;
+
+  const districts =
+    data?.data?.map((d) => ({
+      value: d.district_id,
+      label: d.district_name,
+    })) || [];
+
   if (isLoading) {
     <div>Loading.........</div>;
   }
-  console.log(data);
-  const placesByDistrict = {
-    kathmandu: [
-      { value: "thamel", label: "Thamel" },
-      { value: "new-baneshwor", label: "New Baneshwor" },
-      { value: "maharajgunj", label: "Maharajgunj" },
-      { value: "balaju", label: "Balaju" },
-    ],
-  };
-  const availablePlaces = selectedDistrict
-    ? placesByDistrict[selectedDistrict] || []
-    : [];
+
+  // console.log(data);
+  // console.log(branches);
+
+  const availablePlaces =
+    branchData?.data?.map((b) => ({
+      id: b.branch_id,
+      value: b.branch_id,
+      label: b.branch_name,
+      slug: b.branch_slug,
+    })) || [];
+  console.log(availablePlaces);
+  // const availablePlaces = selectedDistrict
+  //   ? placesByDistrict[selectedDistrict] || []
+  //   : [];
 
   const images = [
     "https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=1920&h=1080&fit=crop",
@@ -55,10 +70,13 @@ const Home = () => {
     return () => clearInterval(interval);
   }, []);
   const handlePlaceChange = (e) => {
-    const place = e.target.value;
-    setSelectedPlace(place);
-    if (place) {
-      navigate(`/services/${place}`);
+    const branchId = e.target.value;
+    const branch = availablePlaces.find((p) => p.id === Number(branchId));
+    setSelectedPlace(branchId);
+    if (branch) {
+      navigate(`/services/${branch.slug}`, {
+        state: { branchId: branch.id },
+      });
     }
   };
 
@@ -82,14 +100,14 @@ const Home = () => {
         ))}
         {/* Center Content */}
         <div className="absolute inset-0 flex items-center justify-center z-20">
-          <div className="text-center text-white px-8">
+          <div className="text-center  px-8">
             <h1 className="text-5xl font-bold mb-4">Aangan Sewa</h1>
             <p className="text-xl mb-2">Quality home services, on demand</p>
             <p className="text-lg mb-8">
               Experienced, hand-picked Professionals to serve you at your
               doorstep
             </p>
-            <div className="max-w-2xl mx-auto bg-white  text-black rounded-lg p-6">
+            <div className="max-w-2xl mx-auto bg-amber-50  text-black rounded-lg p-6">
               <p className="text-lg mb-4 text-gray-800">
                 Where do you need a service?
               </p>

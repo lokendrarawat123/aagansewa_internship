@@ -221,3 +221,29 @@ export const publicGetServices = async (req, res, next) => {
     next(error);
   }
 };
+
+//delete service api
+export const getServicesByBranch = async (req, res, next) => {
+  try {
+    // first get the id from req.params which service will delete
+    const branchId = Number(req.params.branchId);
+
+    // check the service id provide or not
+    if (!branchId) {
+      return res.status(400).json({
+        message: "please provide id  ",
+      });
+    }
+    // check provided service id is exist or not
+    const [rows] = await db.execute(
+      "select *  from services where branch_id = ? ",
+      [branchId]
+    );
+    res.status(200).json({
+      message: "succesfully displayed",
+      data: rows,
+    });
+  } catch (error) {
+    next(error);
+  }
+};

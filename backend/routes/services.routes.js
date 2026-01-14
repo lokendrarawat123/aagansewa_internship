@@ -4,6 +4,7 @@ import {
   addServices,
   deleteService,
   getServices,
+  getServicesByBranch,
   publicGetServices,
   updateService,
 } from "../controllers/services.controller.js";
@@ -40,6 +41,7 @@ serviceRouter.patch(
   authorizeRoles("admin", "manager"),
   updateService
 );
+serviceRouter.get("/get-services/:branchId", getServicesByBranch);
 serviceRouter.get("/getAll-services", publicGetServices);
 
 export default serviceRouter;

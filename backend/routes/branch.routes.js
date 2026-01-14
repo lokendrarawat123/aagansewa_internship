@@ -6,7 +6,9 @@ import {
   deleteBranch,
   deleteDistrict,
   deleteProvince,
+  getAllDistrict,
   getBranch,
+  getBranchByDistrict,
   getDistrict,
   getProvince,
 } from "../controllers/branch.controller.js";
@@ -40,6 +42,7 @@ branchRouter.post(
   addDistrict
 );
 branchRouter.get("/get-district", getDistrict);
+branchRouter.get("/get-all-district", getAllDistrict);
 branchRouter.delete(
   "/delete-district/:id",
   isLogin,
@@ -48,6 +51,7 @@ branchRouter.delete(
 );
 branchRouter.post("/add-branch", isLogin, authorizeRoles("admin"), addBranch);
 branchRouter.get("/get-branch", isLogin, authorizeRoles("admin"), getBranch);
+branchRouter.get("/get-branchs/:district_id", getBranchByDistrict);
 branchRouter.delete(
   "/delete-branch/:id",
   isLogin,

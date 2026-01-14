@@ -208,6 +208,21 @@ GROUP BY
     next(error);
   }
 };
+export const getAllDistrict = async (req, res, next) => {
+  try {
+    const [allDistrict] = await db.execute(`
+     SELECT district_id,district_name from district
+`);
+
+    res.status(200).json({
+      message: "success",
+      data: allDistrict,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 //delete district api
 export const deleteDistrict = async (req, res, next) => {
   try {
@@ -313,6 +328,28 @@ export const getBranch = async (req, res, next) => {
     res.status(200).json({
       message: "successfully displayed",
       branch: all_branch,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+// get branch by district
+export const getBranchByDistrict = async (req, res, next) => {
+  try {
+    const { district_id } = req.params;
+
+    const [rows] = await db.query(
+      `select
+        branch_id,
+        branch_name,
+        LOWER(REPLACE(branch_name,' ','-')) as branch_slug from branch 
+        where  district_id = ?
+     `,
+      [district_id]
+    );
+    res.status(200).json({
+      message: "successfully displayed",
+      data: rows,
     });
   } catch (error) {
     next(error);
