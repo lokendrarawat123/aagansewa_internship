@@ -3,6 +3,7 @@ import BranchDashboard from "../components/pages/branch/BranchDashboard";
 import Districtdashboard from "../components/pages/district/Districtdashboard";
 import ProvinceDashboard from "../components/pages/province/ProvinceDashboard";
 import ManagerDashboard from "../components/pages/manager/ManagerDashboard";
+import ServiceManager from "../components/pages/service/ServiceManager";
 
 export const adminRoutes = [
   {
@@ -24,5 +25,9 @@ export const adminRoutes = [
   {
     path: "manager-dashboard",
     element: <ManagerDashboard />,
+  },
+  {
+    path: "service-dashboard",
+    element: <ServiceManager />,
   },
 ];

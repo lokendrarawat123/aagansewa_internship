@@ -1,7 +1,12 @@
 import React from "react";
+import GalleryCard from "../../components/Gallerycomponents/GalleryCard";
 
 const Gallery = () => {
-  return <div>Gallery</div>;
+  return (
+    <div>
+      <GalleryCard />
+    </div>
+  );
 };
 
 export default Gallery;

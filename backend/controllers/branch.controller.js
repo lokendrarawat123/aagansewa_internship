@@ -14,7 +14,7 @@ export const addProvince = async (req, res, next) => {
     //2 . check if the province already exists
     const [existing] = await db.execute(
       "select province_name from province where province_name = ?",
-      [name]
+      [name],
     );
 
     if (existing.length > 0) {
@@ -48,11 +48,11 @@ export const getProvince = async (req, res, next) => {
       ON p.province_id = d.province_id
       GROUP BY p.province_id,p.province_name
        
-    `
+    `,
     );
     res.status(200).json({
       message: "succesfully displayed",
-      provinces: allProvince,
+      data: allProvince,
     });
   } catch (error) {
     next(error);
@@ -106,7 +106,7 @@ export const deleteProvince = async (req, res, next) => {
     const { id } = req.params;
     const [existing] = await db.execute(
       "select * from province where province_id=?",
-      [id]
+      [id],
     );
 
     if (existing.length === 0) {
@@ -116,7 +116,7 @@ export const deleteProvince = async (req, res, next) => {
     }
     const [districts] = await db.execute(
       "SELECT district_id FROM district WHERE province_id = ?",
-      [id]
+      [id],
     );
 
     if (districts.length > 0) {
@@ -148,12 +148,12 @@ export const addDistrict = async (req, res, next) => {
     //check  that district is already exist or not
     const [existing] = await db.execute(
       "select district_name  from district where district_name = ?",
-      [district_name]
+      [district_name],
     );
     //check the province is exist or not
     const [existProvince] = await db.execute(
       "select province_id from province where province_id=?",
-      [province_id]
+      [province_id],
     );
     if (existProvince.length === 0) {
       return res.status(409).json({
@@ -169,7 +169,7 @@ export const addDistrict = async (req, res, next) => {
 
     await db.execute(
       "insert into district  (district_name , province_id) values (?,?)",
-      [district_name, province_id]
+      [district_name, province_id],
     );
     res.status(201).json({
       message: `${district_name} district is added successfully`,
@@ -234,7 +234,7 @@ export const deleteDistrict = async (req, res, next) => {
     }
     const [existing] = await db.execute(
       "select * from district where district_id=?",
-      [id]
+      [id],
     );
 
     if (existing.length === 0) {
@@ -272,7 +272,7 @@ export const addBranch = async (req, res, next) => {
     }
     const [existing] = await db.execute(
       "select * from district where district_id = ? ",
-      [district_id]
+      [district_id],
     );
     console.log(existing[0].district_name);
     if (existing.length === 0) {
@@ -283,7 +283,7 @@ export const addBranch = async (req, res, next) => {
     const { role, email } = req.user; // fetch data from req.user which is logged user
     await db.execute(
       "insert into branch (branch_name,district_id,remarks) values (?,?,?)",
-      [branch_name, district_id, remarks]
+      [branch_name, district_id, remarks],
     );
     res.status(201).json({
       message: `${branch_name} branch added successfully in ${existing[0].district_name}`,
@@ -304,7 +304,7 @@ export const deleteBranch = async (req, res, next) => {
     }
     const [existing] = await db.execute(
       "select branch_id,branch_name from branch where branch_id = ? ",
-      [id]
+      [id],
     );
     const exist_district = existing[0];
     if (existing.length === 0) {
@@ -345,7 +345,7 @@ export const getBranchByDistrict = async (req, res, next) => {
         LOWER(REPLACE(branch_name,' ','-')) as branch_slug from branch 
         where  district_id = ?
      `,
-      [district_id]
+      [district_id],
     );
     res.status(200).json({
       message: "successfully displayed",

@@ -20,7 +20,7 @@ export const addServices = async (req, res, next) => {
     }
     const [result] = await db.execute(
       "select service_name from services where service_name = ? ",
-      [service_name]
+      [service_name],
     );
     if (result.length > 0) {
       if (req.file) {
@@ -32,7 +32,7 @@ export const addServices = async (req, res, next) => {
     }
     const [existBranch] = await db.execute(
       "select branch_id ,branch_name from branch where branch_id = ?",
-      [branch_id]
+      [branch_id],
     );
     if (existBranch.length === 0) {
       if (req.file) {
@@ -52,7 +52,7 @@ export const addServices = async (req, res, next) => {
 
     await db.execute(
       "insert into services (service_name,service_image,branch_id,description) values (?,?,?,?)",
-      [service_name, imagePath, branch_id, description || null]
+      [service_name, imagePath, branch_id, description || null],
     );
     res.status(201).json({
       message: `${service_name} service has been successfully added to the ${existBranch[0].branch_name} branch.`,
@@ -73,7 +73,7 @@ export const getServices = async (req, res, next) => {
     if (req.user.role === "manager") {
       const [branchService] = await db.execute(
         "select * from services where branch_id=?",
-        [branch_id]
+        [branch_id],
       );
       if (branchService.length === 0) {
         return res.status(403).json({
@@ -87,7 +87,7 @@ export const getServices = async (req, res, next) => {
       });
     }
     const [allServices] = await db.execute(
-      "select * from services order by created_at desc"
+      "select * from services order by created_at desc",
     );
     res.status(200).json({
       message: "service displayed succesfully",
@@ -112,7 +112,7 @@ export const deleteService = async (req, res, next) => {
     // check provided service id is exist or not
     const [result] = await db.execute(
       "select service_id, service_name , branch_id from services where service_id = ? ",
-      [id]
+      [id],
     );
     if (result.length === 0) {
       return res.status(404).json({
@@ -146,7 +146,7 @@ export const updateService = async (req, res, next) => {
     const { service_name, description } = req.body;
     const [result] = await db.execute(
       "select * from services where service_id = ? ",
-      [service_id]
+      [service_id],
     );
     if (result.length === 0) {
       if (req.files) {
@@ -176,14 +176,14 @@ export const updateService = async (req, res, next) => {
       imagePath = outputPath;
       if (oldService.service_image) {
         removeImg(
-          `uploads/services/${oldService.service_image.split("/").pop()}`
+          `uploads/services/${oldService.service_image.split("/").pop()}`,
         );
       }
     }
 
     await db.execute(
       "UPDATE services set service_name=?,service_image=?,description=? where service_id=?",
-      [updateServiceName, imagePath, updateDescription, service_id]
+      [updateServiceName, imagePath, updateDescription, service_id],
     );
     res.status(200).json({
       message: `${updateServiceName} service is updated successfully`,
@@ -192,7 +192,31 @@ export const updateService = async (req, res, next) => {
     next(error);
   }
 };
+//delete service api
+export const getServicesByBranch = async (req, res, next) => {
+  try {
+    // first get the id from req.params which service will delete
+    const branchId = Number(req.params.branchId);
 
+    // check the service id provide or not
+    if (!branchId) {
+      return res.status(400).json({
+        message: "please provide id  ",
+      });
+    }
+    // check provided service id is exist or not
+    const [rows] = await db.execute(
+      "select *  from services where branch_id = ? ",
+      [branchId],
+    );
+    res.status(200).json({
+      message: "succesfully displayed",
+      data: rows,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 // api for public services
 export const publicGetServices = async (req, res, next) => {
   try {
@@ -215,33 +239,7 @@ export const publicGetServices = async (req, res, next) => {
     const [result] = await db.execute(query, params);
     return res.status(200).json({
       message: "service displayed succesfully",
-      allServices: result,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-//delete service api
-export const getServicesByBranch = async (req, res, next) => {
-  try {
-    // first get the id from req.params which service will delete
-    const branchId = Number(req.params.branchId);
-
-    // check the service id provide or not
-    if (!branchId) {
-      return res.status(400).json({
-        message: "please provide id  ",
-      });
-    }
-    // check provided service id is exist or not
-    const [rows] = await db.execute(
-      "select *  from services where branch_id = ? ",
-      [branchId]
-    );
-    res.status(200).json({
-      message: "succesfully displayed",
-      data: rows,
+      data: result,
     });
   } catch (error) {
     next(error);

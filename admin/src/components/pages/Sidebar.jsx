@@ -1,4 +1,4 @@
-import { MapPin, Layers, Building2, LogOut, House, Users } from "lucide-react";
+import { MapPin, Layers, Building2, LogOut, House, Users, Settings } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { logout } from "../../redux/features/authState";
 import { toast } from "react-toastify";
@@ -50,6 +50,12 @@ const Sidebar = ({ active, setActive }) => {
       key: "manager",
       icon: <Users size={18} />,
       path: "/admin/manager-dashboard",
+    },
+    {
+      name: "Service Management",
+      key: "service",
+      icon: <Settings size={18} />,
+      path: "/admin/service-dashboard",
     },
   ];
 

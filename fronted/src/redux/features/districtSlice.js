@@ -15,13 +15,6 @@ export const districtApi = indexSlice.injectEndpoints({
       }),
       providesTags: ["district"],
     }),
-    getServiceByBranch: builder.query({
-      query: (branchId) => ({
-        url: `/services/get-services/${branchId}`,
-        method: "GET",
-      }),
-      providesTags: ["district"],
-    }),
   }),
 });
 export const {

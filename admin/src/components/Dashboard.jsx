@@ -1,9 +1,10 @@
-import { MapPin, Layers, Building2, Users, TrendingUp, Activity } from "lucide-react";
+import { MapPin, Layers, Building2, Users, TrendingUp, Activity, Settings } from "lucide-react";
 import {
   useGetProvinceQuery,
   useGetDistrictQuery,
   useGetBranchQuery,
   useGetManagerQuery,
+  useGetServicesQuery,
 } from "../redux/features/provinceSlilce";
 import { Loading } from "./shared/IsLoading";
 import { Error } from "./shared/Error";
@@ -14,14 +15,16 @@ const Dashboard = () => {
   const { data: districtData, isLoading: districtLoading } = useGetDistrictQuery();
   const { data: branchData, isLoading: branchLoading } = useGetBranchQuery();
   const { data: managerData, isLoading: managerLoading } = useGetManagerQuery();
+  const { data: servicesData, isLoading: servicesLoading } = useGetServicesQuery();
 
   const provinces = provinceData?.provinces || [];
   const districts = districtData?.allDistricts || [];
   const branches = branchData?.branch || [];
   const managers = managerData?.managers || [];
+  const services = servicesData?.allServices || servicesData?.services || [];
 
   // Loading state
-  if (provinceLoading || districtLoading || branchLoading || managerLoading) {
+  if (provinceLoading || districtLoading || branchLoading || managerLoading || servicesLoading) {
     return <Loading isLoading={true} />;
   }
 
@@ -62,6 +65,15 @@ const Dashboard = () => {
       textColor: "text-orange-600",
       change: "+3.7%",
       changeType: "increase"
+    },
+    {
+      title: "Total Services",
+      value: services.length,
+      icon: <Settings className="w-8 h-8 text-indigo-600" />,
+      bgColor: "bg-indigo-50",
+      textColor: "text-indigo-600",
+      change: "+12.3%",
+      changeType: "increase"
     }
   ];
 
@@ -69,27 +81,41 @@ const Dashboard = () => {
   const recentActivities = [
     {
       id: 1,
+      action: "New service added",
+      details: "Education service was created for Branch #5",
+      time: "1 hour ago",
+      type: "service"
+    },
+    {
+      id: 2,
       action: "New province added",
       details: "Karnali Province was created",
       time: "2 hours ago",
       type: "province"
     },
     {
-      id: 2,
+      id: 3,
       action: "Manager assigned",
       details: "John Doe assigned to Branch #12",
       time: "4 hours ago",
       type: "manager"
     },
     {
-      id: 3,
+      id: 4,
+      action: "Service updated",
+      details: "Healthcare service information updated",
+      time: "5 hours ago",
+      type: "service"
+    },
+    {
+      id: 5,
       action: "District updated",
       details: "Kathmandu district information updated",
       time: "6 hours ago",
       type: "district"
     },
     {
-      id: 4,
+      id: 6,
       action: "New branch created",
       details: "Branch office opened in Pokhara",
       time: "1 day ago",
@@ -106,7 +132,7 @@ const Dashboard = () => {
       </div>
 
       {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
         {stats.map((stat, index) => (
           <div key={index} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between">
@@ -181,6 +207,18 @@ const Dashboard = () => {
                 Active managers managing operations
               </p>
             </div>
+
+            {/* Service Overview */}
+            <div className="border border-gray-200 rounded-lg p-4">
+              <div className="flex items-center mb-3">
+                <Settings className="w-5 h-5 text-indigo-600 mr-2" />
+                <h3 className="font-medium text-gray-900">Services</h3>
+              </div>
+              <p className="text-2xl font-bold text-gray-900 mb-2">{services.length}</p>
+              <p className="text-sm text-gray-600">
+                Available services across all branches
+              </p>
+            </div>
           </div>
         </div>
 
@@ -198,6 +236,7 @@ const Dashboard = () => {
                   activity.type === 'province' ? 'bg-blue-500' :
                   activity.type === 'district' ? 'bg-green-500' :
                   activity.type === 'branch' ? 'bg-purple-500' :
+                  activity.type === 'service' ? 'bg-indigo-500' :
                   'bg-orange-500'
                 }`}></div>
                 <div className="flex-1 min-w-0">

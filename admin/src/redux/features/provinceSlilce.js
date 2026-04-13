@@ -98,6 +98,37 @@ export const provinceApi = indexSlice.injectEndpoints({
       }),
       invalidatesTags: ["manager"],
     }),
+    // Service APIs
+    getServices: builder.query({
+      query: () => ({
+        url: "/services/get-services",
+        method: "GET",
+      }),
+      providesTags: ["services"],
+    }),
+    addService: builder.mutation({
+      query: (data) => ({
+        url: "/services/add-services",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["services"],
+    }),
+    updateService: builder.mutation({
+      query: ({ id, data }) => ({
+        url: `/services/update-services/${id}`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: ["services"],
+    }),
+    deleteService: builder.mutation({
+      query: (id) => ({
+        url: `/services/delete-services/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["services"],
+    }),
   }),
 });
 export const {
@@ -115,4 +146,9 @@ export const {
   useAddManagerMutation,
   useUpdateManagerMutation,
   useDeleteManagerMutation,
+  // Service hooks
+  useGetServicesQuery,
+  useAddServiceMutation,
+  useUpdateServiceMutation,
+  useDeleteServiceMutation,
 } = provinceApi;

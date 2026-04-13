@@ -21,25 +21,20 @@ branchRouter.post(
   "/add-province",
   isLogin,
   authorizeRoles("admin"),
-  addProvince
+  addProvince,
 );
-branchRouter.get(
-  "/get-province",
-  isLogin,
-  authorizeRoles("admin"),
-  getProvince
-);
+branchRouter.get("/get-province", getProvince);
 branchRouter.delete(
   "/delete-province/:id",
   isLogin,
   authorizeRoles("admin"),
-  deleteProvince
+  deleteProvince,
 );
 branchRouter.post(
   "/add-district",
   isLogin,
   authorizeRoles("admin"),
-  addDistrict
+  addDistrict,
 );
 branchRouter.get("/get-district", getDistrict);
 branchRouter.get("/get-all-district", getAllDistrict);
@@ -47,7 +42,7 @@ branchRouter.delete(
   "/delete-district/:id",
   isLogin,
   authorizeRoles("admin"),
-  deleteDistrict
+  deleteDistrict,
 );
 branchRouter.post("/add-branch", isLogin, authorizeRoles("admin"), addBranch);
 branchRouter.get("/get-branch", isLogin, authorizeRoles("admin"), getBranch);
@@ -56,7 +51,7 @@ branchRouter.delete(
   "/delete-branch/:id",
   isLogin,
   authorizeRoles("admin"),
-  deleteBranch
+  deleteBranch,
 );
 
 export default branchRouter;

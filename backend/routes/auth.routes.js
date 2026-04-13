@@ -25,7 +25,7 @@ authRouter.patch(
   "/update-manager/:id",
   isLogin,
   authorizeRoles("admin"),
-  updateManager
+  updateManager,
 );
 
 // Delete manager
@@ -33,7 +33,7 @@ authRouter.delete(
   "/delete-manager/:id",
   isLogin,
   authorizeRoles("admin"),
-  deleteManager
+  deleteManager,
 );
 
 export default authRouter;
