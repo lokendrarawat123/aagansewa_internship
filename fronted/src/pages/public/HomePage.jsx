@@ -10,6 +10,7 @@ import {
   useGetAllDistrictQuery,
   useGetBranchByDistrictQuery,
 } from "../../redux/features/districtSlice";
+import Testimonials from "../../components/Homecomponents/Testonomials";
 
 const Home = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -162,7 +163,8 @@ const Home = () => {
           ))}
         </div>
       </div>
-      <div>
+      <Testimonials />
+      {/* <div>
         <Services />
       </div>
       <div>
@@ -173,7 +175,7 @@ const Home = () => {
       </div>
       <div>
         <Contact />
-      </div>
+      </div> */}
     </>
   );
 };

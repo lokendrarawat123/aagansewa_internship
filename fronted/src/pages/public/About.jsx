@@ -1,16 +1,10 @@
+import AboutHero from "../../components/Aboutcomponents/HeroSection";
+
 const About = () => {
   return (
     <div className="w-full text-gray-800">
       {/* HERO */}
-      <section className="bg-indigo-600 text-white">
-        <div className="max-w-7xl mx-auto px-6 py-16 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold">About Agan Sewa</h1>
-          <p className="mt-4 text-indigo-100 max-w-3xl mx-auto">
-            Agan Sewa is a digital platform designed to make government and
-            public services accessible, transparent, and efficient for everyone.
-          </p>
-        </div>
-      </section>
+      <AboutHero />
 
       {/* INTRO */}
       <section className="py-16">

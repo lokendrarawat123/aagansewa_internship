@@ -8,6 +8,13 @@ export const provinceApi = indexSlice.injectEndpoints({
       }),
       providesTags: ["province"],
     }),
+    getBranch: builder.query({
+      query: () => ({
+        url: "/branch/get-branch",
+        method: "GET",
+      }),
+      providesTags: ["province"],
+    }),
   }),
 });
-export const { useGetProvinceQuery } = provinceApi;
+export const { useGetProvinceQuery, useGetBranchQuery } = provinceApi;
