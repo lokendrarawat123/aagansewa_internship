@@ -32,7 +32,7 @@ const AboutAaganSewa = () => {
           <img
             src="https://images.unsplash.com/photo-1521791136064-7986c2920216"
             alt="Aagan Sewa"
-            className="w-full h-[400px] object-cover rounded-2xl shadow-lg"
+            className="w-full h-100 object-cover rounded-2xl shadow-lg"
           />
 
           {/* Orange Glow Effect */}
