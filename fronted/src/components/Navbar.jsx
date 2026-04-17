@@ -5,23 +5,23 @@ import { NavLink } from "react-router-dom";
 
 const AGENCIES = [
   {
-    province: "Koshi Province",
+    province: "Koshi ",
     districts: ["Jhapa", "Morang", "Sunsari", "Ilam"],
   },
   {
-    province: "Madhesh Province",
+    province: "Madhesh ",
     districts: ["Janakpur", "Birgunj", "Sarlahi", "Siraha"],
   },
   {
-    province: "Bagmati Province",
+    province: "Bagmati ",
     districts: ["Kathmandu", "Lalitpur", "Bhaktapur", "Chitwan"],
   },
   {
-    province: "Gandaki Province",
+    province: "Gandaki ",
     districts: ["Pokhara", "Lamjung", "Gorkha", "Baglung"],
   },
   {
-    province: "Lumbini Province",
+    province: "Lumbini ",
     districts: ["Butwal", "Dang", "Kapilvastu", "Palpa"],
   },
 ];
@@ -85,7 +85,7 @@ const Navbar = () => {
 
               {/* DROPDOWN - Sharp Borders & Clean Text */}
               <div
-                className={`absolute left-0 top-full w-[700px] bg-white shadow-2xl border border-gray-200 p-8 grid grid-cols-3 gap-8 origin-top transition-all duration-200
+                className={`absolute left-0 top-full w-175 bg-white shadow-2xl border border-gray-200 p-8 grid grid-cols-3 gap-8 origin-top transition-all duration-200
                 ${branchOpen ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-2"}`}
               >
                 {AGENCIES.map((item) => (

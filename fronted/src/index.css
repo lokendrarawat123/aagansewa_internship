@@ -8,3 +8,21 @@
   --color-primary-orange: #ff6900;
   --color-secondary-blue: #061a32;
 }
+@keyframes infinite-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  } /* 50% kina vane hami list double garchhau */
+}
+
+.animate-scroll {
+  display: flex;
+  width: max-content;
+  animation: infinite-scroll 30s linear infinite;
+}
+
+/* .scroll-container:hover .animate-scroll {
+  animation-play-state: paused;
+} */

@@ -1,4 +1,6 @@
 import AboutHero from "../../components/Aboutcomponents/HeroSection";
+import AboutAaganSewa from "../../components/Servicecomponents/Intro";
+import Intro from "../../components/Servicecomponents/Intro";
 
 const About = () => {
   return (
@@ -6,28 +8,7 @@ const About = () => {
       {/* HERO */}
       <AboutHero />
 
-      {/* INTRO */}
-      <section className="py-16">
-        <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
-          <div>
-            <h2 className="text-3xl font-bold">Who We Are</h2>
-            <p className="mt-4 text-gray-600">
-              Agan Sewa connects citizens with government and public services
-              through a network of branches across different provinces and
-              districts. Our goal is to reduce complexity, save time, and
-              improve service delivery.
-            </p>
-            <p className="mt-4 text-gray-600">
-              By using modern digital technology, we ensure that people can
-              easily find the right service at the right branch.
-            </p>
-          </div>
-
-          <div className="bg-indigo-100 rounded-2xl h-72 flex items-center justify-center text-indigo-600 font-semibold">
-            Illustration / Image
-          </div>
-        </div>
-      </section>
+     
 
       {/* MISSION & VISION */}
       <section className="bg-gray-50 py-16">

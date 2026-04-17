@@ -1,10 +1,11 @@
 import React from "react";
-import GalleryCard from "../../components/Gallerycomponents/GalleryCard";
+
+import GalleryGrid from "../../components/Gallerycomponents/GalleryGrid";
 
 const Gallery = () => {
   return (
     <div>
-      <GalleryCard />
+      <GalleryGrid />
     </div>
   );
 };
