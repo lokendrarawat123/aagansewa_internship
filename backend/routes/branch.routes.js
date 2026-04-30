@@ -19,9 +19,9 @@ import { isLogin } from "../middlewares/isLogin.js";
 import { authorizeRoles } from "../middlewares/isAuthorizedRoles.js";
 
 const branchRouter = express.Router();
-
-branchRouter.get("/get-province", getProvinceWithDistrict);
 branchRouter.get("/get-province/:id", getprovinceById);
+branchRouter.get("/get-allprovince", getAllProvince);
+branchRouter.get("/get-provinceWithdistrict", getProvinceWithDistrict);
 
 branchRouter.post(
   "/add-province",
