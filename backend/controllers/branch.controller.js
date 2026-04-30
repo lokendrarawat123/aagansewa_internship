@@ -34,8 +34,8 @@ export const addProvince = async (req, res, next) => {
   }
 };
 
-//for getting province
-export const getProvince = async (req, res, next) => {
+//get all  province and district by
+export const getProvinceWithDistrict = async (req, res, next) => {
   try {
     //left join for getting province and district
     const [allProvince] = await db.execute(
@@ -52,6 +52,26 @@ export const getProvince = async (req, res, next) => {
     );
     res.status(200).json({
       message: "succesfully displayed",
+      data: allProvince,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+// get only province
+export const getAllProvince = async (req, res, next) => {
+  try {
+    const [allProvince] = await db.execute(
+      `SELECT  * from province  
+    `,
+    );
+    if (allProvince.length === 0) {
+      return res.status(404).json({
+        message: "province not found",
+      });
+    }
+    res.status(200).json({
+      message: "succesfully displayed pronvinces",
       data: allProvince,
     });
   } catch (error) {

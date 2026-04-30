@@ -58,7 +58,7 @@ export const login = async (req, res, next) => {
       {
         //expire time
         expiresIn: expire,
-      }
+      },
     );
     res.cookie("token", token, {
       httpOnly: true,
@@ -78,7 +78,7 @@ export const login = async (req, res, next) => {
 FROM users u
 LEFT JOIN branch b ON u.branch_id = b.branch_id where u.email=?
 `,
-      [email]
+      [email],
     );
     const users = branch[0];
     //else success
@@ -127,7 +127,7 @@ export const addManager = async (req, res, next) => {
     // Check service exists
     const [existBranchManager] = await db.execute(
       "SELECT * FROM users WHERE branch_id = ?",
-      [branch_id]
+      [branch_id],
     );
     if (existBranchManager.length > 0)
       return res
@@ -137,7 +137,7 @@ export const addManager = async (req, res, next) => {
     // Check branch exists
     const [branch] = await db.execute(
       "SELECT * FROM branch WHERE branch_id = ?",
-      [branch_id]
+      [branch_id],
     );
     if (branch.length === 0)
       return res.status(404).json({ message: "Branch not found" });
@@ -147,7 +147,7 @@ export const addManager = async (req, res, next) => {
       `INSERT INTO users
       (name, email, password, branch_id)
       VALUES (?, ?, ?, ?)`,
-      [name, email, hashedPassword, branch_id]
+      [name, email, hashedPassword, branch_id],
     );
 
     res.status(201).json({
@@ -158,7 +158,7 @@ export const addManager = async (req, res, next) => {
   }
 };
 
-// Get all staff
+// Get all Manager
 export const getManager = async (req, res, next) => {
   try {
     const [manager] = await db.execute("SELECT * FROM users where role = ? ", [
@@ -189,14 +189,14 @@ export const updateManager = async (req, res, next) => {
       `
       SELECT * FROM users 
       WHERE user_id = ? `,
-      [id]
+      [id],
     );
     if (existing.length === 0)
       return res.status(404).json({ message: "Manager not found" });
     if (email) {
       const [existEmail] = await db.execute(
         "select email from users where email = ? and user_id !=?",
-        [email, id]
+        [email, id],
       );
       if (existEmail.length > 0) {
         return res.status(409).json({
@@ -211,7 +211,7 @@ export const updateManager = async (req, res, next) => {
     if (branch_id) {
       const [branch] = await db.execute(
         "SELECT * FROM branch WHERE branch_id = ?",
-        [branch_id]
+        [branch_id],
       );
       if (branch.length === 0)
         return res.status(404).json({ message: "Branch not found" });
@@ -225,7 +225,7 @@ export const updateManager = async (req, res, next) => {
 
     await db.execute(
       "UPDATE users SET name=?, email=?,  branch_id=? WHERE user_id=?",
-      [updateName, updateEmail, updteBranchId, id]
+      [updateName, updateEmail, updteBranchId, id],
     );
 
     res.status(200).json({ message: "Manager updated successfully" });
@@ -241,7 +241,7 @@ export const deleteManager = async (req, res, next) => {
 
     const [existing] = await db.execute(
       "SELECT user_id FROM users WHERE user_id = ?",
-      [id]
+      [id],
     );
     if (existing.length === 0)
       return res.status(404).json({ message: "Manager not found" });
