@@ -10,9 +10,15 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     setUser: (state, action) => {
-      state.email = action.payload.email;
-      state.role = action.payload.role;
-      state.isAuth = !!action.payload; //!! for change boolean value
+      // Yadi payload ma email chha bhane matra isAuth true garne
+      if (action.payload && action.payload.email) {
+        state.email = action.payload.email;
+        state.role = action.payload.role;
+        state.isAuth = true;
+      } else {
+        // Natra false nai rakhne
+        state.isAuth = false;
+      }
     },
     logout: (state) => {
       state.email = "";

@@ -1,4 +1,12 @@
-import { MapPin, Layers, Building2, Users, TrendingUp, Activity, Settings } from "lucide-react";
+import {
+  MapPin,
+  Layers,
+  Building2,
+  Users,
+  TrendingUp,
+  Activity,
+  Settings,
+} from "lucide-react";
 import {
   useGetProvinceQuery,
   useGetDistrictQuery,
@@ -8,14 +16,22 @@ import {
 } from "../redux/features/provinceSlilce";
 import { Loading } from "./shared/IsLoading";
 import { Error } from "./shared/Error";
+import { useEffect } from "react"; // Side effect ko lagi
+import { useNavigate } from "react-router-dom"; // Navigate garna
+import { useSelector } from "react-redux"; // Redux state check garna
 
 const Dashboard = () => {
+  const { user, token } = useSelector((state) => state.user.isAuth);
+
   // API hooks to get data
-  const { data: provinceData, isLoading: provinceLoading } = useGetProvinceQuery();
-  const { data: districtData, isLoading: districtLoading } = useGetDistrictQuery();
+  const { data: provinceData, isLoading: provinceLoading } =
+    useGetProvinceQuery();
+  const { data: districtData, isLoading: districtLoading } =
+    useGetDistrictQuery();
   const { data: branchData, isLoading: branchLoading } = useGetBranchQuery();
   const { data: managerData, isLoading: managerLoading } = useGetManagerQuery();
-  const { data: servicesData, isLoading: servicesLoading } = useGetServicesQuery();
+  const { data: servicesData, isLoading: servicesLoading } =
+    useGetServicesQuery();
 
   const provinces = provinceData?.provinces || [];
   const districts = districtData?.allDistricts || [];
@@ -24,7 +40,13 @@ const Dashboard = () => {
   const services = servicesData?.allServices || servicesData?.services || [];
 
   // Loading state
-  if (provinceLoading || districtLoading || branchLoading || managerLoading || servicesLoading) {
+  if (
+    provinceLoading ||
+    districtLoading ||
+    branchLoading ||
+    managerLoading ||
+    servicesLoading
+  ) {
     return <Loading isLoading={true} />;
   }
 
@@ -37,7 +59,7 @@ const Dashboard = () => {
       bgColor: "bg-blue-50",
       textColor: "text-blue-600",
       change: "+2.5%",
-      changeType: "increase"
+      changeType: "increase",
     },
     {
       title: "Total Districts",
@@ -46,7 +68,7 @@ const Dashboard = () => {
       bgColor: "bg-green-50",
       textColor: "text-green-600",
       change: "+5.2%",
-      changeType: "increase"
+      changeType: "increase",
     },
     {
       title: "Total Branches",
@@ -55,7 +77,7 @@ const Dashboard = () => {
       bgColor: "bg-purple-50",
       textColor: "text-purple-600",
       change: "+8.1%",
-      changeType: "increase"
+      changeType: "increase",
     },
     {
       title: "Total Managers",
@@ -64,7 +86,7 @@ const Dashboard = () => {
       bgColor: "bg-orange-50",
       textColor: "text-orange-600",
       change: "+3.7%",
-      changeType: "increase"
+      changeType: "increase",
     },
     {
       title: "Total Services",
@@ -73,8 +95,8 @@ const Dashboard = () => {
       bgColor: "bg-indigo-50",
       textColor: "text-indigo-600",
       change: "+12.3%",
-      changeType: "increase"
-    }
+      changeType: "increase",
+    },
   ];
 
   // Recent activities (mock data)
@@ -84,65 +106,78 @@ const Dashboard = () => {
       action: "New service added",
       details: "Education service was created for Branch #5",
       time: "1 hour ago",
-      type: "service"
+      type: "service",
     },
     {
       id: 2,
       action: "New province added",
       details: "Karnali Province was created",
       time: "2 hours ago",
-      type: "province"
+      type: "province",
     },
     {
       id: 3,
       action: "Manager assigned",
       details: "John Doe assigned to Branch #12",
       time: "4 hours ago",
-      type: "manager"
+      type: "manager",
     },
     {
       id: 4,
       action: "Service updated",
       details: "Healthcare service information updated",
       time: "5 hours ago",
-      type: "service"
+      type: "service",
     },
     {
       id: 5,
       action: "District updated",
       details: "Kathmandu district information updated",
       time: "6 hours ago",
-      type: "district"
+      type: "district",
     },
     {
       id: 6,
       action: "New branch created",
       details: "Branch office opened in Pokhara",
       time: "1 day ago",
-      type: "branch"
-    }
+      type: "branch",
+    },
   ];
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
-        <p className="text-gray-600">Welcome back! Here's what's happening with your organization.</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          Admin Dashboard
+        </h1>
+        <p className="text-gray-600">
+          Welcome back! Here's what's happening with your organization.
+        </p>
       </div>
 
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
         {stats.map((stat, index) => (
-          <div key={index} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+          <div
+            key={index}
+            className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
+          >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600 mb-1">{stat.title}</p>
+                <p className="text-sm font-medium text-gray-600 mb-1">
+                  {stat.title}
+                </p>
                 <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
                 <div className="flex items-center mt-2">
                   <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
-                  <span className="text-sm text-green-600 font-medium">{stat.change}</span>
-                  <span className="text-sm text-gray-500 ml-1">from last month</span>
+                  <span className="text-sm text-green-600 font-medium">
+                    {stat.change}
+                  </span>
+                  <span className="text-sm text-gray-500 ml-1">
+                    from last month
+                  </span>
                 </div>
               </div>
               <div className={`${stat.bgColor} p-3 rounded-lg`}>
@@ -157,8 +192,10 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Quick Overview */}
         <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">Quick Overview</h2>
-          
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">
+            Quick Overview
+          </h2>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Province Overview */}
             <div className="border border-gray-200 rounded-lg p-4">
@@ -166,7 +203,9 @@ const Dashboard = () => {
                 <MapPin className="w-5 h-5 text-blue-600 mr-2" />
                 <h3 className="font-medium text-gray-900">Provinces</h3>
               </div>
-              <p className="text-2xl font-bold text-gray-900 mb-2">{provinces.length}</p>
+              <p className="text-2xl font-bold text-gray-900 mb-2">
+                {provinces.length}
+              </p>
               <p className="text-sm text-gray-600">
                 Managing {districts.length} districts across all provinces
               </p>
@@ -178,7 +217,9 @@ const Dashboard = () => {
                 <Layers className="w-5 h-5 text-green-600 mr-2" />
                 <h3 className="font-medium text-gray-900">Districts</h3>
               </div>
-              <p className="text-2xl font-bold text-gray-900 mb-2">{districts.length}</p>
+              <p className="text-2xl font-bold text-gray-900 mb-2">
+                {districts.length}
+              </p>
               <p className="text-sm text-gray-600">
                 Operating {branches.length} branches across districts
               </p>
@@ -190,7 +231,9 @@ const Dashboard = () => {
                 <Building2 className="w-5 h-5 text-purple-600 mr-2" />
                 <h3 className="font-medium text-gray-900">Branches</h3>
               </div>
-              <p className="text-2xl font-bold text-gray-900 mb-2">{branches.length}</p>
+              <p className="text-2xl font-bold text-gray-900 mb-2">
+                {branches.length}
+              </p>
               <p className="text-sm text-gray-600">
                 {managers.length} managers assigned to branches
               </p>
@@ -202,7 +245,9 @@ const Dashboard = () => {
                 <Users className="w-5 h-5 text-orange-600 mr-2" />
                 <h3 className="font-medium text-gray-900">Managers</h3>
               </div>
-              <p className="text-2xl font-bold text-gray-900 mb-2">{managers.length}</p>
+              <p className="text-2xl font-bold text-gray-900 mb-2">
+                {managers.length}
+              </p>
               <p className="text-sm text-gray-600">
                 Active managers managing operations
               </p>
@@ -214,7 +259,9 @@ const Dashboard = () => {
                 <Settings className="w-5 h-5 text-indigo-600 mr-2" />
                 <h3 className="font-medium text-gray-900">Services</h3>
               </div>
-              <p className="text-2xl font-bold text-gray-900 mb-2">{services.length}</p>
+              <p className="text-2xl font-bold text-gray-900 mb-2">
+                {services.length}
+              </p>
               <p className="text-sm text-gray-600">
                 Available services across all branches
               </p>
@@ -226,28 +273,41 @@ const Dashboard = () => {
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex items-center mb-6">
             <Activity className="w-5 h-5 text-gray-600 mr-2" />
-            <h2 className="text-xl font-semibold text-gray-900">Recent Activities</h2>
+            <h2 className="text-xl font-semibold text-gray-900">
+              Recent Activities
+            </h2>
           </div>
-          
+
           <div className="space-y-4">
             {recentActivities.map((activity) => (
-              <div key={activity.id} className="flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
-                <div className={`w-2 h-2 rounded-full mt-2 ${
-                  activity.type === 'province' ? 'bg-blue-500' :
-                  activity.type === 'district' ? 'bg-green-500' :
-                  activity.type === 'branch' ? 'bg-purple-500' :
-                  activity.type === 'service' ? 'bg-indigo-500' :
-                  'bg-orange-500'
-                }`}></div>
+              <div
+                key={activity.id}
+                className="flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                <div
+                  className={`w-2 h-2 rounded-full mt-2 ${
+                    activity.type === "province"
+                      ? "bg-blue-500"
+                      : activity.type === "district"
+                        ? "bg-green-500"
+                        : activity.type === "branch"
+                          ? "bg-purple-500"
+                          : activity.type === "service"
+                            ? "bg-indigo-500"
+                            : "bg-orange-500"
+                  }`}
+                ></div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900">{activity.action}</p>
+                  <p className="text-sm font-medium text-gray-900">
+                    {activity.action}
+                  </p>
                   <p className="text-sm text-gray-600">{activity.details}</p>
                   <p className="text-xs text-gray-500 mt-1">{activity.time}</p>
                 </div>
               </div>
             ))}
           </div>
-          
+
           <div className="mt-6 pt-4 border-t border-gray-200">
             <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">
               View all activities →
@@ -258,16 +318,20 @@ const Dashboard = () => {
 
       {/* System Status */}
       <div className="mt-6 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">System Status</h2>
+        <h2 className="text-xl font-semibold text-gray-900 mb-4">
+          System Status
+        </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg">
             <div>
-              <p className="text-sm font-medium text-green-800">System Health</p>
+              <p className="text-sm font-medium text-green-800">
+                System Health
+              </p>
               <p className="text-lg font-semibold text-green-900">Excellent</p>
             </div>
             <div className="w-3 h-3 bg-green-500 rounded-full"></div>
           </div>
-          
+
           <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
             <div>
               <p className="text-sm font-medium text-blue-800">Database</p>
@@ -275,11 +339,13 @@ const Dashboard = () => {
             </div>
             <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
           </div>
-          
+
           <div className="flex items-center justify-between p-4 bg-yellow-50 rounded-lg">
             <div>
               <p className="text-sm font-medium text-yellow-800">Last Backup</p>
-              <p className="text-lg font-semibold text-yellow-900">2 hours ago</p>
+              <p className="text-lg font-semibold text-yellow-900">
+                2 hours ago
+              </p>
             </div>
             <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
           </div>

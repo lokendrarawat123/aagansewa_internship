@@ -1,33 +1,25 @@
 import db from "../config/db_connect.js";
 
-export const addProvince = async (req, res, next) => {
+export const getprovinceById = async (req, res, next) => {
   try {
-    const { name } = req.body; // getting data from the fronted or req.body
-    // console.log(req.body);
-    // 1. check name is provided or not
-    // console.log(name);
-
-    if (!name) {
-      return res.status(400).json({ message: "please provide province name " });
+    const { id } = req.params;
+    if (!id) {
+      return res.status(404).json({ message: "please provide province id" });
     }
-
-    //2 . check if the province already exists
-    const [existing] = await db.execute(
-      "select province_name from province where province_name = ?",
-      [name],
+    const [result] = await db.execute(
+      "select * from province where province_id=?",
+      [id],
     );
+    console.log(result[0]);
 
-    if (existing.length > 0) {
-      return res.status(409).json({
-        message: ` ${name} province is already exist`,
+    if (result.length === 0) {
+      return res.status(404).json({
+        message: "province not found",
       });
     }
-
-    //3. insert in province table
-    await db.execute("insert into province(province_name) values(?)", [name]);
-    //success message
-    res.status(201).json({
-      message: `${name} province  added succesfully`,
+    res.status(200).json({
+      message: "successfully displayed",
+      data: result[0],
     });
   } catch (error) {
     next(error);
@@ -73,6 +65,41 @@ export const getAllProvince = async (req, res, next) => {
     res.status(200).json({
       message: "succesfully displayed pronvinces",
       data: allProvince,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+//add province
+export const addProvince = async (req, res, next) => {
+  try {
+    const { name } = req.body; // getting data from the fronted or req.body
+    // console.log(req.body);
+    // 1. check name is provided or not
+    // console.log(name);
+
+    if (!name) {
+      return res.status(400).json({ message: "please provide province name " });
+    }
+
+    //2 . check if the province already exists
+    const [existing] = await db.execute(
+      "select province_name from province where province_name = ?",
+      [name],
+    );
+
+    if (existing.length > 0) {
+      return res.status(409).json({
+        message: ` ${name} province is already exist`,
+      });
+    }
+
+    //3. insert in province table
+    await db.execute("insert into province(province_name) values(?)", [name]);
+    //success message
+    res.status(201).json({
+      message: `${name} province  added succesfully`,
     });
   } catch (error) {
     next(error);
@@ -154,7 +181,7 @@ export const deleteProvince = async (req, res, next) => {
   }
 };
 
-// districts api
+// add districts api
 export const addDistrict = async (req, res, next) => {
   try {
     console.log(req.body);

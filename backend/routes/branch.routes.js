@@ -12,19 +12,23 @@ import {
   getDistrict,
   getAllProvince,
   getProvinceWithDistrict,
+  getprovinceById,
 } from "../controllers/branch.controller.js";
 import { isLogin } from "../middlewares/isLogin.js";
 
 import { authorizeRoles } from "../middlewares/isAuthorizedRoles.js";
 
 const branchRouter = express.Router();
+
+branchRouter.get("/get-province", getProvinceWithDistrict);
+branchRouter.get("/get-province/:id", getprovinceById);
+
 branchRouter.post(
   "/add-province",
   isLogin,
   authorizeRoles("admin"),
   addProvince,
 );
-branchRouter.get("/get-province", getProvinceWithDistrict);
 branchRouter.delete(
   "/delete-province/:id",
   isLogin,
@@ -37,6 +41,7 @@ branchRouter.post(
   authorizeRoles("admin"),
   addDistrict,
 );
+
 branchRouter.get("/get-district", getDistrict);
 branchRouter.get("/get-all-district", getAllDistrict);
 branchRouter.delete(

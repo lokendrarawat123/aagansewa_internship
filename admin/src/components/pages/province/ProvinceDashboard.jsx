@@ -28,7 +28,7 @@ const ProvinceDashboard = () => {
   const [addNewProvince] = useAddProvinceMutation();
   const [deleteProvince] = useDeleteProvinceMutation();
   //store province details for in variable
-  const provinces = data?.provinces; // if data available get data else response of the backend
+  const provinces = data?.data; // if data available get data else response of the backend
 
   //onchange
 

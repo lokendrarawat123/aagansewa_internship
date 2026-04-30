@@ -1,4 +1,18 @@
-import { MapPin, Layers, Building2, LogOut, House, Users, Settings } from "lucide-react";
+import {
+  MapPin,
+  Layers,
+  Building2,
+  LogOut,
+  House,
+  Users,
+  Settings,
+  MessageCircleQuestionMark,
+  UserPen,
+  UserPlus2Icon,
+  UserCheck,
+  UserRoundCog,
+} from "lucide-react";
+
 import { useDispatch } from "react-redux";
 import { logout } from "../../redux/features/authState";
 import { toast } from "react-toastify";
@@ -48,7 +62,7 @@ const Sidebar = ({ active, setActive }) => {
     {
       name: "Manager Management",
       key: "manager",
-      icon: <Users size={18} />,
+      icon: <UserCheck size={18} />,
       path: "/admin/manager-dashboard",
     },
     {
@@ -56,6 +70,18 @@ const Sidebar = ({ active, setActive }) => {
       key: "service",
       icon: <Settings size={18} />,
       path: "/admin/service-dashboard",
+    },
+    {
+      name: "Inquiry Management",
+      key: "inquiry",
+      icon: <MessageCircleQuestionMark size={18} />,
+      path: "/admin/inquiry-dashboard",
+    },
+    {
+      name: "Staff Management",
+      key: "staff",
+      icon: <UserRoundCog size={18} />,
+      path: "/admin/staff-dashboard",
     },
   ];
 
