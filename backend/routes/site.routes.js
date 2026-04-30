@@ -9,17 +9,32 @@ import {
   getInquiry,
   getReview,
   getTrustedCustomers,
+  getInquiryById,
+  getAllInquiry,
+  getInquiryByBranch,
+  updateInquiry,
+  getReviewById,
+  getAllReview,
+  getReviewByBranch,
+  updateReview,
+  getPartnerById,
+  getAllPartner,
+  getPartnerByBranch,
+  addPartner,
+  updatePartner,
+  deletePartner,
 } from "../controllers/site.controller.js";
 import { uploadCostumer } from "../utils/multerHandler.js";
 import { isLogin } from "../middlewares/isLogin.js";
+import { authorizeRoles } from "../middlewares/isAuthorizedRoles.js";
 
 const siteRouter = express.Router();
 
+// Trusted Customer/Partner routes
 siteRouter.post(
   "/add-trusted-costumer",
   uploadCostumer.single("image"),
   isLogin,
-  // single image
   addTrustedCostumer
 );
 siteRouter.get("/get-trusted-costumer", getTrustedCustomers);
@@ -29,12 +44,40 @@ siteRouter.delete(
   deleteTrustedCustomer
 );
 
-siteRouter.post("/review/add-review", isLogin, addReview);
-siteRouter.get("/review/get-review", getReview);
-siteRouter.delete("/review/delete-review/:id", isLogin, deleteReview);
+// Partner routes (aliases for trusted customer)
+siteRouter.get("/get-partner/:id", getPartnerById);
+siteRouter.get("/get-allPartner", getAllPartner);
+siteRouter.get("/branch/:branch_id/partner", getPartnerByBranch);
+siteRouter.post(
+  "/add-partner",
+  uploadCostumer.single("image"),
+  isLogin,
+  addPartner
+);
+siteRouter.patch(
+  "/update-partner/:id",
+  uploadCostumer.single("image"),
+  isLogin,
+  updatePartner
+);
+siteRouter.delete("/delete-partner/:id", isLogin, deletePartner);
 
-siteRouter.post("/inquiry/add-inquiry", addInquiry);
-siteRouter.get("/inquiry/get-inquiry", isLogin, getInquiry);
-siteRouter.delete("/inquiry/delete-inquiry/:id", isLogin, deleteInquiry);
+// Review routes
+siteRouter.post("/add-review", addReview);
+siteRouter.get("/get-review", getReview);
+siteRouter.delete("/delete-review/:id", isLogin, deleteReview);
+siteRouter.get("/get-review/:id", getReviewById);
+siteRouter.get("/get-allReview", getAllReview);
+siteRouter.get("/branch/:branch_id/review", getReviewByBranch);
+siteRouter.patch("/update-review/:id", isLogin, updateReview);
+
+// Inquiry routes
+siteRouter.post("/add-inquiry", addInquiry);
+siteRouter.get("/get-inquiry", isLogin, getInquiry);
+siteRouter.delete("/delete-inquiry/:id", isLogin, deleteInquiry);
+siteRouter.get("/get-inquiry/:id", getInquiryById);
+siteRouter.get("/get-allInquiry", getAllInquiry);
+siteRouter.get("/branch/:branch_id/inquiry", getInquiryByBranch);
+siteRouter.patch("/update-inquiry/:id", isLogin, updateInquiry);
 
 export default siteRouter;

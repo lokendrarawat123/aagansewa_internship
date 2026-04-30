@@ -300,33 +300,38 @@ export const getAllDistrict = async (req, res, next) => {
 //get district with province id
 export const getDistrictByProvinceID = async (req, res, next) => {
   try {
-    const { iprovince_idd } = req.params;
+    const { province_id } = req.params;
+
+    // 🔹 validate
     if (!province_id) {
-      return res.status(404).json({
-        message: "please provide id of province",
+      return res.status(400).json({
+        message: "Please provide province id",
       });
     }
-    const [exsitprovince] = await db.execute(
-      "select * from province where province_id=?",
+
+    // 🔹 check province exist
+    const [existProvince] = await db.execute(
+      "SELECT province_id FROM province WHERE province_id = ?",
       [province_id],
     );
-    if (exsitprovince.length === 0) {
+
+    if (existProvince.length === 0) {
       return res.status(404).json({
-        message: "the province does not exist",
+        message: "Province does not exist",
       });
     }
-    const [result] = await db.execute(
-      "select * from district where province_id=?",
+
+    // 🔹 get districts
+    const [districts] = await db.execute(
+      "SELECT district_id, district_name FROM district WHERE province_id = ?",
       [province_id],
     );
-    if (result.length === 0) {
-      return res.status(404).json({
-        message: "district not found",
-      });
-    }
-    res.status(200).json({
-      message: "successfully displayed",
-      data: result[0],
+
+    // 🔹 response (no 404 for empty)
+    return res.status(200).json({
+      message: "success",
+      total: districts.length,
+      data: districts, // ✅ ALL districts
     });
   } catch (error) {
     next(error);
@@ -435,7 +440,7 @@ export const deleteBranch = async (req, res, next) => {
 export const getBranchById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    // console.log(id);
+
     if (!id) {
       return res.status(409).json({
         message: "provide  Id ",

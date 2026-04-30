@@ -1,5 +1,9 @@
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 import db from "../config/db_connect.js";
+
+const dot = process.env.JWT_SECRET;
+const expire = process.env.JWT_EXPIRE;
 
 // Add Staff
 export const addStaff = async (req, res, next) => {
@@ -73,7 +77,73 @@ export const addStaff = async (req, res, next) => {
   }
 };
 
+// Get staff by ID
+export const getStaffById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    
+    if (!id) {
+      return res.status(400).json({ message: "Please provide staff ID" });
+    }
+
+    const [result] = await db.execute(
+      "SELECT * FROM staff WHERE staff_id = ?",
+      [id]
+    );
+
+    if (result.length === 0) {
+      return res.status(404).json({ message: "Staff not found" });
+    }
+
+    res.status(200).json({
+      message: "Staff fetched successfully",
+      data: result[0],
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // Get all staff
+export const getAllStaff = async (req, res, next) => {
+  try {
+    const [allStaff] = await db.execute(
+      "SELECT * FROM staff ORDER BY created_at DESC"
+    );
+
+    res.status(200).json({
+      message: "All staff fetched successfully",
+      data: allStaff,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Get staff by branch ID
+export const getStaffByBranch = async (req, res, next) => {
+  try {
+    const { branch_id } = req.params;
+    
+    if (!branch_id) {
+      return res.status(400).json({ message: "Please provide branch ID" });
+    }
+
+    const [result] = await db.execute(
+      "SELECT * FROM staff WHERE branch_id = ? ORDER BY created_at DESC",
+      [branch_id]
+    );
+
+    res.status(200).json({
+      message: "Branch staff fetched successfully",
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Get all staff (for authenticated users)
 export const getStaff = async (req, res, next) => {
   try {
     const { email, role } = req.user;
@@ -93,14 +163,20 @@ export const getStaff = async (req, res, next) => {
         "SELECT * FROM staff  where branch_id=?",
         [branch_id]
       );
-      res.status(200).json({
+      return res.status(200).json({
         message: " Staff fetched successfully ",
         staff: staffList,
       });
     }
+    
+    // For admin - get all staff
+    const [allStaff] = await db.execute(
+      "SELECT * FROM staff ORDER BY created_at DESC"
+    );
+    
     res.status(200).json({
       message: "Staff fetched successfully",
-      staff: staffList,
+      staff: allStaff,
     });
   } catch (error) {
     next(error);
@@ -303,68 +379,60 @@ export const resetPassword = async (req, res, next) => {
 };
 export const login = async (req, res, next) => {
   try {
-    // first we need to get user password and email
-
-    // console.log(req.body);
-    const { email, password, role } = req.body;
+    const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ message: "All  inputs are  required" });
+      return res.status(400).json({ message: "All inputs are required" });
     }
 
-    //2. now we find the user is exist or not
-    const [result] = await db.execute("select * from staff where email =? ", [
+    // Find the user
+    const [result] = await db.execute("SELECT * FROM staff WHERE email = ?", [
       email,
     ]);
-    // console.log(result[0]);
-    // console.log(typeof result);
+
     if (result.length === 0) {
-      res.status(400).json({
-        message: `user not found this email ${email}`,
+      return res.status(400).json({
+        message: `User not found with email ${email}`,
       });
     }
-    //store the result value in any varaible
+
     const user = result[0];
-    // console.log(user);
 
     const isMatch = await bcrypt.compare(password, user.password);
-    // console.log(isMatch);
     if (!isMatch) {
-      res.status(401).json({
-        message: "invalid crendial",
+      return res.status(401).json({
+        message: "Invalid credentials",
       });
     }
-    //jwt=jsonwebtoken
-    //for genarate token for cookies
-    //it takes 3 things
-    // i.your details 2.secret key 3. expire time
-    const token = await jwt.sign(
+
+    // Generate JWT token
+    const token = jwt.sign(
       {
-        //details
-        id: user.id,
+        id: user.staff_id,
         name: user.name,
         email: user.email,
-        role: user.role,
+        role: "staff",
+        branch_id: user.branch_id,
       },
-      //secrete key
       dot,
       {
-        //expire time
         expiresIn: expire,
       }
     );
+
     res.cookie("token", token, {
       httpOnly: true,
       secure: false,
       sameSite: "none",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // for 7 day
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
-    //else success
+
     res.status(200).json({
-      message: "login success",
+      message: "Login successful",
       user: {
         name: user.name,
-        role: user.role,
+        role: "staff",
+        email: user.email,
       },
     });
   } catch (error) {
@@ -375,7 +443,7 @@ export const logout = async (req, res, next) => {
   try {
     res.clearCookie("token");
     res.status(200).json({
-      message: "succesfully sign out thank you",
+      message: "Successfully signed out, thank you",
     });
   } catch (error) {
     next(error);

@@ -223,7 +223,113 @@ export const deleteInquiry = async (req, res, next) => {
     next(error);
   }
 };
-//get inquiry api
+// Get inquiry by ID
+export const getInquiryById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    
+    if (!id) {
+      return res.status(400).json({ message: "Please provide inquiry ID" });
+    }
+
+    const [result] = await db.execute(
+      "SELECT * FROM inquiry WHERE inquiry_id = ?",
+      [id]
+    );
+
+    if (result.length === 0) {
+      return res.status(404).json({ message: "Inquiry not found" });
+    }
+
+    res.status(200).json({
+      message: "Inquiry fetched successfully",
+      data: result[0],
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Get all inquiries
+export const getAllInquiry = async (req, res, next) => {
+  try {
+    const [allInquiry] = await db.execute(
+      "SELECT * FROM inquiry ORDER BY created_at DESC"
+    );
+
+    res.status(200).json({
+      message: "All inquiries fetched successfully",
+      data: allInquiry,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Get inquiries by branch ID
+export const getInquiryByBranch = async (req, res, next) => {
+  try {
+    const { branch_id } = req.params;
+    
+    if (!branch_id) {
+      return res.status(400).json({ message: "Please provide branch ID" });
+    }
+
+    const [result] = await db.execute(
+      "SELECT * FROM inquiry WHERE branch_id = ? ORDER BY created_at DESC",
+      [branch_id]
+    );
+
+    res.status(200).json({
+      message: "Branch inquiries fetched successfully",
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Update inquiry
+export const updateInquiry = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { name, email, phone, address, branch_id, description } = req.body;
+
+    if (!id) {
+      return res.status(400).json({ message: "Please provide inquiry ID" });
+    }
+
+    const [existing] = await db.execute(
+      "SELECT * FROM inquiry WHERE inquiry_id = ?",
+      [id]
+    );
+
+    if (existing.length === 0) {
+      return res.status(404).json({ message: "Inquiry not found" });
+    }
+
+    const oldInquiry = existing[0];
+
+    await db.execute(
+      "UPDATE inquiry SET name=?, email=?, phone=?, address=?, branch_id=?, description=? WHERE inquiry_id=?",
+      [
+        name || oldInquiry.name,
+        email || oldInquiry.email,
+        phone || oldInquiry.phone,
+        address || oldInquiry.address,
+        branch_id || oldInquiry.branch_id,
+        description || oldInquiry.description,
+        id,
+      ]
+    );
+
+    res.status(200).json({ message: "Inquiry updated successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+//get inquiry api (for authenticated users)
 export const getInquiry = async (req, res, next) => {
   try {
     const { email, role } = req.user;
@@ -270,3 +376,228 @@ export const getInquiry = async (req, res, next) => {
     next(error);
   }
 };
+
+// Get review by ID
+export const getReviewById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    
+    if (!id) {
+      return res.status(400).json({ message: "Please provide review ID" });
+    }
+
+    const [result] = await db.execute(
+      "SELECT * FROM review WHERE review_id = ?",
+      [id]
+    );
+
+    if (result.length === 0) {
+      return res.status(404).json({ message: "Review not found" });
+    }
+
+    res.status(200).json({
+      message: "Review fetched successfully",
+      data: result[0],
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Get all reviews
+export const getAllReview = async (req, res, next) => {
+  try {
+    const [reviews] = await db.execute(
+      "SELECT * FROM review ORDER BY created_at DESC"
+    );
+
+    res.status(200).json({
+      message: "All reviews fetched successfully",
+      data: reviews,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Get reviews by branch ID
+export const getReviewByBranch = async (req, res, next) => {
+  try {
+    const { branch_id } = req.params;
+    
+    if (!branch_id) {
+      return res.status(400).json({ message: "Please provide branch ID" });
+    }
+
+    const [result] = await db.execute(
+      "SELECT * FROM review WHERE branch_id = ? ORDER BY created_at DESC",
+      [branch_id]
+    );
+
+    res.status(200).json({
+      message: "Branch reviews fetched successfully",
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Update review
+export const updateReview = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { name, position, description } = req.body;
+
+    if (!id) {
+      return res.status(400).json({ message: "Please provide review ID" });
+    }
+
+    const [existing] = await db.execute(
+      "SELECT * FROM review WHERE review_id = ?",
+      [id]
+    );
+
+    if (existing.length === 0) {
+      return res.status(404).json({ message: "Review not found" });
+    }
+
+    const oldReview = existing[0];
+
+    await db.execute(
+      "UPDATE review SET name=?, position=?, description=? WHERE review_id=?",
+      [
+        name || oldReview.name,
+        position || oldReview.position,
+        description || oldReview.description,
+        id,
+      ]
+    );
+
+    res.status(200).json({ message: "Review updated successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Partner APIs
+// Get partner by ID
+export const getPartnerById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    
+    if (!id) {
+      return res.status(400).json({ message: "Please provide partner ID" });
+    }
+
+    const [result] = await db.execute(
+      "SELECT * FROM trusted_costumer WHERE costumer_id = ?",
+      [id]
+    );
+
+    if (result.length === 0) {
+      return res.status(404).json({ message: "Partner not found" });
+    }
+
+    res.status(200).json({
+      message: "Partner fetched successfully",
+      data: result[0],
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Get all partners
+export const getAllPartner = async (req, res, next) => {
+  try {
+    const [partners] = await db.execute(
+      "SELECT * FROM trusted_costumer ORDER BY created_at DESC"
+    );
+
+    res.status(200).json({
+      message: "All partners fetched successfully",
+      data: partners,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Get partners by branch ID
+export const getPartnerByBranch = async (req, res, next) => {
+  try {
+    const { branch_id } = req.params;
+    
+    if (!branch_id) {
+      return res.status(400).json({ message: "Please provide branch ID" });
+    }
+
+    const [result] = await db.execute(
+      "SELECT * FROM trusted_costumer WHERE branch_id = ? ORDER BY created_at DESC",
+      [branch_id]
+    );
+
+    res.status(200).json({
+      message: "Branch partners fetched successfully",
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Add partner (alias for addTrustedCostumer)
+export const addPartner = addTrustedCostumer;
+
+// Update partner
+export const updatePartner = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { name } = req.body;
+    const image = req.file;
+
+    if (!id) {
+      return res.status(400).json({ message: "Please provide partner ID" });
+    }
+
+    const [existing] = await db.execute(
+      "SELECT * FROM trusted_costumer WHERE costumer_id = ?",
+      [id]
+    );
+
+    if (existing.length === 0) {
+      if (req.file) {
+        removeImg(req.file.path);
+      }
+      return res.status(404).json({ message: "Partner not found" });
+    }
+
+    const oldPartner = existing[0];
+    let imagePath = oldPartner.image;
+
+    if (req.file) {
+      const outputPath = `uploads/costumer/school-${req.file.filename}`;
+      await compressImg(req.file.path, outputPath);
+      imagePath = outputPath;
+      if (oldPartner.image) {
+        removeImg(oldPartner.image);
+      }
+    }
+
+    await db.execute(
+      "UPDATE trusted_costumer SET name=?, image=? WHERE costumer_id=?",
+      [name || oldPartner.name, imagePath, id]
+    );
+
+    res.status(200).json({ message: "Partner updated successfully" });
+  } catch (error) {
+    if (req.file) {
+      removeImg(req.file.path);
+    }
+    next(error);
+  }
+};
+
+// Delete partner (alias for deleteTrustedCustomer)
+export const deletePartner = deleteTrustedCustomer;

@@ -63,7 +63,144 @@ export const addGallery = async (req, res, next) => {
   }
 };
 
+// Get gallery by ID
+export const getGalleryById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    
+    if (!id) {
+      return res.status(400).json({ message: "Please provide gallery ID" });
+    }
+
+    const [result] = await db.execute(
+      "SELECT * FROM gallery WHERE gallery_id = ?",
+      [id]
+    );
+
+    if (result.length === 0) {
+      return res.status(404).json({ message: "Gallery not found" });
+    }
+
+    res.status(200).json({
+      message: "Gallery fetched successfully",
+      data: result[0],
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // Get all gallery entries
+export const getAllGallery = async (req, res, next) => {
+  try {
+    const [galleries] = await db.execute(
+      "SELECT * FROM gallery ORDER BY created_at DESC"
+    );
+
+    res.status(200).json({
+      message: "All galleries fetched successfully",
+      data: galleries,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Get gallery by branch ID
+export const getGalleryByBranch = async (req, res, next) => {
+  try {
+    const { branch_id } = req.params;
+    
+    if (!branch_id) {
+      return res.status(400).json({ message: "Please provide branch ID" });
+    }
+
+    const [result] = await db.execute(
+      "SELECT * FROM gallery WHERE branch_id = ? ORDER BY created_at DESC",
+      [branch_id]
+    );
+
+    res.status(200).json({
+      message: "Branch galleries fetched successfully",
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Update Gallery
+export const updateGallery = async (req, res, next) => {
+  let images = [];
+  try {
+    const { id } = req.params;
+    const { title, gallery_date, location, branch_id } = req.body;
+    images = req.files;
+
+    if (!id) {
+      return res.status(400).json({ message: "Please provide gallery ID" });
+    }
+
+    const [existing] = await db.execute(
+      "SELECT * FROM gallery WHERE gallery_id = ?",
+      [id]
+    );
+
+    if (existing.length === 0) {
+      if (images && images.length > 0) {
+        for (const i of images) {
+          removeImg(i.path);
+        }
+      }
+      return res.status(404).json({ message: "Gallery not found" });
+    }
+
+    const oldGallery = existing[0];
+    let imagePath = oldGallery.image;
+
+    // If new images are uploaded
+    if (images && images.length > 0) {
+      const imagePaths = [];
+      for (const i of images) {
+        const outputPath = `uploads/gallery/compressed-${i.filename}`;
+        await compressImg(i.path, outputPath);
+        imagePaths.push(outputPath);
+      }
+      imagePath = imagePaths.join(",");
+      
+      // Remove old images
+      if (oldGallery.image) {
+        const oldImages = oldGallery.image.split(",");
+        for (const img of oldImages) {
+          removeImg(img);
+        }
+      }
+    }
+
+    await db.execute(
+      "UPDATE gallery SET title=?, gallery_date=?, location=?, branch_id=?, image=? WHERE gallery_id=?",
+      [
+        title || oldGallery.title,
+        gallery_date || oldGallery.gallery_date,
+        location || oldGallery.location,
+        branch_id || oldGallery.branch_id,
+        imagePath,
+        id,
+      ]
+    );
+
+    res.status(200).json({ message: "Gallery updated successfully" });
+  } catch (error) {
+    if (images && images.length > 0) {
+      for (const i of images) {
+        removeImg(i.path);
+      }
+    }
+    next(error);
+  }
+};
+
+// Get all gallery entries (for authenticated users)
 export const getGallery = async (req, res, next) => {
   try {
     const { role, email } = req.user;
@@ -77,7 +214,7 @@ export const getGallery = async (req, res, next) => {
         "SELECT * FROM gallery WHERE branch_id=? ORDER BY created_at DESC",
         [userBranch_id]
       );
-      res.status(200).json({
+      return res.status(200).json({
         message: "Gallery fetched successfully",
         photots: galleries,
       });
@@ -90,7 +227,7 @@ export const getGallery = async (req, res, next) => {
       if (galleries.length === 0)
         return res.status(404).json({ message: "No gallery entries found" });
 
-      res.status(200).json({
+      return res.status(200).json({
         message: "Gallery fetched successfully",
         photots: galleries,
       });

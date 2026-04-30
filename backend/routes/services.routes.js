@@ -3,6 +3,7 @@ import express from "express";
 import {
   addServices,
   deleteService,
+  getServiceById,
   getServices,
   getServicesByBranch,
   publicGetServices,
@@ -20,26 +21,30 @@ serviceRouter.post(
   authorizeRoles("admin", "manager"),
   uploadService.single("image"),
 
-  addServices
+  addServices,
 );
+
+serviceRouter.get("/get-service/:id", getServiceById);
+
 serviceRouter.get(
   "/get-services",
   isLogin,
   authorizeRoles("admin", "manager"),
-  getServices
+  getServices,
 );
 serviceRouter.delete(
   "/delete-services/:id",
   isLogin,
   authorizeRoles("admin", "manager"),
 
-  deleteService
+  deleteService,
 );
 serviceRouter.patch(
-  "/update-services/:id",
+  "/update-services/:service_id",
   isLogin,
   authorizeRoles("admin", "manager"),
-  updateService
+  uploadService.single("image"),
+  updateService,
 );
 serviceRouter.get("/get-services/:branchId", getServicesByBranch);
 serviceRouter.get("/getAll-services", publicGetServices);

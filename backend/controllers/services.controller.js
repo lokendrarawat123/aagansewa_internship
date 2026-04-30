@@ -65,7 +65,7 @@ export const addServices = async (req, res, next) => {
     next(error);
   }
 };
-//get services api
+//get all services api
 export const getServices = async (req, res, next) => {
   try {
     const { branch_id } = req.user;
@@ -97,6 +97,37 @@ export const getServices = async (req, res, next) => {
     next(error);
   }
 };
+//get service by id api
+export const getServiceById = async (req, res, next) => {
+  try {
+    // first get the id from req.params which service will delete
+    const { id } = req.params;
+
+    // check the service id provide or not
+    if (!id) {
+      return res.status(400).json({
+        message: "please provide id of the service  ",
+      });
+    }
+    // check provided service id is exist or not
+    const [result] = await db.execute(
+      "select service_id, service_name , branch_id from services where service_id = ? ",
+      [id],
+    );
+    if (result.length === 0) {
+      return res.status(404).json({
+        message: `service is not exist in this ${id} id`,
+      });
+    }
+    res.status(200).json({
+      message: `successfully`,
+      data: result[0],
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 //delete service api
 export const deleteService = async (req, res, next) => {
   try {
@@ -141,7 +172,7 @@ export const updateService = async (req, res, next) => {
     //get update service id from req.params
     const { service_id } = req.params;
     //get service image from the req.file
-    const service_image = req.files;
+    const service_image = req.file;
     // get update form data from the req.body
     const { service_name, description } = req.body;
     const [result] = await db.execute(
