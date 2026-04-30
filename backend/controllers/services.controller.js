@@ -3,7 +3,68 @@ import { removeImg } from "../utils/removeImg.js";
 import { compressImg } from "../utils/sharphandler.js";
 
 //add service api
+export const addServices = async (req, res, next) => {
+  try {
+    //for getting img we use req.file
+    const { service_name, description, branch_id } = req.body;
 
+    const image = req.file;
+
+    if (!image || !service_name || !branch_id) {
+      if (req.file) {
+        removeImg(req.file.path);
+      }
+      return res.status(400).json({
+        message: "please provide all input ",
+      });
+    }
+    const [result] = await db.execute(
+      "select service_name from services where service_name = ? ",
+      [service_name],
+    );
+    if (result.length > 0) {
+      if (req.file) {
+        removeImg(req.file.path);
+      }
+      return res.status(409).json({
+        message: `${service_name} service already exists.`,
+      });
+    }
+    const [existBranch] = await db.execute(
+      "select branch_id ,branch_name from branch where branch_id = ?",
+      [branch_id],
+    );
+    if (existBranch.length === 0) {
+      if (req.file) {
+        removeImg(req.file.path);
+      }
+
+      return res.status(404).json({
+        message: `Invalid branch ID: ${branch_id}. Branch does not exist.`,
+      });
+    }
+    let imagePath = "";
+    if (req.file) {
+      const outputPath = `uploads/services/school-${req.file.filename}`;
+      await compressImg(req.file.path, outputPath);
+      imagePath = outputPath;
+    }
+
+    await db.execute(
+      "insert into services (service_name,service_image,branch_id,description) values (?,?,?,?)",
+      [service_name, imagePath, branch_id, description || null],
+    );
+    res.status(201).json({
+      message: `${service_name} service has been successfully added to the ${existBranch[0].branch_name} branch.`,
+    });
+  } catch (error) {
+    if (req.file) {
+      removeImg(req.file.path);
+    }
+
+    next(error);
+  }
+};
 //get services api
 export const getServices = async (req, res, next) => {
   try {
