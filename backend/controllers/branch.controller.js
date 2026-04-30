@@ -225,8 +225,35 @@ export const addDistrict = async (req, res, next) => {
     next(error);
   }
 };
-//get district api
-export const getDistrict = async (req, res, next) => {
+//get district by id api
+export const getDistrictById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return res.status(404).json({
+        message: "please provide id of district",
+      });
+    }
+    const [result] = await db.execute(
+      "select * from district where district_id=?",
+      [id],
+    );
+    if (result.length === 0) {
+      return res.status(404).json({
+        message: "district not found",
+      });
+    }
+    res.status(200).json({
+      message: "successfully displayed",
+      data: result[0],
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+//get all  district with branch and province group concat
+export const getAllDistrictWithBranch = async (req, res, next) => {
   try {
     const [allDistrict] = await db.execute(`
      SELECT 
@@ -255,6 +282,7 @@ GROUP BY
     next(error);
   }
 };
+//get all district
 export const getAllDistrict = async (req, res, next) => {
   try {
     const [allDistrict] = await db.execute(`
@@ -264,6 +292,41 @@ export const getAllDistrict = async (req, res, next) => {
     res.status(200).json({
       message: "success",
       data: allDistrict,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+//get district with province id
+export const getDistrictByProvinceID = async (req, res, next) => {
+  try {
+    const { iprovince_idd } = req.params;
+    if (!province_id) {
+      return res.status(404).json({
+        message: "please provide id of province",
+      });
+    }
+    const [exsitprovince] = await db.execute(
+      "select * from province where province_id=?",
+      [province_id],
+    );
+    if (exsitprovince.length === 0) {
+      return res.status(404).json({
+        message: "the province does not exist",
+      });
+    }
+    const [result] = await db.execute(
+      "select * from district where province_id=?",
+      [province_id],
+    );
+    if (result.length === 0) {
+      return res.status(404).json({
+        message: "district not found",
+      });
+    }
+    res.status(200).json({
+      message: "successfully displayed",
+      data: result[0],
     });
   } catch (error) {
     next(error);
@@ -353,28 +416,59 @@ export const deleteBranch = async (req, res, next) => {
       "select branch_id,branch_name from branch where branch_id = ? ",
       [id],
     );
-    const exist_district = existing[0];
+    const exist_branch = existing[0];
     if (existing.length === 0) {
       return res.status(404).json({
-        message: `branch not found by ${id}th id`,
+        message: `branch not found `,
       });
     }
     await db.execute("delete from branch where branch_id = ?", [id]);
     res.status(200).json({
-      message: `${exist_district.branch_name} branch delete successfully`,
+      message: `${exist_branch.branch_name} branch delete successfully`,
     });
   } catch (error) {
     next(error);
   }
 };
+
+//get branch by branch id
+export const getBranchById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    // console.log(id);
+    if (!id) {
+      return res.status(409).json({
+        message: "provide  Id ",
+      });
+    }
+    const [existing] = await db.execute(
+      "select branch_id,branch_name from branch where branch_id = ? ",
+      [id],
+    );
+    const exist_district = existing[0];
+    if (existing.length === 0) {
+      return res.status(404).json({
+        message: `branch not found `,
+      });
+    }
+
+    res.status(200).json({
+      message: "successfully displayed",
+      data: exist_district,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 //get branch api
-export const getBranch = async (req, res, next) => {
+export const getAllBranch = async (req, res, next) => {
   try {
     const [all_branch] = await db.execute(`select * from branch 
      `);
     res.status(200).json({
       message: "successfully displayed",
-      branch: all_branch,
+      data: all_branch,
     });
   } catch (error) {
     next(error);
