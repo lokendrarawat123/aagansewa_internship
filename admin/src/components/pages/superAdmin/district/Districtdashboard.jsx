@@ -7,7 +7,7 @@ import {
   useGetProvinceQuery,
 } from "../../../../redux/features/provinceSlilce";
 import Input from "../../../shared/Input";
-import DetailsModal from "../../../shared/modal";
+import DetailsModal from "../../../shared/Modal";
 import { Loading } from "../../../shared/IsLoading";
 import { Error } from "../../../shared/Error";
 

@@ -7,7 +7,7 @@ import {
 } from "../../../../redux/features/provinceSlilce.js";
 import Input from "../../../shared/Input.jsx";
 
-import DetailsModal from "../../../shared/modal.jsx";
+import DetailsModal from "../../../shared/Modal.jsx";
 import { Loading } from "../../../shared/IsLoading.jsx";
 import { Error } from "../../../shared/Error.jsx";
 import Select from "../../../shared/Select.jsx";
