@@ -5,12 +5,12 @@ import {
   useDeleteProvinceMutation,
   useGetProvinceQuery,
 } from "../../../../redux/features/provinceSlilce";
-import Input from "../../../shared/Input.jsx";
+import Input from "../../../shared/Input";
 
-import DetailsModal from "../../../shared/Modal.jsx";
-import { Loading } from "../../../shared/IsLoading.jsx";
-import { Error } from "../../../shared/Error.jsx";
-import Select from "../../../shared/Select.jsx";
+import DetailsModal from "../../../shared/Modal";
+import { Loading } from "../../../shared/IsLoading";
+import { Error } from "../../../shared/Error";
+import Select from "../../../shared/Select";
 //dasboard
 const actionOptions = [
   { value: "Delete", label: "Delete" },
