@@ -1,11 +1,11 @@
-import Dashboard from "../components/Dashboard";
-import BranchDashboard from "../components/pages/branch/BranchDashboard";
-import Districtdashboard from "../components/pages/district/Districtdashboard";
-import ProvinceDashboard from "../components/pages/province/ProvinceDashboard";
-import ManagerDashboard from "../components/pages/manager/ManagerDashboard";
-import ServiceManager from "../components/pages/service/ServiceManager";
-import InquiryDashboard from "../components/pages/inquiry/InquiryDashboard";
-import StaffDashboard from "../components/pages/staff/StaffDashboard";
+import Dashboard from "../components/ui/Dashboard";
+import BranchDashboard from "../components/pages/superAdmin/district/branch/BranchDashboard";
+import Districtdashboard from "../components/pages/superAdmin/district/Districtdashboard";
+import ProvinceDashboard from "../components/pages/superAdmin/province/ProvinceDashboard";
+import ManagerDashboard from "../components/pages/superAdmin/district/branchmanager/BranchManager";
+import ServiceManager from "../components/pages/superAdmin/service/ServiceManager";
+import InquiryDashboard from "../components/pages/superAdmin/inquiry/InquiryDashboard";
+import StaffDashboard from "../components/pages/superAdmin/staff/StaffDashboard";
 
 export const adminRoutes = [
   {

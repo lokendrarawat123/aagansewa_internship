@@ -4,7 +4,7 @@ import {
   useAddProvinceMutation,
   useDeleteProvinceMutation,
   useGetProvinceQuery,
-} from "../../../../redux/features/provinceSlilce.js";
+} from "../../../../redux/features/provinceSlilce";
 import Input from "../../../shared/Input.jsx";
 
 import DetailsModal from "../../../shared/Modal.jsx";
