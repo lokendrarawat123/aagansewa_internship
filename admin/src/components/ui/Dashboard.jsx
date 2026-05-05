@@ -12,8 +12,10 @@ import {
   useGetDistrictQuery,
   useGetBranchQuery,
   useGetManagerQuery,
-  useGetServicesQuery,
 } from "../../redux/features/provinceSlilce";
+import {
+  useGetServicesQuery,
+} from "../../redux/features/serviceSlice";
 import { Loading } from "../shared/IsLoading";
 import { Error } from "../shared/Error";
 import { useEffect } from "react"; // Side effect ko lagi
