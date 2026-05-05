@@ -3,7 +3,7 @@ export const provinceApi = indexSlice.injectEndpoints({
   endpoints: (builder) => ({
     getProvince: builder.query({
       query: () => ({
-        url: "/branch/get-province",
+        url: "/branch/get-allprovince",
         method: "GET",
       }),
       providesTags: ["province"],
@@ -25,7 +25,7 @@ export const provinceApi = indexSlice.injectEndpoints({
     }),
     getDistrict: builder.query({
       query: () => ({
-        url: "/branch/get-district",
+        url: "/branch/get-districtwitbranch",
         method: "GET",
       }),
       providesTags: ["district"],
@@ -67,7 +67,7 @@ export const provinceApi = indexSlice.injectEndpoints({
       }),
       invalidatesTags: ["branch"],
     }),
-    // ADDED: Manager APIs
+    // Manager APIs
     getManager: builder.query({
       query: () => ({
         url: "/auth/get-manager",
@@ -86,7 +86,7 @@ export const provinceApi = indexSlice.injectEndpoints({
     updateManager: builder.mutation({
       query: ({ id, ...data }) => ({
         url: `/auth/update-manager/${id}`,
-        method: "PUT",
+        method: "PATCH",
         body: data,
       }),
       invalidatesTags: ["manager"],
@@ -98,39 +98,9 @@ export const provinceApi = indexSlice.injectEndpoints({
       }),
       invalidatesTags: ["manager"],
     }),
-    // Service APIs
-    getServices: builder.query({
-      query: () => ({
-        url: "/services/get-services",
-        method: "GET",
-      }),
-      providesTags: ["services"],
-    }),
-    addService: builder.mutation({
-      query: (data) => ({
-        url: "/services/add-services",
-        method: "POST",
-        body: data,
-      }),
-      invalidatesTags: ["services"],
-    }),
-    updateService: builder.mutation({
-      query: ({ id, data }) => ({
-        url: `/services/update-services/${id}`,
-        method: "PUT",
-        body: data,
-      }),
-      invalidatesTags: ["services"],
-    }),
-    deleteService: builder.mutation({
-      query: (id) => ({
-        url: `/services/delete-services/${id}`,
-        method: "DELETE",
-      }),
-      invalidatesTags: ["services"],
-    }),
   }),
 });
+
 export const {
   useGetProvinceQuery,
   useAddProvinceMutation,
@@ -141,14 +111,9 @@ export const {
   useGetBranchQuery,
   useAddBranchMutation,
   useDeleteBranchMutation,
-  // ADDED: Manager hooks
+  // Manager hooks
   useGetManagerQuery,
   useAddManagerMutation,
   useUpdateManagerMutation,
   useDeleteManagerMutation,
-  // Service hooks
-  useGetServicesQuery,
-  useAddServiceMutation,
-  useUpdateServiceMutation,
-  useDeleteServiceMutation,
 } = provinceApi;
