@@ -1,10 +1,10 @@
 import { useState } from "react";
-import Input from "./shared/Input";
+import Input from "../shared/Input";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
-import { useSignInMutation } from "../redux/features/authSlice";
+import { useSignInMutation } from "../../redux/features/authSlice";
 import { useNavigate } from "react-router-dom";
-import { setUser } from "../redux/features/authState";
+import { setUser } from "../../redux/features/authState";
 import { useEffect } from "react";
 
 const Login = () => {

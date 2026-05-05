@@ -35,7 +35,7 @@ export const addService = async (req, res, next) => {
     await compressImg(req.file.path, imagePath);
 
     await db.execute(
-      "INSERT INTO services (service_name, slug, service_image, branch_id, description) VALUES (?,?,?,?,?)",
+      "INSERT INTO services (service_name,slug ,service_image, branch_id, description) VALUES (?,?,?,?,?)",
       [service_name, slug, imagePath, branch_id, description || null],
     );
 
@@ -92,10 +92,9 @@ export const getServicesBySlug = async (req, res, next) => {
   try {
     const { slug } = req.params;
 
-    const [rows] = await db.execute(
-      "SELECT * FROM services WHERE slug = ?",
-      [slug]
-    );
+    const [rows] = await db.execute("SELECT * FROM services WHERE slug = ?", [
+      slug,
+    ]);
 
     // ❗ if not found
     if (rows.length === 0) {

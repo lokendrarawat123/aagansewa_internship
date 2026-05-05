@@ -5,11 +5,11 @@ import {
   useAddDistrictMutation,
   useDeleteDistrictMutation,
   useGetProvinceQuery,
-} from "../../../redux/features/provinceSlilce";
-import Input from "../../shared/Input";
-import DetailsModal from "../../shared/modal";
-import { Loading } from "../../shared/IsLoading";
-import { Error } from "../../shared/Error";
+} from "../../../../redux/features/provinceSlilce";
+import Input from "../../../shared/Input";
+import DetailsModal from "../../../shared/modal";
+import { Loading } from "../../../shared/IsLoading";
+import { Error } from "../../../shared/Error";
 
 const DistrictDashboard = () => {
   // State for managing modal and form

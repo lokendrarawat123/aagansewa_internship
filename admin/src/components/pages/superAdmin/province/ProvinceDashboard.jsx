@@ -4,13 +4,13 @@ import {
   useAddProvinceMutation,
   useDeleteProvinceMutation,
   useGetProvinceQuery,
-} from "../../../redux/features/branchSlice.js";
-import Input from "../../shared/Input";
+} from "../../../../redux/features/branchSlice.js";
+import Input from "../../../shared/Input.jsx";
 
-import DetailsModal from "../../shared/modal";
-import { Loading } from "../../shared/IsLoading";
-import { Error } from "../../shared/Error";
-import Select from "../../shared/Select";
+import DetailsModal from "../../../shared/modal.jsx";
+import { Loading } from "../../../shared/IsLoading.jsx";
+import { Error } from "../../../shared/Error.jsx";
+import Select from "../../../shared/Select.jsx";
 //dasboard
 const actionOptions = [
   { value: "Delete", label: "Delete" },

@@ -6,11 +6,11 @@ import {
   useUpdateServiceMutation,
   useDeleteServiceMutation,
   useGetBranchQuery,
-} from "../../../redux/features/provinceSlilce";
-import Input from "../../shared/Input";
-import DetailsModal from "../../shared/modal";
-import { Loading } from "../../shared/IsLoading";
-import { Error } from "../../shared/Error";
+} from "../../../../redux/features/provinceSlilce";
+import Input from "../../../shared/Input";
+import DetailsModal from "../../../shared/modal";
+import { Loading } from "../../../shared/IsLoading";
+import { Error } from "../../../shared/Error";
 
 const ServiceManager = () => {
   // State for managing modals and forms

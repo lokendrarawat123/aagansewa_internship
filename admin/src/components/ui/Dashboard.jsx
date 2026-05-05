@@ -13,9 +13,9 @@ import {
   useGetBranchQuery,
   useGetManagerQuery,
   useGetServicesQuery,
-} from "../redux/features/provinceSlilce";
-import { Loading } from "./shared/IsLoading";
-import { Error } from "./shared/Error";
+} from "../../redux/features/provinceSlilce";
+import { Loading } from "../shared/IsLoading";
+import { Error } from "../shared/Error";
 import { useEffect } from "react"; // Side effect ko lagi
 import { useNavigate } from "react-router-dom"; // Navigate garna
 import { useSelector } from "react-redux"; // Redux state check garna

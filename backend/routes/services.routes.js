@@ -37,14 +37,14 @@ serviceRouter.get(
   getServices,
 );
 serviceRouter.patch(
-  "/update/:id",
+  "/update-service/:id",
   isLogin,
   authorizeRoles("admin", "manager"),
   uploadService.single("image"),
   updateService,
 );
 serviceRouter.delete(
-  "/delete/:id",
+  "/delete-service/:id",
   isLogin,
   authorizeRoles("admin", "manager"),
   deleteService,
