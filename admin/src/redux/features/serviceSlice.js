@@ -30,7 +30,7 @@ export const serviceApi = indexSlice.injectEndpoints({
       query: (params = {}) => {
         const queryParams = new URLSearchParams(params).toString();
         return {
-          url: `/services/getAll-services${queryParams ? `?${queryParams}` : ''}`,
+          url: `/services/getAll-services${queryParams ? `?${queryParams}` : ""}`,
           method: "GET",
         };
       },

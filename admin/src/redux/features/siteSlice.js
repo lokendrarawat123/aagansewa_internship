@@ -24,7 +24,7 @@ export const siteApi = indexSlice.injectEndpoints({
       }),
       invalidatesTags: ["partner"],
     }),
-    
+
     // Partner APIs
     getPartnerById: builder.query({
       query: (id) => ({
@@ -70,7 +70,7 @@ export const siteApi = indexSlice.injectEndpoints({
       }),
       invalidatesTags: ["partner"],
     }),
-    
+
     // Review APIs
     getReviews: builder.query({
       query: () => ({
@@ -123,7 +123,7 @@ export const siteApi = indexSlice.injectEndpoints({
       }),
       invalidatesTags: ["review"],
     }),
-    
+
     // Inquiry APIs
     getInquiries: builder.query({
       query: () => ({
@@ -184,7 +184,7 @@ export const {
   useGetTrustedCustomersQuery,
   useAddTrustedCustomerMutation,
   useDeleteTrustedCustomerMutation,
-  
+
   // Partner hooks
   useGetPartnerByIdQuery,
   useGetAllPartnersQuery,
@@ -192,7 +192,7 @@ export const {
   useAddPartnerMutation,
   useUpdatePartnerMutation,
   useDeletePartnerMutation,
-  
+
   // Review hooks
   useGetReviewsQuery,
   useGetReviewByIdQuery,
@@ -201,7 +201,7 @@ export const {
   useAddReviewMutation,
   useUpdateReviewMutation,
   useDeleteReviewMutation,
-  
+
   // Inquiry hooks
   useGetInquiriesQuery,
   useGetInquiryByIdQuery,

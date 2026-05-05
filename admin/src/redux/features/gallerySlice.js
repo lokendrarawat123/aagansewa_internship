@@ -1,14 +1,6 @@
 import { indexSlice } from "./indexSlice";
 export const galleryApi = indexSlice.injectEndpoints({
   endpoints: (builder) => ({
-    // Get Galleries (authenticated)
-    getGalleries: builder.query({
-      query: () => ({
-        url: "/gallery/get-gallery",
-        method: "GET",
-      }),
-      providesTags: ["gallery"],
-    }),
     // Get Gallery by ID
     getGalleryById: builder.query({
       query: (id) => ({
@@ -63,7 +55,6 @@ export const galleryApi = indexSlice.injectEndpoints({
 });
 
 export const {
-  useGetGalleriesQuery,
   useGetGalleryByIdQuery,
   useGetAllGalleriesQuery,
   useGetGalleriesByBranchQuery,

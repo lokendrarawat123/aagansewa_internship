@@ -42,7 +42,7 @@ branchRouter.delete(
 branchRouter.get("/get-district/:id", getDistrictById);
 branchRouter.get("/get-districtwitbranch", getAllDistrictWithBranch);
 branchRouter.get("/get-all-district", getAllDistrict);
-branchRouter.get("/get-district/:province_id", getDistrictByProvinceID);
+branchRouter.get("/get-districts/:province_id", getDistrictByProvinceID);
 branchRouter.post(
   "/add-district",
   isLogin,

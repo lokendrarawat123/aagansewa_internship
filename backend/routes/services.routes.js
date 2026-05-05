@@ -1,11 +1,11 @@
 import express from "express";
-
 import {
-  addServices,
+  addService,
   deleteService,
   getServiceById,
   getServices,
-  getServicesByBranch,
+  getServicesByBranchId,
+  getServicesBySlug,
   publicGetServices,
   updateService,
 } from "../controllers/services.controller.js";
@@ -15,38 +15,39 @@ import { authorizeRoles } from "../middlewares/isAuthorizedRoles.js";
 
 const serviceRouter = express.Router();
 
+// Public Routes
+serviceRouter.get("/get-all-service", publicGetServices);
+serviceRouter.get("/get-service", publicGetServices);
+serviceRouter.get("/get-service/:id", getServiceById);
+serviceRouter.get("/get-services/:branchId", getServicesByBranchId);
+serviceRouter.get("/get/:slug", getServicesBySlug);
+
+// Protected Routes (Admin/Manager)
 serviceRouter.post(
-  "/add-services",
+  "/add-service",
   isLogin,
   authorizeRoles("admin", "manager"),
   uploadService.single("image"),
-
-  addServices,
+  addService,
 );
-
-serviceRouter.get("/get-service/:id", getServiceById);
-
 serviceRouter.get(
-  "/get-services",
+  "/admin/get-list",
   isLogin,
   authorizeRoles("admin", "manager"),
   getServices,
 );
-serviceRouter.delete(
-  "/delete-services/:id",
-  isLogin,
-  authorizeRoles("admin", "manager"),
-
-  deleteService,
-);
 serviceRouter.patch(
-  "/update-services/:service_id",
+  "/update/:id",
   isLogin,
   authorizeRoles("admin", "manager"),
   uploadService.single("image"),
   updateService,
 );
-serviceRouter.get("/get-services/:branchId", getServicesByBranch);
-serviceRouter.get("/getAll-services", publicGetServices);
+serviceRouter.delete(
+  "/delete/:id",
+  isLogin,
+  authorizeRoles("admin", "manager"),
+  deleteService,
+);
 
 export default serviceRouter;
