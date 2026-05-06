@@ -6,11 +6,11 @@ import {
   useUpdateServiceMutation,
   useDeleteServiceMutation,
 } from "../../../../redux/features/serviceSlice.js";
-import { useGetBranchQuery } from "../../../../redux/features/provinceSlilce";
-import Input from "../../../shared/Input";
-import DetailsModal from "../../../shared/Modal";
-import { Loading } from "../../../shared/IsLoading";
-import { Error } from "../../../shared/Error";
+import { useGetBranchQuery } from "../../../../redux/features/provinceSlilce.js";
+import Input from "../../../shared/Input.jsx";
+import DetailsModal from "../../../shared/Modal.jsx";
+import { Loading } from "../../../shared/IsLoading.jsx";
+import { Error } from "../../../shared/Error.jsx";
 
 const ServiceManager = () => {
   // State for managing modals and forms

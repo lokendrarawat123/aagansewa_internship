@@ -6,9 +6,7 @@ import {
   useUpdateInquiryMutation,
   useDeleteInquiryMutation,
 } from "../../../../redux/features/siteSlice";
-import {
-  useGetBranchQuery,
-} from "../../../../redux/features/provinceSlilce";
+import { useGetBranchQuery } from "../../../../redux/features/branchSlice.js";
 import Input from "../../../shared/Input";
 import DetailsModal from "../../../shared/Modal";
 import { Loading } from "../../../shared/IsLoading";
@@ -31,7 +29,8 @@ const InquiryDashboard = () => {
   const [updateInquiry] = useUpdateInquiryMutation();
   const [deleteInquiry] = useDeleteInquiryMutation();
 
-  const inquiries = inquiriesData?.inquiries || inquiriesData?.allInquiries || [];
+  const inquiries =
+    inquiriesData?.inquiries || inquiriesData?.allInquiries || [];
   const branches = branchData?.branch || [];
 
   // Handle form input changes
@@ -125,7 +124,7 @@ const InquiryDashboard = () => {
 
   // Get branch name by ID
   const getBranchName = (branchId) => {
-    const branch = branches.find(b => b.branch_id == branchId);
+    const branch = branches.find((b) => b.branch_id == branchId);
     return branch ? branch.branch_name : `Branch ${branchId}`;
   };
 
@@ -144,13 +143,14 @@ const InquiryDashboard = () => {
         <h1 className="text-2xl font-bold mb-4">Inquiry Management</h1>
         <div className="flex gap-2">
           <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">
-            {inquiries.filter(i => i.status === 'pending').length} Pending
+            {inquiries.filter((i) => i.status === "pending").length} Pending
           </span>
           <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
-            {inquiries.filter(i => i.status === 'in_progress').length} In Progress
+            {inquiries.filter((i) => i.status === "in_progress").length} In
+            Progress
           </span>
           <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
-            {inquiries.filter(i => i.status === 'resolved').length} Resolved
+            {inquiries.filter((i) => i.status === "resolved").length} Resolved
           </span>
         </div>
       </div>
@@ -198,26 +198,26 @@ const InquiryDashboard = () => {
                   <td className="px-4 py-3 text-sm">{inquiry.name}</td>
                   <td className="px-4 py-3 text-sm">{inquiry.email}</td>
                   <td className="px-4 py-3 text-sm">
-                    {inquiry.subject ? 
-                      (inquiry.subject.length > 30 ? 
-                        inquiry.subject.substring(0, 30) + "..." : 
-                        inquiry.subject
-                      ) : "No subject"
-                    }
+                    {inquiry.subject
+                      ? inquiry.subject.length > 30
+                        ? inquiry.subject.substring(0, 30) + "..."
+                        : inquiry.subject
+                      : "No subject"}
                   </td>
                   <td className="px-4 py-3 text-sm">
                     {getBranchName(inquiry.branch_id)}
                   </td>
                   <td className="px-4 py-3 text-sm">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusBadge(inquiry.status)}`}>
-                      {inquiry.status || 'pending'}
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusBadge(inquiry.status)}`}
+                    >
+                      {inquiry.status || "pending"}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-sm">
-                    {inquiry.created_at ? 
-                      new Date(inquiry.created_at).toLocaleDateString() : 
-                      "N/A"
-                    }
+                    {inquiry.created_at
+                      ? new Date(inquiry.created_at).toLocaleDateString()
+                      : "N/A"}
                   </td>
                   <td className="px-4 py-3 text-sm">
                     <div className="flex gap-2">
@@ -248,8 +248,12 @@ const InquiryDashboard = () => {
                 <td colSpan="8" className="px-4 py-12 text-center">
                   <div className="flex flex-col items-center space-y-3">
                     <div className="text-gray-400 text-4xl">📧</div>
-                    <p className="text-gray-500 font-medium">No inquiries found</p>
-                    <p className="text-gray-400 text-sm">Inquiries will appear here when customers submit them</p>
+                    <p className="text-gray-500 font-medium">
+                      No inquiries found
+                    </p>
+                    <p className="text-gray-400 text-sm">
+                      Inquiries will appear here when customers submit them
+                    </p>
                   </div>
                 </td>
               </tr>
@@ -330,19 +334,23 @@ const InquiryDashboard = () => {
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="p-4 bg-gray-50 rounded-lg">
-              <h3 className="text-sm font-medium text-gray-600 mb-1">Inquiry ID</h3>
+              <h3 className="text-sm font-medium text-gray-600 mb-1">
+                Inquiry ID
+              </h3>
               <p className="text-lg font-semibold text-gray-900">
                 {selectedInquiry?.inquiry_id}
               </p>
             </div>
             <div className="p-4 bg-gray-50 rounded-lg">
               <h3 className="text-sm font-medium text-gray-600 mb-1">Status</h3>
-              <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusBadge(selectedInquiry?.status)}`}>
-                {selectedInquiry?.status || 'pending'}
+              <span
+                className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusBadge(selectedInquiry?.status)}`}
+              >
+                {selectedInquiry?.status || "pending"}
               </span>
             </div>
           </div>
-          
+
           <div className="grid grid-cols-2 gap-4">
             <div className="p-4 bg-gray-50 rounded-lg">
               <h3 className="text-sm font-medium text-gray-600 mb-1">Name</h3>
@@ -389,28 +397,34 @@ const InquiryDashboard = () => {
 
           {selectedInquiry?.response && (
             <div className="p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500">
-              <h3 className="text-sm font-medium text-blue-600 mb-1">Response/Notes</h3>
-              <p className="text-gray-800 whitespace-pre-wrap">{selectedInquiry.response}</p>
+              <h3 className="text-sm font-medium text-blue-600 mb-1">
+                Response/Notes
+              </h3>
+              <p className="text-gray-800 whitespace-pre-wrap">
+                {selectedInquiry.response}
+              </p>
             </div>
           )}
 
           <div className="grid grid-cols-2 gap-4">
             <div className="p-4 bg-gray-50 rounded-lg">
-              <h3 className="text-sm font-medium text-gray-600 mb-1">Created At</h3>
+              <h3 className="text-sm font-medium text-gray-600 mb-1">
+                Created At
+              </h3>
               <p className="text-lg font-semibold text-gray-900">
-                {selectedInquiry?.created_at ? 
-                  new Date(selectedInquiry.created_at).toLocaleString() : 
-                  "N/A"
-                }
+                {selectedInquiry?.created_at
+                  ? new Date(selectedInquiry.created_at).toLocaleString()
+                  : "N/A"}
               </p>
             </div>
             <div className="p-4 bg-gray-50 rounded-lg">
-              <h3 className="text-sm font-medium text-gray-600 mb-1">Updated At</h3>
+              <h3 className="text-sm font-medium text-gray-600 mb-1">
+                Updated At
+              </h3>
               <p className="text-lg font-semibold text-gray-900">
-                {selectedInquiry?.updated_at ? 
-                  new Date(selectedInquiry.updated_at).toLocaleString() : 
-                  "N/A"
-                }
+                {selectedInquiry?.updated_at
+                  ? new Date(selectedInquiry.updated_at).toLocaleString()
+                  : "N/A"}
               </p>
             </div>
           </div>
@@ -431,11 +445,11 @@ const InquiryDashboard = () => {
               Delete Inquiry
             </h3>
             <p className="text-gray-600">
-              Are you sure you want to delete this inquiry from "{selectedInquiry?.name}"? 
-              This action cannot be undone.
+              Are you sure you want to delete this inquiry from "
+              {selectedInquiry?.name}"? This action cannot be undone.
             </p>
           </div>
-          
+
           <div className="flex justify-center gap-3 pt-4">
             <button
               onClick={closeDeleteModal}
