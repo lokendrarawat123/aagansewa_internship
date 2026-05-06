@@ -6,7 +6,7 @@ import {
   useUpdateInquiryMutation,
   useDeleteInquiryMutation,
 } from "../../../../redux/features/siteSlice";
-import { useGetBranchQuery } from "../../../../redux/features/branchSlice.js";
+import { useGetBranchQuery } from "../../../../redux/features/branchSlice";
 import Input from "../../../shared/Input";
 import DetailsModal from "../../../shared/Modal";
 import { Loading } from "../../../shared/IsLoading";
