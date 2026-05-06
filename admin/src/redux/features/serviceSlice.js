@@ -4,7 +4,7 @@ export const serviceApi = indexSlice.injectEndpoints({
     // Get Services (authenticated)
     getServices: builder.query({
       query: () => ({
-        url: "/services/get-services",
+        url: "/services/get-service",
         method: "GET",
       }),
       providesTags: ["services"],

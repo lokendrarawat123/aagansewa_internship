@@ -5,10 +5,8 @@ import {
   useAddServiceMutation,
   useUpdateServiceMutation,
   useDeleteServiceMutation,
-} from "../../../../redux/features/serviceSlice";
-import {
-  useGetBranchQuery,
-} from "../../../../redux/features/provinceSlilce";
+} from "../../../../redux/features/serviceSlice.js";
+import { useGetBranchQuery } from "../../../../redux/features/branchSlice.js";
 import Input from "../../../shared/Input";
 import DetailsModal from "../../../shared/Modal";
 import { Loading } from "../../../shared/IsLoading";
@@ -67,7 +65,12 @@ const ServiceManager = () => {
       }
 
       const res = await addService(submitData).unwrap();
-      setFormData({ service_name: "", description: "", branch_id: "", service_image: null });
+      setFormData({
+        service_name: "",
+        description: "",
+        branch_id: "",
+        service_image: null,
+      });
       setShowAddModal(false);
       toast.success(res.message || "Service added successfully");
     } catch (error) {
@@ -90,7 +93,12 @@ const ServiceManager = () => {
         id: selectedService.service_id,
         data: updateData,
       }).unwrap();
-      setFormData({ service_name: "", description: "", branch_id: "", service_image: null });
+      setFormData({
+        service_name: "",
+        description: "",
+        branch_id: "",
+        service_image: null,
+      });
       setShowEditModal(false);
       setSelectedService(null);
       toast.success(res.message || "Service updated successfully");
@@ -139,13 +147,23 @@ const ServiceManager = () => {
   // Close modals
   const closeAddModal = () => {
     setShowAddModal(false);
-    setFormData({ service_name: "", description: "", branch_id: "", service_image: null });
+    setFormData({
+      service_name: "",
+      description: "",
+      branch_id: "",
+      service_image: null,
+    });
   };
 
   const closeEditModal = () => {
     setShowEditModal(false);
     setSelectedService(null);
-    setFormData({ service_name: "", description: "", branch_id: "", service_image: null });
+    setFormData({
+      service_name: "",
+      description: "",
+      branch_id: "",
+      service_image: null,
+    });
   };
 
   const closeDeleteModal = () => {
@@ -210,18 +228,17 @@ const ServiceManager = () => {
                   <td className="px-4 py-3 text-sm">{service.service_id}</td>
                   <td className="px-4 py-3 text-sm">{service.service_name}</td>
                   <td className="px-4 py-3 text-sm">
-                    {service.description ? 
-                      (service.description.length > 50 ? 
-                        service.description.substring(0, 50) + "..." : 
-                        service.description
-                      ) : "No description"
-                    }
+                    {service.description
+                      ? service.description.length > 50
+                        ? service.description.substring(0, 50) + "..."
+                        : service.description
+                      : "No description"}
                   </td>
                   <td className="px-4 py-3 text-sm">{service.branch_id}</td>
                   <td className="px-4 py-3 text-sm">
                     {service.service_image ? (
-                      <img 
-                        src={`http://localhost:3000/${service.service_image}`} 
+                      <img
+                        src={`http://localhost:3000/${service.service_image}`}
                         alt={service.service_name}
                         className="w-12 h-12 object-cover rounded"
                       />
@@ -258,8 +275,12 @@ const ServiceManager = () => {
                 <td colSpan="6" className="px-4 py-12 text-center">
                   <div className="flex flex-col items-center space-y-3">
                     <div className="text-gray-400 text-4xl">🛠️</div>
-                    <p className="text-gray-500 font-medium">No services found</p>
-                    <p className="text-gray-400 text-sm">Add your first service to get started</p>
+                    <p className="text-gray-500 font-medium">
+                      No services found
+                    </p>
+                    <p className="text-gray-400 text-sm">
+                      Add your first service to get started
+                    </p>
                   </div>
                 </td>
               </tr>
@@ -405,8 +426,8 @@ const ServiceManager = () => {
             {selectedService?.service_image && (
               <div className="mt-2">
                 <p className="text-sm text-gray-600">Current image:</p>
-                <img 
-                  src={`http://localhost:3000/${selectedService.service_image}`} 
+                <img
+                  src={`http://localhost:3000/${selectedService.service_image}`}
                   alt={selectedService.service_name}
                   className="w-20 h-20 object-cover rounded mt-1"
                 />
@@ -445,21 +466,27 @@ const ServiceManager = () => {
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="p-4 bg-gray-50 rounded-lg">
-              <h3 className="text-sm font-medium text-gray-600 mb-1">Service ID</h3>
+              <h3 className="text-sm font-medium text-gray-600 mb-1">
+                Service ID
+              </h3>
               <p className="text-lg font-semibold text-gray-900">
                 {selectedService?.service_id}
               </p>
             </div>
             <div className="p-4 bg-gray-50 rounded-lg">
-              <h3 className="text-sm font-medium text-gray-600 mb-1">Service Name</h3>
+              <h3 className="text-sm font-medium text-gray-600 mb-1">
+                Service Name
+              </h3>
               <p className="text-lg font-semibold text-gray-900">
                 {selectedService?.service_name}
               </p>
             </div>
           </div>
-          
+
           <div className="p-4 bg-gray-50 rounded-lg">
-            <h3 className="text-sm font-medium text-gray-600 mb-1">Description</h3>
+            <h3 className="text-sm font-medium text-gray-600 mb-1">
+              Description
+            </h3>
             <p className="text-lg font-semibold text-gray-900">
               {selectedService?.description || "No description provided"}
             </p>
@@ -467,27 +494,32 @@ const ServiceManager = () => {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="p-4 bg-gray-50 rounded-lg">
-              <h3 className="text-sm font-medium text-gray-600 mb-1">Branch ID</h3>
+              <h3 className="text-sm font-medium text-gray-600 mb-1">
+                Branch ID
+              </h3>
               <p className="text-lg font-semibold text-gray-900">
                 {selectedService?.branch_id}
               </p>
             </div>
             <div className="p-4 bg-gray-50 rounded-lg">
-              <h3 className="text-sm font-medium text-gray-600 mb-1">Created At</h3>
+              <h3 className="text-sm font-medium text-gray-600 mb-1">
+                Created At
+              </h3>
               <p className="text-lg font-semibold text-gray-900">
-                {selectedService?.created_at ? 
-                  new Date(selectedService.created_at).toLocaleDateString() : 
-                  "N/A"
-                }
+                {selectedService?.created_at
+                  ? new Date(selectedService.created_at).toLocaleDateString()
+                  : "N/A"}
               </p>
             </div>
           </div>
 
           {selectedService?.service_image && (
             <div className="p-4 bg-gray-50 rounded-lg">
-              <h3 className="text-sm font-medium text-gray-600 mb-2">Service Image</h3>
-              <img 
-                src={`http://localhost:3000/${selectedService.service_image}`} 
+              <h3 className="text-sm font-medium text-gray-600 mb-2">
+                Service Image
+              </h3>
+              <img
+                src={`http://localhost:3000/${selectedService.service_image}`}
                 alt={selectedService.service_name}
                 className="w-full max-w-xs h-48 object-cover rounded"
               />
@@ -510,11 +542,11 @@ const ServiceManager = () => {
               Delete Service
             </h3>
             <p className="text-gray-600">
-              Are you sure you want to delete "{selectedService?.service_name}"? 
+              Are you sure you want to delete "{selectedService?.service_name}"?
               This action cannot be undone.
             </p>
           </div>
-          
+
           <div className="flex justify-center gap-3 pt-4">
             <button
               onClick={closeDeleteModal}

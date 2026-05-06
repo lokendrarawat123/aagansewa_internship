@@ -11,13 +11,10 @@ import {
   useGetProvinceQuery,
   useGetDistrictQuery,
   useGetBranchQuery,
-  useGetManagerQuery,
-} from "../../redux/features/provinceSlilce";
-import {
-  useGetServicesQuery,
-} from "../../redux/features/serviceSlice";
-import { Loading } from "../shared/IsLoading";
-import { Error } from "../shared/Error";
+} from "../../../redux/features/branchSlice.js";
+import { useGetServicesQuery } from "../../../redux/features/serviceSlice.js";
+import { Loading } from "../../shared/IsLoading.jsx";
+import { Error } from "../../shared/Error.jsx";
 import { useEffect } from "react"; // Side effect ko lagi
 import { useNavigate } from "react-router-dom"; // Navigate garna
 import { useSelector } from "react-redux"; // Redux state check garna
@@ -31,14 +28,14 @@ const Dashboard = () => {
   const { data: districtData, isLoading: districtLoading } =
     useGetDistrictQuery();
   const { data: branchData, isLoading: branchLoading } = useGetBranchQuery();
-  const { data: managerData, isLoading: managerLoading } = useGetManagerQuery();
+  // const { data: managerData, isLoading: managerLoading } = useGetManagerQuery();
   const { data: servicesData, isLoading: servicesLoading } =
     useGetServicesQuery();
 
   const provinces = provinceData?.provinces || [];
   const districts = districtData?.allDistricts || [];
   const branches = branchData?.branch || [];
-  const managers = managerData?.managers || [];
+  // const managers = managerData?.managers || [];
   const services = servicesData?.allServices || servicesData?.services || [];
 
   // Loading state
@@ -46,7 +43,7 @@ const Dashboard = () => {
     provinceLoading ||
     districtLoading ||
     branchLoading ||
-    managerLoading ||
+    // managerLoading ||
     servicesLoading
   ) {
     return <Loading isLoading={true} />;
@@ -83,7 +80,7 @@ const Dashboard = () => {
     },
     {
       title: "Total Managers",
-      value: managers.length,
+      // value: managers.length,
       icon: <Users className="w-8 h-8 text-orange-600" />,
       bgColor: "bg-orange-50",
       textColor: "text-orange-600",

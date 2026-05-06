@@ -1,9 +1,9 @@
-import Dashboard from "../components/ui/Dashboard";
+import Dashboard from "../components/pages/superAdmin/Dashboard";
 import BranchDashboard from "../components/pages/superAdmin/branch/BranchDashboard";
 import Districtdashboard from "../components/pages/superAdmin/district/Districtdashboard";
 import ProvinceDashboard from "../components/pages/superAdmin/province/ProvinceDashboard";
 import ManagerDashboard from "../components/pages/superAdmin/branchmanager/BranchManager";
-import ServiceManager from "../components/pages/superAdmin/service/ServiceManager";
+import ServiceManager from "../components/pages/superAdmin/service/ServiceDashboard";
 import InquiryDashboard from "../components/pages/superAdmin/inquiry/InquiryDashboard";
 import StaffDashboard from "../components/pages/superAdmin/staff/StaffDashboard";
 
