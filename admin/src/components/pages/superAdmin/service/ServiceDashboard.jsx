@@ -6,7 +6,7 @@ import {
   useUpdateServiceMutation,
   useDeleteServiceMutation,
 } from "../../../../redux/features/serviceSlice.js";
-import { useGetBranchQuery } from "../../../../redux/features/branchSlice";
+import { useGetBranchQuery } from "../../../../redux/features/branchSlice.js";
 import Input from "../../../shared/Input.jsx";
 import DetailsModal from "../../../shared/Modal.jsx";
 import { Loading } from "../../../shared/IsLoading.jsx";
@@ -35,6 +35,7 @@ const ServiceManager = () => {
 
   const services = servicesData?.allServices || servicesData?.services;
   const branches = branchData?.branch;
+  console.log("Fetched services:", services);
 
   // Handle form input changes
   const handleChange = (e) => {
