@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
 import {
-  useGetServicesQuery,
   useAddServiceMutation,
   useUpdateServiceMutation,
   useDeleteServiceMutation,
+  useGetsAllServiceWithBranchNameQuery,
 } from "../../../../redux/features/serviceSlice.js";
 import { useGetBranchQuery } from "../../../../redux/features/branchSlice.js";
 import Input from "../../../shared/Input.jsx";
@@ -27,13 +27,17 @@ const ServiceManager = () => {
   });
 
   // API hooks
-  const { data: servicesData, isLoading, error } = useGetServicesQuery();
+  const {
+    data: servicesData,
+    isLoading,
+    error,
+  } = useGetsAllServiceWithBranchNameQuery();
   const { data: branchData } = useGetBranchQuery();
   const [addService] = useAddServiceMutation();
   const [updateService] = useUpdateServiceMutation();
   const [deleteService] = useDeleteServiceMutation();
 
-  const services = servicesData?.allServices || servicesData?.services;
+  const services = servicesData?.data || servicesData?.services;
   const branches = branchData?.branch;
   console.log("Fetched services:", services);
 
@@ -208,7 +212,7 @@ const ServiceManager = () => {
                 Description
               </th>
               <th className="px-4 py-3 text-left text-sm font-semibold text-slate-700">
-                Branch ID
+                Branch Name
               </th>
               <th className="px-4 py-3 text-left text-sm font-semibold text-slate-700">
                 Image
@@ -235,7 +239,7 @@ const ServiceManager = () => {
                         : service.description
                       : "No description"}
                   </td>
-                  <td className="px-4 py-3 text-sm">{service.branch_id}</td>
+                  <td className="px-4 py-3 text-sm">{service.branch_name}</td>
                   <td className="px-4 py-3 text-sm">
                     {service.service_image ? (
                       <img

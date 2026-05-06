@@ -2,6 +2,7 @@ import express from "express";
 import {
   addService,
   deleteService,
+  getAllServicesWithBranch,
   getServiceById,
   getServices,
   getServicesByBranchId,
@@ -16,7 +17,7 @@ import { authorizeRoles } from "../middlewares/isAuthorizedRoles.js";
 const serviceRouter = express.Router();
 
 // Public Routes
-serviceRouter.get("/get-all-service", publicGetServices);
+serviceRouter.get("/get-all-service", getAllServicesWithBranch);
 serviceRouter.get("/get-service", publicGetServices);
 serviceRouter.get("/get-service/:id", getServiceById);
 serviceRouter.get("/get-services/:branchId", getServicesByBranchId);

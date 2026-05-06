@@ -2,9 +2,18 @@ import { indexSlice } from "./indexSlice";
 export const serviceApi = indexSlice.injectEndpoints({
   endpoints: (builder) => ({
     // Get Services (authenticated)
-    getService: builder.query({
+    getServices: builder.query({
       query: () => ({
         url: "/services/get-service",
+        method: "GET",
+      }),
+      providesTags: ["services"],
+    }),
+
+    // Get Services with Branch details (public)
+    getsAllServiceWithBranchName: builder.query({
+      query: () => ({
+        url: "/services/get-all-service",
         method: "GET",
       }),
       providesTags: ["services"],
@@ -66,11 +75,12 @@ export const serviceApi = indexSlice.injectEndpoints({
 });
 
 export const {
-  useGetServiceQuery,
+  useGetServicesQuery,
   useGetServiceByIdQuery,
   useGetServicesByBranchQuery,
   useGetAllServicesQuery,
   useAddServiceMutation,
   useUpdateServiceMutation,
   useDeleteServiceMutation,
+  useGetsAllServiceWithBranchNameQuery,
 } = serviceApi;

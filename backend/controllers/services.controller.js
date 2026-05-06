@@ -51,24 +51,24 @@ export const addService = async (req, res, next) => {
 };
 
 // Get All (Public with Search/Filter)
-export const publicGetServices = async (req, res, next) => {
-  try {
-    const { branch_id } = req.query;
-    let query = "SELECT * FROM services";
-    let params = [];
+// export const publicGetServices = async (req, res, next) => {
+//   try {
+//     const { branch_id } = req.query;
+//     let query = "SELECT * FROM services";
+//     let params = [];
 
-    if (branch_id) {
-      query += " WHERE branch_id = ?";
-      params = [branch_id];
-    }
-    query += " ORDER BY created_at DESC";
+//     if (branch_id) {
+//       query += " WHERE branch_id = ?";
+//       params = [branch_id];
+//     }
+//     query += " ORDER BY created_at DESC";
 
-    const [rows] = await db.execute(query, params);
-    res.status(200).json({ success: true, data: rows });
-  } catch (error) {
-    next(error);
-  }
-};
+//     const [rows] = await db.execute(query, params);
+//     res.status(200).json({ success: true, data: rows });
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 
 // Get Single by ID
 export const getServiceById = async (req, res, next) => {
@@ -218,30 +218,70 @@ export const getServices = async (req, res, next) => {
   }
 };
 // api for public services
-// export const publicGetServices = async (req, res, next) => {
-//   try {
-//     const { province_id, district_id, branch_id } = req.query;
-//     // console.log(req.query);
-//     let query = "";
-//     let params = [];
-//     if (province_id && !district_id && !branch_id) {
-//       query = "select * from district where province_id=?";
-//       params = [province_id];
-//     } else if (province_id && district_id && !branch_id) {
-//       query = "select * from branch where district_id =?";
-//       params = [district_id];
-//     } else if (province_id && district_id && branch_id) {
-//       query = "select * from services where branch_id =?";
-//       params = [branch_id];
-//     } else {
-//       query = "select * from services order by created_at desc";
-//     }
-//     const [result] = await db.execute(query, params);
-//     return res.status(200).json({
-//       message: "service displayed succesfully",
-//       data: result,
-//     });
-//   } catch (error) {
-//     next(error);
-//   }
-// };
+export const publicGetServices = async (req, res, next) => {
+  try {
+    const { province_id, district_id, branch_id } = req.query;
+    // console.log(req.query);
+    let query = "";
+    let params = [];
+    if (province_id && !district_id && !branch_id) {
+      query = "select * from district where province_id=?";
+      params = [province_id];
+    } else if (province_id && district_id && !branch_id) {
+      query = "select * from branch where district_id =?";
+      params = [district_id];
+    } else if (province_id && district_id && branch_id) {
+      query = "select * from services where branch_id =?";
+      params = [branch_id];
+    } else {
+      query = "select * from services order by created_at desc";
+    }
+    const [result] = await db.execute(query, params);
+    return res.status(200).json({
+      message: "service displayed succesfully",
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+// with branch and service
+export const getAllServicesWithBranch = async (req, res, next) => {
+  try {
+    /**
+     * SELECT s.*: सेवा (Service) टेबलका सबै कोलमहरू
+     * b.branch_name: ब्रान्चको नाम
+     * b.branch_id: ब्रान्चको ID (यसलाई b_id भनिएको छ ताकि कन्फ्युजन नहोस्)
+     */
+    const query = `
+      SELECT 
+        s.*, 
+        b.branch_name, 
+        b.branch_id AS b_id
+      FROM services s
+      LEFT JOIN branch b ON s.branch_id = b.branch_id
+      ORDER BY s.created_at DESC
+    `;
+
+    const [rows] = await db.execute(query);
+
+    // यदि डेटा छैन भने
+    if (rows.length === 0) {
+      return res.status(200).json({
+        success: true,
+        message: "No services available",
+        data: [],
+      });
+    }
+
+    // सफल रेस्पोन्स
+    res.status(200).json({
+      success: true,
+      count: rows.length,
+      data: rows,
+    });
+  } catch (error) {
+    console.error("Error fetching services with branch:", error);
+    next(error); // Error handling middleware मा पठाउने
+  }
+};
