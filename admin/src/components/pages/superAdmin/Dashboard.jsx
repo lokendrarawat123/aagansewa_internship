@@ -1,148 +1,7 @@
-import {
-  MapPin,
-  Layers,
-  Building2,
-  Users,
-  TrendingUp,
-  Activity,
-  Settings,
-} from "lucide-react";
-import {
-  useGetProvinceQuery,
-  useGetDistrictQuery,
-  useGetBranchQuery,
-} from "../../../redux/features/branchSlice.js";
-import { useGetServicesQuery } from "../../../redux/features/serviceSlice.js";
-import { Loading } from "../../shared/IsLoading.jsx";
-import { Error } from "../../shared/Error.jsx";
-import { useEffect } from "react"; // Side effect ko lagi
-import { useNavigate } from "react-router-dom"; // Navigate garna
-import { useSelector } from "react-redux"; // Redux state check garna
+import { useSelector } from "react-redux";
 
 const Dashboard = () => {
-  const { user, token } = useSelector((state) => state.user.isAuth);
-
-  // API hooks to get data
-  const { data: provinceData, isLoading: provinceLoading } =
-    useGetProvinceQuery();
-  const { data: districtData, isLoading: districtLoading } =
-    useGetDistrictQuery();
-  const { data: branchData, isLoading: branchLoading } = useGetBranchQuery();
-  // const { data: managerData, isLoading: managerLoading } = useGetManagerQuery();
-  const { data: servicesData, isLoading: servicesLoading } =
-    useGetServicesQuery();
-
-  const provinces = provinceData?.provinces || [];
-  const districts = districtData?.allDistricts || [];
-  const branches = branchData?.branch || [];
-  // const managers = managerData?.managers || [];
-  const services = servicesData?.allServices || servicesData?.services || [];
-
-  // Loading state
-  if (
-    provinceLoading ||
-    districtLoading ||
-    branchLoading ||
-    // managerLoading ||
-    servicesLoading
-  ) {
-    return <Loading isLoading={true} />;
-  }
-
-  // Statistics cards data
-  const stats = [
-    {
-      title: "Total Provinces",
-      value: provinces.length,
-      icon: <MapPin className="w-8 h-8 text-blue-600" />,
-      bgColor: "bg-blue-50",
-      textColor: "text-blue-600",
-      change: "+2.5%",
-      changeType: "increase",
-    },
-    {
-      title: "Total Districts",
-      value: districts.length,
-      icon: <Layers className="w-8 h-8 text-green-600" />,
-      bgColor: "bg-green-50",
-      textColor: "text-green-600",
-      change: "+5.2%",
-      changeType: "increase",
-    },
-    {
-      title: "Total Branches",
-      value: branches.length,
-      icon: <Building2 className="w-8 h-8 text-purple-600" />,
-      bgColor: "bg-purple-50",
-      textColor: "text-purple-600",
-      change: "+8.1%",
-      changeType: "increase",
-    },
-    {
-      title: "Total Managers",
-      // value: managers.length,
-      icon: <Users className="w-8 h-8 text-orange-600" />,
-      bgColor: "bg-orange-50",
-      textColor: "text-orange-600",
-      change: "+3.7%",
-      changeType: "increase",
-    },
-    {
-      title: "Total Services",
-      value: services.length,
-      icon: <Settings className="w-8 h-8 text-indigo-600" />,
-      bgColor: "bg-indigo-50",
-      textColor: "text-indigo-600",
-      change: "+12.3%",
-      changeType: "increase",
-    },
-  ];
-
-  // Recent activities (mock data)
-  const recentActivities = [
-    {
-      id: 1,
-      action: "New service added",
-      details: "Education service was created for Branch #5",
-      time: "1 hour ago",
-      type: "service",
-    },
-    {
-      id: 2,
-      action: "New province added",
-      details: "Karnali Province was created",
-      time: "2 hours ago",
-      type: "province",
-    },
-    {
-      id: 3,
-      action: "Manager assigned",
-      details: "John Doe assigned to Branch #12",
-      time: "4 hours ago",
-      type: "manager",
-    },
-    {
-      id: 4,
-      action: "Service updated",
-      details: "Healthcare service information updated",
-      time: "5 hours ago",
-      type: "service",
-    },
-    {
-      id: 5,
-      action: "District updated",
-      details: "Kathmandu district information updated",
-      time: "6 hours ago",
-      type: "district",
-    },
-    {
-      id: 6,
-      action: "New branch created",
-      details: "Branch office opened in Pokhara",
-      time: "1 day ago",
-      type: "branch",
-    },
-  ];
+  const { user } = useSelector((state) => state.user) || {};
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -152,202 +11,234 @@ const Dashboard = () => {
           Admin Dashboard
         </h1>
         <p className="text-gray-600">
-          Welcome back! Here's what's happening with your organization.
+          Welcome back{user?.name ? `, ${user.name}` : ""}! Manage your
+          organization from here.
         </p>
       </div>
 
-      {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
-        {stats.map((stat, index) => (
-          <div
-            key={index}
-            className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 mb-1">
-                  {stat.title}
-                </p>
-                <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
-                <div className="flex items-center mt-2">
-                  <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
-                  <span className="text-sm text-green-600 font-medium">
-                    {stat.change}
-                  </span>
-                  <span className="text-sm text-gray-500 ml-1">
-                    from last month
-                  </span>
-                </div>
-              </div>
-              <div className={`${stat.bgColor} p-3 rounded-lg`}>
-                {stat.icon}
-              </div>
+      {/* Quick Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div className="flex items-center">
+            <div className="p-3 bg-blue-50 rounded-lg">
+              <svg
+                className="w-6 h-6 text-blue-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+              </svg>
             </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Quick Overview */}
-        <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">
-            Quick Overview
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Province Overview */}
-            <div className="border border-gray-200 rounded-lg p-4">
-              <div className="flex items-center mb-3">
-                <MapPin className="w-5 h-5 text-blue-600 mr-2" />
-                <h3 className="font-medium text-gray-900">Provinces</h3>
-              </div>
-              <p className="text-2xl font-bold text-gray-900 mb-2">
-                {provinces.length}
-              </p>
-              <p className="text-sm text-gray-600">
-                Managing {districts.length} districts across all provinces
-              </p>
-            </div>
-
-            {/* District Overview */}
-            <div className="border border-gray-200 rounded-lg p-4">
-              <div className="flex items-center mb-3">
-                <Layers className="w-5 h-5 text-green-600 mr-2" />
-                <h3 className="font-medium text-gray-900">Districts</h3>
-              </div>
-              <p className="text-2xl font-bold text-gray-900 mb-2">
-                {districts.length}
-              </p>
-              <p className="text-sm text-gray-600">
-                Operating {branches.length} branches across districts
-              </p>
-            </div>
-
-            {/* Branch Overview */}
-            <div className="border border-gray-200 rounded-lg p-4">
-              <div className="flex items-center mb-3">
-                <Building2 className="w-5 h-5 text-purple-600 mr-2" />
-                <h3 className="font-medium text-gray-900">Branches</h3>
-              </div>
-              <p className="text-2xl font-bold text-gray-900 mb-2">
-                {branches.length}
-              </p>
-              <p className="text-sm text-gray-600">
-                {managers.length} managers assigned to branches
-              </p>
-            </div>
-
-            {/* Manager Overview */}
-            <div className="border border-gray-200 rounded-lg p-4">
-              <div className="flex items-center mb-3">
-                <Users className="w-5 h-5 text-orange-600 mr-2" />
-                <h3 className="font-medium text-gray-900">Managers</h3>
-              </div>
-              <p className="text-2xl font-bold text-gray-900 mb-2">
-                {managers.length}
-              </p>
-              <p className="text-sm text-gray-600">
-                Active managers managing operations
-              </p>
-            </div>
-
-            {/* Service Overview */}
-            <div className="border border-gray-200 rounded-lg p-4">
-              <div className="flex items-center mb-3">
-                <Settings className="w-5 h-5 text-indigo-600 mr-2" />
-                <h3 className="font-medium text-gray-900">Services</h3>
-              </div>
-              <p className="text-2xl font-bold text-gray-900 mb-2">
-                {services.length}
-              </p>
-              <p className="text-sm text-gray-600">
-                Available services across all branches
-              </p>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-600">Provinces</p>
+              <p className="text-2xl font-bold text-gray-900">7</p>
             </div>
           </div>
         </div>
 
-        {/* Recent Activities */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <div className="flex items-center mb-6">
-            <Activity className="w-5 h-5 text-gray-600 mr-2" />
-            <h2 className="text-xl font-semibold text-gray-900">
-              Recent Activities
-            </h2>
-          </div>
-
-          <div className="space-y-4">
-            {recentActivities.map((activity) => (
-              <div
-                key={activity.id}
-                className="flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div className="flex items-center">
+            <div className="p-3 bg-green-50 rounded-lg">
+              <svg
+                className="w-6 h-6 text-green-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
               >
-                <div
-                  className={`w-2 h-2 rounded-full mt-2 ${
-                    activity.type === "province"
-                      ? "bg-blue-500"
-                      : activity.type === "district"
-                        ? "bg-green-500"
-                        : activity.type === "branch"
-                          ? "bg-purple-500"
-                          : activity.type === "service"
-                            ? "bg-indigo-500"
-                            : "bg-orange-500"
-                  }`}
-                ></div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900">
-                    {activity.action}
-                  </p>
-                  <p className="text-sm text-gray-600">{activity.details}</p>
-                  <p className="text-xs text-gray-500 mt-1">{activity.time}</p>
-                </div>
-              </div>
-            ))}
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                />
+              </svg>
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-600">Branches</p>
+              <p className="text-2xl font-bold text-gray-900">25</p>
+            </div>
           </div>
+        </div>
 
-          <div className="mt-6 pt-4 border-t border-gray-200">
-            <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">
-              View all activities →
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div className="flex items-center">
+            <div className="p-3 bg-purple-50 rounded-lg">
+              <svg
+                className="w-6 h-6 text-purple-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"
+                />
+              </svg>
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-600">Staff</p>
+              <p className="text-2xl font-bold text-gray-900">150</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div className="flex items-center">
+            <div className="p-3 bg-orange-50 rounded-lg">
+              <svg
+                className="w-6 h-6 text-orange-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+              </svg>
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-600">Services</p>
+              <p className="text-2xl font-bold text-gray-900">12</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Welcome Card */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 mb-8">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            Welcome to Admin Panel
+          </h2>
+          <p className="text-gray-600 mb-6">
+            Use the sidebar navigation to manage provinces, districts, branches,
+            services, and staff.
+          </p>
+          <div className="flex justify-center space-x-4">
+            <button className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">
+              Get Started
+            </button>
+            <button className="border border-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-50 transition">
+              Learn More
             </button>
           </div>
         </div>
       </div>
 
-      {/* System Status */}
-      <div className="mt-6 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">
-          System Status
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg">
-            <div>
-              <p className="text-sm font-medium text-green-800">
-                System Health
-              </p>
-              <p className="text-lg font-semibold text-green-900">Excellent</p>
+      {/* Quick Actions */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          Quick Actions
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition text-left">
+            <div className="text-blue-600 mb-2">
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                />
+              </svg>
             </div>
-            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-          </div>
+            <p className="font-medium text-gray-900">Add Province</p>
+            <p className="text-sm text-gray-600">Create new province</p>
+          </button>
 
-          <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
-            <div>
-              <p className="text-sm font-medium text-blue-800">Database</p>
-              <p className="text-lg font-semibold text-blue-900">Connected</p>
+          <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition text-left">
+            <div className="text-green-600 mb-2">
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                />
+              </svg>
             </div>
-            <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-          </div>
+            <p className="font-medium text-gray-900">Add Branch</p>
+            <p className="text-sm text-gray-600">Create new branch</p>
+          </button>
 
-          <div className="flex items-center justify-between p-4 bg-yellow-50 rounded-lg">
-            <div>
-              <p className="text-sm font-medium text-yellow-800">Last Backup</p>
-              <p className="text-lg font-semibold text-yellow-900">
-                2 hours ago
-              </p>
+          <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition text-left">
+            <div className="text-purple-600 mb-2">
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                />
+              </svg>
             </div>
-            <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-          </div>
+            <p className="font-medium text-gray-900">Add Staff</p>
+            <p className="text-sm text-gray-600">Add new staff member</p>
+          </button>
+
+          <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition text-left">
+            <div className="text-orange-600 mb-2">
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+              </svg>
+            </div>
+            <p className="font-medium text-gray-900">Add Service</p>
+            <p className="text-sm text-gray-600">Create new service</p>
+          </button>
         </div>
       </div>
     </div>

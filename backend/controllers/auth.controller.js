@@ -238,6 +238,9 @@ export const updateManager = async (req, res, next) => {
 export const deleteManager = async (req, res, next) => {
   try {
     const { id } = req.params;
+    if (!id) {
+      return res.status(400).json({ message: "Manager ID is required" });
+    }
 
     const [existing] = await db.execute(
       "SELECT user_id FROM users WHERE user_id = ?",

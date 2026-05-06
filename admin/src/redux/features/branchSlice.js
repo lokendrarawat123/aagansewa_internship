@@ -3,7 +3,7 @@ export const branchApi = indexSlice.injectEndpoints({
   endpoints: (builder) => ({
     getProvince: builder.query({
       query: () => ({
-        url: "/branch/get-province",
+        url: "/branch/get-allprovince",
         method: "GET",
       }),
       providesTags: ["branch"],
