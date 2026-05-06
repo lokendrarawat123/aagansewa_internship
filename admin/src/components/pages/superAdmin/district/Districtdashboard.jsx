@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
 import {
-  useGetDistrictQuery,
+  useGetDisrtrictWithBranchQuery,
   useAddDistrictMutation,
   useDeleteDistrictMutation,
   useGetProvinceQuery,
@@ -23,12 +23,16 @@ const DistrictDashboard = () => {
   });
 
   // API hooks
-  const { data: districtData, isLoading, error } = useGetDistrictQuery();
+  const {
+    data: districtData,
+    isLoading,
+    error,
+  } = useGetDisrtrictWithBranchQuery();
   const { data: provinceData } = useGetProvinceQuery();
   const [addDistrict] = useAddDistrictMutation();
   const [deleteDistrict] = useDeleteDistrictMutation();
 
-  const districts = districtData?.allDistricts;
+  const districts = districtData?.data;
   const provinces = provinceData?.provinces;
 
   // Handle form input changes

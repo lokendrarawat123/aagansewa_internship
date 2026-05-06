@@ -16,6 +16,7 @@ import {
   getDistrictByProvinceID,
   getAllBranch,
   getBranchById,
+  filteredBranches,
 } from "../controllers/branch.controller.js";
 import { isLogin } from "../middlewares/isLogin.js";
 
@@ -59,6 +60,8 @@ branchRouter.post("/add-branch", isLogin, authorizeRoles("admin"), addBranch);
 branchRouter.get("/get-branch", getAllBranch);
 branchRouter.get("/get-branchs/:district_id", getBranchByDistrict);
 branchRouter.get("/get-branch/:id", getBranchById);
+branchRouter.get("/get-filteredBranches", filteredBranches);
+
 branchRouter.delete(
   "/delete-branch/:id",
   isLogin,

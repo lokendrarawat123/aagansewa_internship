@@ -6,7 +6,7 @@ import {
   useUpdateServiceMutation,
   useDeleteServiceMutation,
 } from "../../../../redux/features/serviceSlice.js";
-import { useGetBranchQuery } from "../../../../redux/features/branchSlice.js";
+import { useGetBranchQuery } from "../../../../redux/features/provinceSlilce";
 import Input from "../../../shared/Input";
 import DetailsModal from "../../../shared/Modal";
 import { Loading } from "../../../shared/IsLoading";

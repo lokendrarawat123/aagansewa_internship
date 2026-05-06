@@ -276,7 +276,7 @@ GROUP BY
 
     res.status(200).json({
       message: "success",
-      allDistricts: allDistrict,
+      data: allDistrict,
     });
   } catch (error) {
     next(error);
@@ -470,11 +470,24 @@ export const getBranchById = async (req, res, next) => {
 //get branch api
 export const getAllBranch = async (req, res, next) => {
   try {
-    const [all_branch] = await db.execute(`select * from branch 
-     `);
+    const [rows] = await db.query(
+      `
+      SELECT 
+        b.branch_id,
+        b.branch_name,
+        LOWER(REPLACE(b.branch_name, ' ', '-')) ,
+        b.district_id,
+        d.district_name
+      FROM branch b
+      LEFT JOIN district d 
+        ON b.district_id = d.district_id
+      ORDER BY b.branch_id DESC
+      `,
+    );
+
     res.status(200).json({
-      message: "successfully displayed",
-      data: all_branch,
+      message: "Branches fetched successfully",
+      data: rows,
     });
   } catch (error) {
     next(error);
@@ -498,6 +511,35 @@ export const getBranchByDistrict = async (req, res, next) => {
       message: "successfully displayed",
       data: rows,
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// get branch with district
+
+export const filteredBranches = async (req, res, next) => {
+  try {
+    const { province_id, district_id } = req.query;
+
+    // १. यदि केही छानिएको छैन भने सबै ब्रान्च देखाउने Query
+    let query = "SELECT * FROM branch";
+    let params = [];
+
+    // २. यदि District छानिएको छ भने (सबैभन्दा सटीक फिल्टर)
+    if (district_id) {
+      query += " WHERE district_id = ?";
+      params = [district_id];
+    }
+    // ३. यदि Province मात्र छानिएको छ भने त्यो Province का सबै ब्रान्च देखाउने
+    else if (province_id) {
+      query +=
+        " WHERE district_id IN (SELECT district_id FROM district WHERE province_id = ?)";
+      params = [province_id];
+    }
+
+    const [result] = await db.execute(query, params);
+    return res.status(200).json({ data: result });
   } catch (error) {
     next(error);
   }

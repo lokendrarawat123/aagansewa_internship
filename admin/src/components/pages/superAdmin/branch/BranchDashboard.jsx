@@ -5,6 +5,7 @@ import {
   useAddBranchMutation,
   useDeleteBranchMutation,
   useGetDistrictQuery,
+  useGetProvinceQuery,
 } from "../../../../redux/features/branchSlice.js";
 import Input from "../../../shared/Input";
 import DetailsModal from "../../../shared/Modal";
@@ -25,12 +26,14 @@ const BranchDashboard = () => {
 
   // API hooks
   const { data: branchData, isLoading, error } = useGetBranchQuery();
+
   const { data: districtData } = useGetDistrictQuery();
   const { data: provinceData } = useGetProvinceQuery();
   const [addBranch] = useAddBranchMutation();
   const [deleteBranch] = useDeleteBranchMutation();
 
-  const branches = branchData?.branch;
+  const branches = branchData?.data || [];
+  console.log("Branches:", branches);
   const allDistricts = districtData?.allDistricts;
   const provinces = provinceData?.provinces;
 
@@ -132,7 +135,7 @@ const BranchDashboard = () => {
                 Branch Name
               </th>
               <th className="px-4 py-3 text-left text-sm font-semibold text-slate-700">
-                District ID
+                District Name
               </th>
               <th className="px-4 py-3 text-left text-sm font-semibold text-slate-700">
                 Action
@@ -149,7 +152,7 @@ const BranchDashboard = () => {
                 >
                   <td className="px-4 py-3 text-sm">{branch.branch_id}</td>
                   <td className="px-4 py-3 text-sm">{branch.branch_name}</td>
-                  <td className="px-4 py-3 text-sm">{branch.district_id}</td>
+                  <td className="px-4 py-3 text-sm">{branch.district_name}</td>
                   <td className="px-4 py-3 text-sm">
                     <div className="flex gap-2">
                       <button
@@ -336,10 +339,10 @@ const BranchDashboard = () => {
           <div className="grid grid-cols-2 gap-4">
             <div className="p-4 bg-gray-50 rounded-lg">
               <h3 className="text-sm font-medium text-gray-600 mb-1">
-                District ID
+                District Name
               </h3>
               <p className="text-lg font-semibold text-gray-900">
-                {selectedBranch?.district_id}
+                {selectedBranch?.district_name}
               </p>
             </div>
             <div className="p-4 bg-gray-50 rounded-lg">

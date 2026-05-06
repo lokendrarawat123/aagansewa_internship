@@ -25,7 +25,14 @@ export const branchApi = indexSlice.injectEndpoints({
     }),
     getDistrict: builder.query({
       query: () => ({
-        url: "/branch/get-district",
+        url: "/branch/get-all-district",
+        method: "GET",
+      }),
+      providesTags: ["branch"],
+    }),
+    getDisrtrictWithBranch: builder.query({
+      query: () => ({
+        url: "/branch/get-districtwitbranch",
         method: "GET",
       }),
       providesTags: ["branch"],
@@ -79,4 +86,5 @@ export const {
   useGetBranchQuery,
   useAddBranchMutation,
   useDeleteBranchMutation,
+  useGetDisrtrictWithBranchQuery,
 } = branchApi;
