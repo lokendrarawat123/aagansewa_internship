@@ -86,7 +86,7 @@ const Sidebar = ({ active, setActive }) => {
   ];
 
   return (
-    <aside className="fixed-0w-64 h-screen bg-slate-900 text-slate-200 flex flex-col shadow-xl">
+    <aside className="fixed-0 w-64 h-screen bg-slate-900 text-slate-200 flex flex-col shadow-xl">
       {/* Brand */}
       <div className="px-6 py-5 text-xl font-semibold border-b border-slate-700">
         Admin Panel
