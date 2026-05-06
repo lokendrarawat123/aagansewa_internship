@@ -6,11 +6,11 @@ import {
   useDeleteBranchMutation,
   useGetDistrictQuery,
   useGetProvinceQuery,
-} from "../../../../../redux/features/provinceSlilce";
-import Input from "../../../../shared/Input";
-import DetailsModal from "../../../../shared/Modal";
-import { Loading } from "../../../../shared/IsLoading";
-import { Error } from "../../../../shared/Error";
+} from "../../../../redux/features/provinceSlilce";
+import Input from "../../../shared/Input";
+import DetailsModal from "../../../shared/Modal";
+import { Loading } from "../../../shared/IsLoading";
+import { Error } from "../../../shared/Error";
 
 const BranchDashboard = () => {
   // State for managing modal and form
@@ -37,13 +37,13 @@ const BranchDashboard = () => {
 
   // Filter districts based on selected province
   const filteredDistricts = allDistricts?.filter(
-    district => district.province_id == formData.province_id
+    (district) => district.province_id == formData.province_id,
   );
 
   // Handle form input changes
   const handleChange = (e) => {
     const { id, value } = e.target;
-    
+
     // If province changes, reset district selection
     if (id === "province_id") {
       setFormData((prev) => ({
@@ -69,9 +69,14 @@ const BranchDashboard = () => {
         district_id: formData.district_id,
         remarks: formData.remarks,
       };
-      
+
       const res = await addBranch(submitData).unwrap();
-      setFormData({ branch_name: "", province_id: "", district_id: "", remarks: "" });
+      setFormData({
+        branch_name: "",
+        province_id: "",
+        district_id: "",
+        remarks: "",
+      });
       setShowAddModal(false);
       toast.success(res.message || "Branch added successfully");
     } catch (error) {
@@ -169,8 +174,12 @@ const BranchDashboard = () => {
                 <td colSpan="4" className="px-4 py-12 text-center">
                   <div className="flex flex-col items-center space-y-3">
                     <div className="text-gray-400 text-4xl">🏢</div>
-                    <p className="text-gray-500 font-medium">No branches found</p>
-                    <p className="text-gray-400 text-sm">Add your first branch to get started</p>
+                    <p className="text-gray-500 font-medium">
+                      No branches found
+                    </p>
+                    <p className="text-gray-400 text-sm">
+                      Add your first branch to get started
+                    </p>
                   </div>
                 </td>
               </tr>
@@ -184,7 +193,12 @@ const BranchDashboard = () => {
         show={showAddModal}
         onClose={() => {
           setShowAddModal(false);
-          setFormData({ branch_name: "", province_id: "", district_id: "", remarks: "" });
+          setFormData({
+            branch_name: "",
+            province_id: "",
+            district_id: "",
+            remarks: "",
+          });
         }}
         title="Add New Branch"
         size="md"
@@ -239,7 +253,9 @@ const BranchDashboard = () => {
               disabled={!formData.province_id} // Disable until province is selected
             >
               <option value="">
-                {!formData.province_id ? "Select Province First" : "Select District"}
+                {!formData.province_id
+                  ? "Select Province First"
+                  : "Select District"}
               </option>
               {filteredDistricts?.map((district) => (
                 <option key={district.district_id} value={district.district_id}>
@@ -267,7 +283,12 @@ const BranchDashboard = () => {
               type="button"
               onClick={() => {
                 setShowAddModal(false);
-                setFormData({ branch_name: "", province_id: "", district_id: "", remarks: "" });
+                setFormData({
+                  branch_name: "",
+                  province_id: "",
+                  district_id: "",
+                  remarks: "",
+                });
               }}
               className="px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-50 transition"
             >
@@ -296,40 +317,49 @@ const BranchDashboard = () => {
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="p-4 bg-gray-50 rounded-lg">
-              <h3 className="text-sm font-medium text-gray-600 mb-1">Branch ID</h3>
+              <h3 className="text-sm font-medium text-gray-600 mb-1">
+                Branch ID
+              </h3>
               <p className="text-lg font-semibold text-gray-900">
                 {selectedBranch?.branch_id}
               </p>
             </div>
             <div className="p-4 bg-gray-50 rounded-lg">
-              <h3 className="text-sm font-medium text-gray-600 mb-1">Branch Name</h3>
+              <h3 className="text-sm font-medium text-gray-600 mb-1">
+                Branch Name
+              </h3>
               <p className="text-lg font-semibold text-gray-900">
                 {selectedBranch?.branch_name}
               </p>
             </div>
           </div>
-          
+
           <div className="grid grid-cols-2 gap-4">
             <div className="p-4 bg-gray-50 rounded-lg">
-              <h3 className="text-sm font-medium text-gray-600 mb-1">District ID</h3>
+              <h3 className="text-sm font-medium text-gray-600 mb-1">
+                District ID
+              </h3>
               <p className="text-lg font-semibold text-gray-900">
                 {selectedBranch?.district_id}
               </p>
             </div>
             <div className="p-4 bg-gray-50 rounded-lg">
-              <h3 className="text-sm font-medium text-gray-600 mb-1">Created At</h3>
+              <h3 className="text-sm font-medium text-gray-600 mb-1">
+                Created At
+              </h3>
               <p className="text-lg font-semibold text-gray-900">
-                {selectedBranch?.created_at ? 
-                  new Date(selectedBranch.created_at).toLocaleDateString() : 
-                  "N/A"
-                }
+                {selectedBranch?.created_at
+                  ? new Date(selectedBranch.created_at).toLocaleDateString()
+                  : "N/A"}
               </p>
             </div>
           </div>
 
           {selectedBranch?.remarks && (
             <div className="p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500">
-              <h3 className="text-sm font-medium text-blue-600 mb-1">Remarks</h3>
+              <h3 className="text-sm font-medium text-blue-600 mb-1">
+                Remarks
+              </h3>
               <p className="text-gray-800">{selectedBranch.remarks}</p>
             </div>
           )}
