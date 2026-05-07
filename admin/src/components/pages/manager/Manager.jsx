@@ -174,7 +174,10 @@ const Manager = () => {
               <span className="text-sm font-bold text-blue-600">3</span>
             </div>
           </div>
-          <Link to="/admin/manager-staff-dashboard" className="w-full mt-4 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition block text-center">
+          <Link
+            to="/admin/manager-staff-dashboard"
+            className="w-full mt-4 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition block text-center"
+          >
             Manage Staff
           </Link>
         </div>
@@ -206,7 +209,10 @@ const Manager = () => {
               <span className="text-sm font-bold text-blue-600">2</span>
             </div>
           </div>
-          <Link to="/admin/manager-service-dashboard" className="w-full mt-4 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition block text-center">
+          <Link
+            to="/admin/manager-service-dashboard"
+            className="w-full mt-4 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition block text-center"
+          >
             Manage Services
           </Link>
         </div>
@@ -234,7 +240,10 @@ const Manager = () => {
               <span className="text-sm font-bold text-blue-600">23</span>
             </div>
           </div>
-          <Link to="/admin/manager-inquiry-dashboard" className="w-full mt-4 bg-yellow-600 text-white py-2 rounded-lg hover:bg-yellow-700 transition block text-center">
+          <Link
+            to="/admin/manager-inquiry-dashboard"
+            className="w-full mt-4 bg-yellow-600 text-white py-2 rounded-lg hover:bg-yellow-700 transition block text-center"
+          >
             Manage Inquiries
           </Link>
         </div>

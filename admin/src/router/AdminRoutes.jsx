@@ -10,6 +10,7 @@ import ManagerDashboard from "../components/pages/manager/Manager";
 import ManagerServiceDashboard from "../components/pages/manager/service/ServiceDashboard";
 import ManagerStaffDashboard from "../components/pages/manager/staff/StaffDashboard";
 import ManagerInquiryDashboard from "../components/pages/manager/inquiry/InquiryDashboard";
+import Manager from "../components/pages/manager/Manager";
 
 export const adminRoutes = [
   {
@@ -18,7 +19,7 @@ export const adminRoutes = [
   },
   {
     path: "manager-dashboard",
-    element: <ManagerDashboard />,
+    element: <Manager />,
   },
   {
     path: "manager-service-dashboard",

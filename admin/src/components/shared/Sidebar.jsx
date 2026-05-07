@@ -11,9 +11,13 @@ import {
   UserPlus2Icon,
   UserCheck,
   UserRoundCog,
+  Star,
+  UserCircle,
+  BarChart3,
 } from "lucide-react";
 
 import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { logout } from "../../redux/features/authState";
 import { toast } from "react-toastify";
 
@@ -21,6 +25,9 @@ import { useSignOutMutation } from "../../redux/features/authSlice";
 import { Link, useNavigate } from "react-router-dom";
 
 const Sidebar = ({ active, setActive }) => {
+  const { user } = useSelector((state) => state.user);
+  const role = user?.role?.toLowerCase();
+  console.log("User Role:", user); // Debugging line to check the role value
   const [signout] = useSignOutMutation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -85,6 +92,51 @@ const Sidebar = ({ active, setActive }) => {
     },
   ];
 
+  const managerMenu = [
+    {
+      name: "Home",
+      key: "home",
+      icon: <House size={18} />,
+      path: "/dashboard", // Clean URL
+    },
+    {
+      name: "Service Management",
+      key: "service",
+      icon: <Settings size={18} />,
+      path: "/service-management",
+    },
+    {
+      name: "Staff Management",
+      key: "staff",
+      icon: <UserRoundCog size={18} />,
+      path: "/staff-management",
+    },
+    {
+      name: "Inquiry Management",
+      key: "inquiry",
+      icon: <MessageCircleQuestionMark size={18} />,
+      path: "/inquiry-management",
+    },
+    {
+      name: "Review Management",
+      key: "review",
+      icon: <Star size={18} />,
+      path: "/review-management",
+    },
+    {
+      name: "Profile",
+      key: "profile",
+      icon: <UserCircle size={18} />,
+      path: "/profile",
+    },
+    {
+      name: "Reports",
+      key: "report",
+      icon: <BarChart3 size={18} />,
+      path: "/reports",
+    },
+  ];
+  const currentMenu = role === "admin" ? menu : managerMenu;
   return (
     <aside className="fixed-0 w-64 h-screen bg-slate-900 text-slate-200 flex flex-col shadow-xl">
       {/* Brand */}
@@ -94,7 +146,7 @@ const Sidebar = ({ active, setActive }) => {
 
       {/* Menu */}
       <nav className="flex-1 px-3 py-4 space-y-1">
-        {menu.map((item) => (
+        {currentMenu.map((item) => (
           <Link
             key={item.key}
             to={item.path}
