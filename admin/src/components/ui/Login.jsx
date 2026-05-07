@@ -20,7 +20,7 @@ const Login = () => {
       if (user.role === "admin") {
         navigate("/admin/dashboard");
       } else if (user.role === "manager") {
-        navigate("/addmin/manager-dashboard");
+        navigate("/admin/manager-dashboard");
       }
     }
   }, [isAuth, user, navigate]); // user ra isAuth dubai dependancy ma rakhne
@@ -57,7 +57,7 @@ const Login = () => {
       if (role === "admin") {
         navigate("/admin/dashboard");
       } else if (role === "manager") {
-        navigate("/addmin/manager/dashboard");
+        navigate("/admin/manager-dashboard");
       } else {
         navigate("/");
       }

@@ -2,11 +2,14 @@ import Dashboard from "../components/pages/superAdmin/Dashboard";
 import BranchDashboard from "../components/pages/superAdmin/branch/BranchDashboard";
 import Districtdashboard from "../components/pages/superAdmin/district/Districtdashboard";
 import ProvinceDashboard from "../components/pages/superAdmin/province/ProvinceDashboard";
-import ManagerDashboard from "../components/pages/superAdmin/branchmanager/BranchManager";
+import BranchManagerDashboard from "../components/pages/superAdmin/branchmanager/BranchManager";
 import ServiceManager from "../components/pages/superAdmin/service/ServiceDashboard";
 import InquiryDashboard from "../components/pages/superAdmin/inquiry/InquiryDashboard";
 import StaffDashboard from "../components/pages/superAdmin/staff/StaffDashboard";
-import Manager from "../components/pages/manager/Manager";
+import ManagerDashboard from "../components/pages/manager/Manager";
+import ManagerServiceDashboard from "../components/pages/manager/service/ServiceDashboard";
+import ManagerStaffDashboard from "../components/pages/manager/staff/StaffDashboard";
+import ManagerInquiryDashboard from "../components/pages/manager/inquiry/InquiryDashboard";
 
 export const adminRoutes = [
   {
@@ -15,7 +18,19 @@ export const adminRoutes = [
   },
   {
     path: "manager-dashboard",
-    element: <Manager />,
+    element: <ManagerDashboard />,
+  },
+  {
+    path: "manager-service-dashboard",
+    element: <ManagerServiceDashboard />,
+  },
+  {
+    path: "manager-staff-dashboard",
+    element: <ManagerStaffDashboard />,
+  },
+  {
+    path: "manager-inquiry-dashboard",
+    element: <ManagerInquiryDashboard />,
   },
   {
     path: "province-dashboard",
@@ -30,8 +45,8 @@ export const adminRoutes = [
     element: <BranchDashboard />,
   },
   {
-    path: "manager-dashboard",
-    element: <ManagerDashboard />,
+    path: "branch-manager-dashboard",
+    element: <BranchManagerDashboard />,
   },
   {
     path: "service-dashboard",
