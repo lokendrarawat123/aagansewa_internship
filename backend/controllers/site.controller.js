@@ -253,15 +253,24 @@ export const getInquiryById = async (req, res, next) => {
 // Get all inquiries
 export const getAllInquiry = async (req, res, next) => {
   try {
-    const [allInquiry] = await db.execute(
-      "SELECT * FROM inquiry ORDER BY created_at DESC",
-    );
+    // inquiry (i) ra branch (b) table join gareko
+    // i.branch_id = b.id (tapaiko column name anusar check garnuhos)
+    const [allInquiry] = await db.execute(`
+      SELECT 
+        i.*, 
+        b.branch_name 
+      FROM inquiry i
+      LEFT JOIN branch b ON i.branch_id = b.branch_id
+      ORDER BY i.created_at DESC
+    `);
 
     res.status(200).json({
-      message: "All inquiries fetched successfully",
+      message: "All inquiries with branch details fetched successfully",
+      count: allInquiry.length,
       data: allInquiry,
     });
   } catch (error) {
+    console.error("Error fetching inquiries:", error);
     next(error);
   }
 };

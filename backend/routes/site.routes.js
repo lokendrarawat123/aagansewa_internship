@@ -76,7 +76,7 @@ siteRouter.post("/add-inquiry", isLogin, addInquiry);
 siteRouter.get("/get-inquiry", getInquiry);
 siteRouter.delete("/delete-inquiry/:id", isLogin, deleteInquiry);
 siteRouter.get("/get-inquiry/:id", getInquiryById);
-siteRouter.get("/get-allInquiry", getAllInquiry);
+siteRouter.get("/get-allInquiry", getAllInquiry); // for the all inquiry not authenticated
 siteRouter.get("/branch/:branch_id/inquiry", getInquiryByBranch);
 siteRouter.patch("/update-inquiry/:id", isLogin, updateInquiry);
 

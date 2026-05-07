@@ -125,13 +125,7 @@ export const siteApi = indexSlice.injectEndpoints({
     }),
 
     // Inquiry APIs
-    getInquiries: builder.query({
-      query: () => ({
-        url: "/site/get-inquiry",
-        method: "GET",
-      }),
-      providesTags: ["inquiry"],
-    }),
+
     getInquiryById: builder.query({
       query: (id) => ({
         url: `/site/get-inquiry/${id}`,
@@ -203,7 +197,7 @@ export const {
   useDeleteReviewMutation,
 
   // Inquiry hooks
-  useGetInquiriesQuery,
+
   useGetInquiryByIdQuery,
   useGetAllInquiriesQuery,
   useGetInquiriesByBranchQuery,
