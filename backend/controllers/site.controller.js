@@ -28,7 +28,7 @@ export const addTrustedCostumer = async (req, res, next) => {
     // save to DB
     await db.execute(
       "INSERT INTO trusted_costumer (name, image) VALUES (?, ?)",
-      [name, imagePath]
+      [name, imagePath],
     );
 
     res.status(201).json({ message: "Trusted customer added successfully" });
@@ -43,7 +43,7 @@ export const getTrustedCustomers = async (req, res, next) => {
   try {
     // Fetch all trusted customers
     const [customers] = await db.execute(
-      "SELECT * FROM  trusted_costumer ORDER BY created_at DESC"
+      "SELECT * FROM  trusted_costumer ORDER BY created_at DESC",
     );
 
     if (customers.length === 0) {
@@ -70,7 +70,7 @@ export const deleteTrustedCustomer = async (req, res, next) => {
     // Check if customer exists
     const [result] = await db.execute(
       "SELECT name, image FROM trusted_costumer WHERE costumer_id = ?",
-      [id]
+      [id],
     );
 
     if (result.length === 0) {
@@ -108,7 +108,7 @@ export const addReview = async (req, res, next) => {
 
     await db.execute(
       "INSERT INTO review (name, position, description) VALUES (?, ?, ?)",
-      [name, position || null, description]
+      [name, position || null, description],
     );
 
     res.status(201).json({ message: "Review added successfully" });
@@ -121,7 +121,7 @@ export const addReview = async (req, res, next) => {
 export const getReview = async (req, res, next) => {
   try {
     const [reviews] = await db.execute(
-      "SELECT * FROM review ORDER BY review_id DESC"
+      "SELECT * FROM review ORDER BY review_id DESC",
     );
 
     if (reviews.length === 0) {
@@ -144,7 +144,7 @@ export const deleteReview = async (req, res, next) => {
 
     const [result] = await db.execute(
       "SELECT name FROM review WHERE review_id = ?",
-      [id]
+      [id],
     );
 
     if (result.length === 0) {
@@ -174,7 +174,7 @@ export const addInquiry = async (req, res, next) => {
     }
     const [branch] = await db.execute(
       "select branch_id ,branch_name from branch where branch_id = ?",
-      [branch_id]
+      [branch_id],
     );
     if (branch.length === 0) {
       return res.status(404).json({
@@ -186,7 +186,7 @@ export const addInquiry = async (req, res, next) => {
     await db.execute(
       `INSERT INTO inquiry (name, phone, address, email, description, branch_id) 
        VALUES (?, ?, ?, ?, ?, ?)`,
-      [name, phone, address, email || null, description || null, branch_id]
+      [name, phone, address, email || null, description || null, branch_id],
     );
 
     res.status(201).json({
@@ -208,7 +208,7 @@ export const deleteInquiry = async (req, res, next) => {
     }
     const [result] = await db.execute(
       "select inquiry_id from inquiry where inquiry_id = ? ",
-      [inquiry_id]
+      [inquiry_id],
     );
 
     if (result.length === 0) {
@@ -227,14 +227,14 @@ export const deleteInquiry = async (req, res, next) => {
 export const getInquiryById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    
+
     if (!id) {
       return res.status(400).json({ message: "Please provide inquiry ID" });
     }
 
     const [result] = await db.execute(
       "SELECT * FROM inquiry WHERE inquiry_id = ?",
-      [id]
+      [id],
     );
 
     if (result.length === 0) {
@@ -254,7 +254,7 @@ export const getInquiryById = async (req, res, next) => {
 export const getAllInquiry = async (req, res, next) => {
   try {
     const [allInquiry] = await db.execute(
-      "SELECT * FROM inquiry ORDER BY created_at DESC"
+      "SELECT * FROM inquiry ORDER BY created_at DESC",
     );
 
     res.status(200).json({
@@ -270,14 +270,14 @@ export const getAllInquiry = async (req, res, next) => {
 export const getInquiryByBranch = async (req, res, next) => {
   try {
     const { branch_id } = req.params;
-    
+
     if (!branch_id) {
       return res.status(400).json({ message: "Please provide branch ID" });
     }
 
     const [result] = await db.execute(
       "SELECT * FROM inquiry WHERE branch_id = ? ORDER BY created_at DESC",
-      [branch_id]
+      [branch_id],
     );
 
     res.status(200).json({
@@ -301,7 +301,7 @@ export const updateInquiry = async (req, res, next) => {
 
     const [existing] = await db.execute(
       "SELECT * FROM inquiry WHERE inquiry_id = ?",
-      [id]
+      [id],
     );
 
     if (existing.length === 0) {
@@ -320,7 +320,7 @@ export const updateInquiry = async (req, res, next) => {
         branch_id || oldInquiry.branch_id,
         description || oldInquiry.description,
         id,
-      ]
+      ],
     );
 
     res.status(200).json({ message: "Inquiry updated successfully" });
@@ -339,7 +339,7 @@ export const getInquiry = async (req, res, next) => {
     // admin → all inquiries
     if (role === "admin") {
       const [rows] = await db.execute(
-        "SELECT * FROM inquiry ORDER BY created_at DESC"
+        "SELECT * FROM inquiry ORDER BY created_at DESC",
       );
       allInquiry = rows;
     }
@@ -349,7 +349,7 @@ export const getInquiry = async (req, res, next) => {
       // get manager branch
       const [branchRows] = await db.execute(
         "SELECT branch_id FROM users WHERE email = ?",
-        [email]
+        [email],
       );
 
       if (branchRows.length === 0 || !branchRows[0].branch_id) {
@@ -362,7 +362,7 @@ export const getInquiry = async (req, res, next) => {
 
       const [rows] = await db.execute(
         "SELECT * FROM inquiry WHERE branch_id = ? ORDER BY created_at DESC",
-        [branch_id]
+        [branch_id],
       );
 
       allInquiry = rows;
@@ -370,7 +370,7 @@ export const getInquiry = async (req, res, next) => {
 
     res.status(200).json({
       message: "Successfully displayed inquiry",
-      allInquiry,
+      data: allInquiry,
     });
   } catch (error) {
     next(error);
@@ -381,14 +381,14 @@ export const getInquiry = async (req, res, next) => {
 export const getReviewById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    
+
     if (!id) {
       return res.status(400).json({ message: "Please provide review ID" });
     }
 
     const [result] = await db.execute(
       "SELECT * FROM review WHERE review_id = ?",
-      [id]
+      [id],
     );
 
     if (result.length === 0) {
@@ -408,7 +408,7 @@ export const getReviewById = async (req, res, next) => {
 export const getAllReview = async (req, res, next) => {
   try {
     const [reviews] = await db.execute(
-      "SELECT * FROM review ORDER BY created_at DESC"
+      "SELECT * FROM review ORDER BY created_at DESC",
     );
 
     res.status(200).json({
@@ -424,14 +424,14 @@ export const getAllReview = async (req, res, next) => {
 export const getReviewByBranch = async (req, res, next) => {
   try {
     const { branch_id } = req.params;
-    
+
     if (!branch_id) {
       return res.status(400).json({ message: "Please provide branch ID" });
     }
 
     const [result] = await db.execute(
       "SELECT * FROM review WHERE branch_id = ? ORDER BY created_at DESC",
-      [branch_id]
+      [branch_id],
     );
 
     res.status(200).json({
@@ -455,7 +455,7 @@ export const updateReview = async (req, res, next) => {
 
     const [existing] = await db.execute(
       "SELECT * FROM review WHERE review_id = ?",
-      [id]
+      [id],
     );
 
     if (existing.length === 0) {
@@ -471,7 +471,7 @@ export const updateReview = async (req, res, next) => {
         position || oldReview.position,
         description || oldReview.description,
         id,
-      ]
+      ],
     );
 
     res.status(200).json({ message: "Review updated successfully" });
@@ -485,14 +485,14 @@ export const updateReview = async (req, res, next) => {
 export const getPartnerById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    
+
     if (!id) {
       return res.status(400).json({ message: "Please provide partner ID" });
     }
 
     const [result] = await db.execute(
       "SELECT * FROM trusted_costumer WHERE costumer_id = ?",
-      [id]
+      [id],
     );
 
     if (result.length === 0) {
@@ -512,7 +512,7 @@ export const getPartnerById = async (req, res, next) => {
 export const getAllPartner = async (req, res, next) => {
   try {
     const [partners] = await db.execute(
-      "SELECT * FROM trusted_costumer ORDER BY created_at DESC"
+      "SELECT * FROM trusted_costumer ORDER BY created_at DESC",
     );
 
     res.status(200).json({
@@ -528,14 +528,14 @@ export const getAllPartner = async (req, res, next) => {
 export const getPartnerByBranch = async (req, res, next) => {
   try {
     const { branch_id } = req.params;
-    
+
     if (!branch_id) {
       return res.status(400).json({ message: "Please provide branch ID" });
     }
 
     const [result] = await db.execute(
       "SELECT * FROM trusted_costumer WHERE branch_id = ? ORDER BY created_at DESC",
-      [branch_id]
+      [branch_id],
     );
 
     res.status(200).json({
@@ -563,7 +563,7 @@ export const updatePartner = async (req, res, next) => {
 
     const [existing] = await db.execute(
       "SELECT * FROM trusted_costumer WHERE costumer_id = ?",
-      [id]
+      [id],
     );
 
     if (existing.length === 0) {
@@ -587,7 +587,7 @@ export const updatePartner = async (req, res, next) => {
 
     await db.execute(
       "UPDATE trusted_costumer SET name=?, image=? WHERE costumer_id=?",
-      [name || oldPartner.name, imagePath, id]
+      [name || oldPartner.name, imagePath, id],
     );
 
     res.status(200).json({ message: "Partner updated successfully" });
