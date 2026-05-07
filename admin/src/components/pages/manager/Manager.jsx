@@ -175,7 +175,7 @@ const Manager = () => {
             </div>
           </div>
           <Link
-            to="/admin/manager-staff-dashboard"
+            to="/manager/staff-dashboard"
             className="w-full mt-4 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition block text-center"
           >
             Manage Staff
@@ -210,7 +210,7 @@ const Manager = () => {
             </div>
           </div>
           <Link
-            to="/admin/manager-service-dashboard"
+            to="/manager/service-dashboard"
             className="w-full mt-4 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition block text-center"
           >
             Manage Services
@@ -241,7 +241,7 @@ const Manager = () => {
             </div>
           </div>
           <Link
-            to="/admin/manager-inquiry-dashboard"
+            to="/manager/inquiry-dashboard"
             className="w-full mt-4 bg-yellow-600 text-white py-2 rounded-lg hover:bg-yellow-700 transition block text-center"
           >
             Manage Inquiries
