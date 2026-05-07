@@ -1,6 +1,8 @@
 import { indexSlice } from "./indexSlice";
+
 export const branchApi = indexSlice.injectEndpoints({
   endpoints: (builder) => ({
+    // Province Endpoints
     getProvince: builder.query({
       query: () => ({
         url: "/branch/get-allprovince",
@@ -23,6 +25,8 @@ export const branchApi = indexSlice.injectEndpoints({
       }),
       invalidatesTags: ["branch"],
     }),
+
+    // District Endpoints
     getDistrict: builder.query({
       query: () => ({
         url: "/branch/get-all-district",
@@ -52,6 +56,8 @@ export const branchApi = indexSlice.injectEndpoints({
       }),
       invalidatesTags: ["branch"],
     }),
+
+    // Branch Endpoints
     getBranch: builder.query({
       query: () => ({
         url: "/branch/get-branch",
@@ -74,8 +80,40 @@ export const branchApi = indexSlice.injectEndpoints({
       }),
       invalidatesTags: ["branch"],
     }),
-  }),
-});
+
+    getManagers: builder.query({
+      query: () => ({
+        url: "auth/get-manager",
+        method: "GET",
+      }),
+      providesTags: ["branch"],
+    }),
+    addManager: builder.mutation({
+      query: (data) => ({
+        url: "/user/add-manager",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["branch"],
+    }),
+    updateManager: builder.mutation({
+      query: ({ id, data }) => ({
+        url: `/user/update-manager/${id}`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: ["branch"],
+    }),
+    deleteManager: builder.mutation({
+      query: (id) => ({
+        url: `/user/delete-manager/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["branch"],
+    }),
+  }), // Endpoints ko closure
+}); // injectEndpoints ko closure
+
 export const {
   useGetProvinceQuery,
   useAddProvinceMutation,
@@ -87,4 +125,8 @@ export const {
   useAddBranchMutation,
   useDeleteBranchMutation,
   useGetDisrtrictWithBranchQuery,
+  useGetManagersQuery,
+  useAddManagerMutation,
+  useDeleteManagerMutation,
+  useUpdateManagerMutation,
 } = branchApi;

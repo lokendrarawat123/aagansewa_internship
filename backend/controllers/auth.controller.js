@@ -161,14 +161,29 @@ export const addManager = async (req, res, next) => {
 // Get all Manager
 export const getManager = async (req, res, next) => {
   try {
-    const [manager] = await db.execute("SELECT * FROM users where role = ? ", [
-      "manager",
-    ]);
+    // users table (u) lai branch table (b) sanga join gareko
+    const [managers] = await db.execute(
+      `SELECT 
+        u.user_id, 
+        u.name, 
+        u.email, 
+        u.role, 
+        u.created_at, 
+        u.branch_id, 
+        b.branch_name 
+      FROM users u
+      LEFT JOIN branch b ON u.branch_id = b.branch_id
+      WHERE u.role = ?`,
+      ["manager"],
+    );
+
     res.status(200).json({
-      message: "Manager fetched successfully",
-      managers: manager,
+      success: true,
+      message: "Managers with branch details fetched successfully",
+      managers: managers,
     });
   } catch (error) {
+    console.error("Error fetching managers:", error);
     next(error);
   }
 };
