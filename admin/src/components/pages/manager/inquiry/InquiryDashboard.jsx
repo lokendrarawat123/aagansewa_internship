@@ -33,10 +33,15 @@ const ManagerInquiryDashboard = () => {
   const [deleteInquiry] = useDeleteInquiryMutation();
 
   // Filter inquiries for manager's branch only
-  const allInquiries = inquiriesData?.inquiries || inquiriesData?.allInquiries || [];
-  const branchInquiries = allInquiries.filter(inquiry => inquiry.branch_id == userBranchId);
+  const allInquiries =
+    inquiriesData?.inquiries || inquiriesData?.allInquiries || [];
+  const branchInquiries = allInquiries.filter(
+    (inquiry) => inquiry.branch_id == userBranchId,
+  );
   const branches = branchData?.branch || [];
-  const userBranch = branches.find(branch => branch.branch_id == userBranchId);
+  const userBranch = branches.find(
+    (branch) => branch.branch_id == userBranchId,
+  );
 
   // Handle form input changes
   const handleChange = (e) => {
@@ -128,10 +133,18 @@ const ManagerInquiryDashboard = () => {
   };
 
   // Get inquiry stats
-  const pendingCount = branchInquiries.filter(i => i.status === 'pending').length;
-  const inProgressCount = branchInquiries.filter(i => i.status === 'in_progress').length;
-  const resolvedCount = branchInquiries.filter(i => i.status === 'resolved').length;
-  const closedCount = branchInquiries.filter(i => i.status === 'closed').length;
+  const pendingCount = branchInquiries.filter(
+    (i) => i.status === "pending",
+  ).length;
+  const inProgressCount = branchInquiries.filter(
+    (i) => i.status === "in_progress",
+  ).length;
+  const resolvedCount = branchInquiries.filter(
+    (i) => i.status === "resolved",
+  ).length;
+  const closedCount = branchInquiries.filter(
+    (i) => i.status === "closed",
+  ).length;
 
   // Loading and error states
   if (isLoading) {
@@ -148,7 +161,8 @@ const ManagerInquiryDashboard = () => {
         <div>
           <h1 className="text-2xl font-bold mb-2">Inquiry Management</h1>
           <p className="text-gray-600">
-            Managing inquiries for {userBranch?.branch_name || `Branch ${userBranchId}`}
+            Managing inquiries for{" "}
+            {userBranch?.branch_name || `Branch ${userBranchId}`}
           </p>
         </div>
         <div className="flex gap-2">
@@ -169,8 +183,18 @@ const ManagerInquiryDashboard = () => {
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
           <div className="flex items-center">
             <div className="p-2 bg-yellow-50 rounded-lg">
-              <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                className="w-5 h-5 text-yellow-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             </div>
             <div className="ml-3">
@@ -183,13 +207,25 @@ const ManagerInquiryDashboard = () => {
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
           <div className="flex items-center">
             <div className="p-2 bg-blue-50 rounded-lg">
-              <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              <svg
+                className="w-5 h-5 text-blue-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 10V3L4 14h7v7l9-11h-7z"
+                />
               </svg>
             </div>
             <div className="ml-3">
               <p className="text-sm font-medium text-gray-600">In Progress</p>
-              <p className="text-xl font-bold text-gray-900">{inProgressCount}</p>
+              <p className="text-xl font-bold text-gray-900">
+                {inProgressCount}
+              </p>
             </div>
           </div>
         </div>
@@ -197,8 +233,18 @@ const ManagerInquiryDashboard = () => {
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
           <div className="flex items-center">
             <div className="p-2 bg-green-50 rounded-lg">
-              <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                className="w-5 h-5 text-green-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             </div>
             <div className="ml-3">
@@ -211,13 +257,25 @@ const ManagerInquiryDashboard = () => {
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
           <div className="flex items-center">
             <div className="p-2 bg-gray-50 rounded-lg">
-              <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              <svg
+                className="w-5 h-5 text-gray-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                />
               </svg>
             </div>
             <div className="ml-3">
               <p className="text-sm font-medium text-gray-600">Total</p>
-              <p className="text-xl font-bold text-gray-900">{branchInquiries.length}</p>
+              <p className="text-xl font-bold text-gray-900">
+                {branchInquiries.length}
+              </p>
             </div>
           </div>
         </div>
