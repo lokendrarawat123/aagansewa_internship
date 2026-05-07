@@ -35,13 +35,13 @@ siteRouter.post(
   "/add-trusted-costumer",
   uploadCostumer.single("image"),
   isLogin,
-  addTrustedCostumer
+  addTrustedCostumer,
 );
 siteRouter.get("/get-trusted-costumer", getTrustedCustomers);
 siteRouter.delete(
   "/delete-trusted-costumer/:id",
   isLogin,
-  deleteTrustedCustomer
+  deleteTrustedCustomer,
 );
 
 // Partner routes (aliases for trusted customer)
@@ -52,13 +52,13 @@ siteRouter.post(
   "/add-partner",
   uploadCostumer.single("image"),
   isLogin,
-  addPartner
+  addPartner,
 );
 siteRouter.patch(
   "/update-partner/:id",
   uploadCostumer.single("image"),
   isLogin,
-  updatePartner
+  updatePartner,
 );
 siteRouter.delete("/delete-partner/:id", isLogin, deletePartner);
 
@@ -72,8 +72,8 @@ siteRouter.get("/branch/:branch_id/review", getReviewByBranch);
 siteRouter.patch("/update-review/:id", isLogin, updateReview);
 
 // Inquiry routes
-siteRouter.post("/add-inquiry", addInquiry);
-siteRouter.get("/get-inquiry", isLogin, getInquiry);
+siteRouter.post("/add-inquiry", isLogin, addInquiry);
+siteRouter.get("/get-inquiry", getInquiry);
 siteRouter.delete("/delete-inquiry/:id", isLogin, deleteInquiry);
 siteRouter.get("/get-inquiry/:id", getInquiryById);
 siteRouter.get("/get-allInquiry", getAllInquiry);
