@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { FaBars, FaTimes, FaChevronDown } from "react-icons/fa";
-import logo1 from "../assets/logo1.jpg";
+import logo1 from "../assets/logo.png";
 import { NavLink } from "react-router-dom";
 
 const AGENCIES = [
