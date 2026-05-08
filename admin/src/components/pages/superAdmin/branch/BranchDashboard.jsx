@@ -14,6 +14,7 @@ import { Error } from "../../../shared/Error";
 
 const BranchDashboard = () => {
   // State for managing modal and form
+  const [selectProvince, setSelectProvince] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [selectedBranch, setSelectedBranch] = useState(null);
@@ -27,24 +28,27 @@ const BranchDashboard = () => {
   // API hooks
   const { data: branchData, isLoading, error } = useGetBranchQuery();
 
-  const { data: districtData } = useGetDistrictQuery();
+  const { data: districtData } = useGetDistrictByProvinceQuery();
   const { data: provinceData } = useGetProvinceQuery();
   const [addBranch] = useAddBranchMutation();
   const [deleteBranch] = useDeleteBranchMutation();
 
   const branches = branchData?.data || [];
-  console.log("Branches:", branches);
-  const allDistricts = districtData?.allDistricts;
+
+  const filteredDistricts = districtData?.data;
+
   const provinces = provinceData?.data;
 
   // Filter districts based on selected province
   const filteredDistricts = allDistricts?.filter(
     (district) => district.province_id == formData.province_id,
   );
+  console.log("filter: ", filteredDistricts);
 
   // Handle form input changes
   const handleChange = (e) => {
     const { id, value } = e.target;
+    setSelectProvince(id);
 
     // If province changes, reset district selection
     if (id === "province_id") {

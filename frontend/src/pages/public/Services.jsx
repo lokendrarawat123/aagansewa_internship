@@ -16,7 +16,6 @@ const Services = () => {
     <div className="w-full text-gray-800">
       {/* HERO SECTION */}
       <section className="relative min-h-[60vh] flex items-center justify-center text-white overflow-hidden">
-        
         {/* Background Image */}
         <div
           className="absolute inset-0 bg-cover bg-center scale-105"
@@ -30,7 +29,8 @@ const Services = () => {
         <div
           className="absolute inset-0"
           style={{
-            background: "linear-gradient(135deg, rgba(25, 45, 85, 0.6) 0%, rgba(25, 45, 85, 0.5) 60%, rgba(255, 107, 53, 0.2) 100%)"
+            background:
+              "linear-gradient(135deg, rgba(25, 45, 85, 0.6) 0%, rgba(25, 45, 85, 0.5) 60%, rgba(255, 107, 53, 0.2) 100%)",
           }}
         />
 
@@ -44,7 +44,7 @@ const Services = () => {
             Aagan Sewa branches. Find the service you need and connect with our
             local managers for quick assistance.
           </p>
-          
+
           {/* CTA Button */}
           <div className="mt-8">
             <button
@@ -52,7 +52,9 @@ const Services = () => {
               style={{ backgroundColor: "#FF6B35" }}
             >
               Browse All Services
-              <span className="inline-block transition-transform group-hover:translate-x-1 ml-1">→</span>
+              <span className="inline-block transition-transform group-hover:translate-x-1 ml-1">
+                →
+              </span>
             </button>
           </div>
         </div>
