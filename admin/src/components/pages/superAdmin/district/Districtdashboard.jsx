@@ -33,7 +33,7 @@ const DistrictDashboard = () => {
   const [deleteDistrict] = useDeleteDistrictMutation();
 
   const districts = districtData?.data;
-  const provinces = provinceData?.provinces;
+  const provinces = provinceData?.data;
   console.log(provinces);
 
   // Handle form input changes
