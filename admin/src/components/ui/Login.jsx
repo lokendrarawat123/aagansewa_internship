@@ -8,7 +8,7 @@ import { setUser } from "../../redux/features/authState";
 
 const Login = () => {
   // 1. User ko data pani line state bata
-  const { isAuth, user } = useSelector((state) => state.user);
+  const { isAuth, role } = useSelector((state) => state.user);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -16,14 +16,14 @@ const Login = () => {
 
   // 2. Dashboard protection logic yaha sudharnu parcha
   useEffect(() => {
-    if (isAuth && user) {
-      if (user.role === "admin") {
+    if (isAuth && role) {
+      if (role === "admin") {
         navigate("/admin/dashboard");
-      } else if (user.role === "manager") {
+      } else if (role === "manager") {
         navigate("/manager/dashboard");
       }
     }
-  }, [isAuth, user, navigate]); // user ra isAuth dubai dependancy ma rakhne
+  }, [isAuth, role, navigate]); // user ra isAuth dubai dependancy ma rakhne
 
   const [data, setData] = useState({
     email: "",
