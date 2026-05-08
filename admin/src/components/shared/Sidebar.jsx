@@ -25,9 +25,8 @@ import { useSignOutMutation } from "../../redux/features/authSlice";
 import { Link, useNavigate } from "react-router-dom";
 
 const Sidebar = ({ active, setActive }) => {
-  const { user } = useSelector((state) => state.user);
-  const role = user?.role?.toLowerCase();
-  console.log("User Role:", user); // Debugging line to check the role value
+  const { role } = useSelector((state) => state.user);
+  console.log("User Role:", role); // Debugging line to check the role value
   const [signout] = useSignOutMutation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -47,6 +46,7 @@ const Sidebar = ({ active, setActive }) => {
       key: "dashboard",
       icon: <House size={18} />,
       path: "dashboard",
+      role: ["admin", "manager"],
     },
     {
       name: "Province Management",
