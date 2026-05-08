@@ -35,7 +35,7 @@ const BranchDashboard = () => {
   const branches = branchData?.data || [];
   console.log("Branches:", branches);
   const allDistricts = districtData?.allDistricts;
-  const provinces = provinceData?.provinces;
+  const provinces = provinceData?.data;
 
   // Filter districts based on selected province
   const filteredDistricts = allDistricts?.filter(
