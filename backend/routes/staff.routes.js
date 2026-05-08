@@ -16,14 +16,14 @@ import { authorizeRoles } from "../middlewares/isAuthorizedRoles.js";
 const staffRouter = express.Router();
 
 // Staff CRUD operations
-staffRouter.post("/add-staff", isLogin, addStaff);
+staffRouter.post("/add-staff", isLogin, authorizeRoles("manager"), addStaff);
 staffRouter.get("/get-staff", isLogin, getStaff);
 staffRouter.patch("/update-staff/:id", isLogin, updateStaff);
 staffRouter.delete(
   "/delete-staff/:id",
   isLogin,
   authorizeRoles("manager"),
-  deleteStaff
+  deleteStaff,
 );
 
 // Additional staff routes
