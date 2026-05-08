@@ -4,8 +4,8 @@ import {
   useGetBranchQuery,
   useAddBranchMutation,
   useDeleteBranchMutation,
-  useGetDistrictQuery,
   useGetProvinceQuery,
+  useGetDistrictByProvinceQuery,
 } from "../../../../redux/features/branchSlice.js";
 import Input from "../../../shared/Input";
 import DetailsModal from "../../../shared/Modal";
@@ -28,7 +28,9 @@ const BranchDashboard = () => {
   // API hooks
   const { data: branchData, isLoading, error } = useGetBranchQuery();
 
-  const { data: districtData } = useGetDistrictByProvinceQuery();
+  const { data: districtData } = useGetDistrictByProvinceQuery(
+    formData.province_id,
+  );
   const { data: provinceData } = useGetProvinceQuery();
   const [addBranch] = useAddBranchMutation();
   const [deleteBranch] = useDeleteBranchMutation();
@@ -39,16 +41,9 @@ const BranchDashboard = () => {
 
   const provinces = provinceData?.data;
 
-  // Filter districts based on selected province
-  const filteredDistricts = allDistricts?.filter(
-    (district) => district.province_id == formData.province_id,
-  );
-  console.log("filter: ", filteredDistricts);
-
   // Handle form input changes
   const handleChange = (e) => {
     const { id, value } = e.target;
-    setSelectProvince(id);
 
     // If province changes, reset district selection
     if (id === "province_id") {
