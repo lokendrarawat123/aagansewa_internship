@@ -72,12 +72,11 @@ siteRouter.get("/branch/:branch_id/review", getReviewByBranch);
 siteRouter.patch("/update-review/:id", isLogin, updateReview);
 
 // Inquiry routes
-siteRouter.post("/add-inquiry", isLogin, addInquiry);
+siteRouter.post("/add-inquiry", isLogin,authorizeRoles("manager"), addInquiry);
 siteRouter.get("/get-inquiry", getInquiry);
-siteRouter.delete("/delete-inquiry/:id", isLogin, deleteInquiry);
+siteRouter.delete("/delete-inquiry/:id", isLogin,authorizeRoles("manager"), deleteInquiry);
 siteRouter.get("/get-inquiry/:id", getInquiryById);
 siteRouter.get("/get-allInquiry", getAllInquiry); // for the all inquiry not authenticated
 siteRouter.get("/branch/:branch_id/inquiry", getInquiryByBranch);
-siteRouter.patch("/update-inquiry/:id", isLogin, updateInquiry);
-
+siteRouter.patch("/update-inquiry/:id", isLogin, authorizeRoles("manager"),updateInquiry);
 export default siteRouter;
