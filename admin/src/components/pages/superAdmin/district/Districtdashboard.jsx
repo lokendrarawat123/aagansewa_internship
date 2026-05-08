@@ -33,7 +33,8 @@ const DistrictDashboard = () => {
   const [deleteDistrict] = useDeleteDistrictMutation();
 
   const districts = districtData?.data;
-  const provinces = provinceData?.provinces;
+  const provinces = provinceData?.data;
+  console.log(provinces);
 
   // Handle form input changes
   const handleChange = (e) => {
@@ -63,6 +64,7 @@ const DistrictDashboard = () => {
   // delelte modal open
   const handleDeleteModal = async (district) => {
     setSelectedDistrict(district);
+    console.log(selectedDistrict);
     setShowDeleteModal(true);
   };
   // Handle delete district
@@ -71,7 +73,8 @@ const DistrictDashboard = () => {
       console.log(district);
       await deleteDistrict(district.district_id).unwrap();
       toast.success("District deleted successfully");
-      setShowAddModal(false);
+      setShowDeleteModal(false);
+      setSelectedDistrict(null);
     } catch (error) {
       toast.error(error.data?.message || "Failed to delete district");
     }
@@ -290,7 +293,7 @@ const DistrictDashboard = () => {
 
             <button
               onClick={() => {
-                handleDelete(districts);
+                handleDelete(selectedDistrict);
               }}
               className="px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600"
             >

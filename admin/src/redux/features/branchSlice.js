@@ -41,6 +41,13 @@ export const branchApi = indexSlice.injectEndpoints({
       }),
       providesTags: ["branch"],
     }),
+    getDistrictByProvince: builder.query({
+      query: (id) => ({
+        url: `/branch/get-districts/ ${id}`,
+        method: "GET",
+      }),
+      providesTags: ["branch"],
+    }),
     addDistrict: builder.mutation({
       query: (data) => ({
         url: "/branch/add-district",
@@ -129,4 +136,5 @@ export const {
   useAddManagerMutation,
   useDeleteManagerMutation,
   useUpdateManagerMutation,
+  useGetDistrictByProvinceQuery,
 } = branchApi;
