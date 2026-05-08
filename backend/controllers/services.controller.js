@@ -285,3 +285,30 @@ export const getAllServicesWithBranch = async (req, res, next) => {
     next(error); // Error handling middleware मा पठाउने
   }
 };
+export const vision = async (req, res, next) => {
+  try {
+    const { province_id, district_id, branch_id } = req.query;
+    // console.log(req.query);
+    let query = "";
+    let params = [];
+    if (province_id && !district_id && !branch_id) {
+      query = "select * from district where province_id=?";
+      params = [province_id];
+    } else if (province_id && district_id && !branch_id) {
+      query = "select * from branch where district_id =?";
+      params = [district_id];
+    } else if (province_id && district_id && branch_id) {
+      query = "select * from services where branch_id =?";
+      params = [branch_id];
+    } else {
+      query = "select * from services order by created_at desc";
+    }
+    const [result] = await db.execute(query, params);
+    return res.status(200).json({
+      message: "service displayed succesfully",
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};

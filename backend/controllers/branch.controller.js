@@ -520,7 +520,7 @@ export const getBranchByDistrict = async (req, res, next) => {
 
 export const filteredBranches = async (req, res, next) => {
   try {
-    const { province_id, district_id } = req.query;
+    const { province_id, district_id } = req.params;
 
     // १. यदि केही छानिएको छैन भने सबै ब्रान्च देखाउने Query
     let query = "SELECT * FROM branch";

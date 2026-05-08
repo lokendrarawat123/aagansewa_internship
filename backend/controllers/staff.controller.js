@@ -291,39 +291,70 @@ export const deleteStaff = async (req, res, next) => {
 export const forgotPassword = async (req, res, next) => {
   try {
     const { email } = req.body;
-    if (!email) return res.status(400).json({ message: "Email required" });
 
-    const [staff] = await db.execute(
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
+
+    // Check if staff exists
+    const [rows] = await db.execute(
       "SELECT staff_id FROM staff WHERE email = ?",
       [email]
     );
-    if (staff.length === 0)
-      return res.status(404).json({ message: "Email not found" });
 
-    // Generate 6-digit code
-    const code = Math.floor(100000 + Math.random() * 900000);
+    if (rows.length === 0) {
+      // Option 1: Security best practice (recommended)
+      return res.status(200).json({ 
+        message: "If an account with that email exists, a reset code has been sent." 
+      });
 
-    // Store code in DB
-    await db.execute("UPDATE staff SET reset_code = ? WHERE email = ?", [
-      code,
-      email,
-    ]);
+      // Option 2: If you want to be explicit (less secure against enumeration)
+      // return res.status(404).json({ message: "Email not found" });
+    }
+
+    // Generate 6-digit reset code
+    const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // Set expiration (15 minutes)
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
+
+    // Store code + expiration
+    await db.execute(
+      `UPDATE staff 
+       SET reset_code = ?, 
+           reset_code_expires = ? 
+       WHERE email = ?`,
+      [resetCode, expiresAt, email]
+    );
 
     // Send email
-    const transporter = nodemailer.createTransport({
+    const transporter = nodemailer.createTransporter({
       service: "gmail",
-      auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
     });
 
     await transporter.sendMail({
-      from: process.env.EMAIL_USER,
+      from: `"Your App Name" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: "Password Reset Code",
-      text: `Your password reset code is: ${code}`,
+      html: `
+        <h2>Password Reset Request</h2>
+        <p>Your password reset code is:</p>
+        <h1 style="letter-spacing: 8px;">${resetCode}</h1>
+        <p>This code will expire in 15 minutes.</p>
+        <p>If you didn't request this, please ignore this email.</p>
+      `,
     });
 
-    res.status(200).json({ message: "Reset code sent to your email" });
+    res.status(200).json({ 
+      message: "Reset code sent to your email" 
+    });
+
   } catch (error) {
+    console.error("Forgot password error:", error);
     next(error);
   }
 };

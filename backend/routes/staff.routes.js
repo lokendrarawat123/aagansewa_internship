@@ -8,7 +8,7 @@ import {
   logout,
   getStaffById,
   getAllStaff,
-  getStaffByBranch,
+  getStaffByBranch,forgotPassword
 } from "../controllers/staff.controller.js";
 import { isLogin } from "../middlewares/isLogin.js";
 import { authorizeRoles } from "../middlewares/isAuthorizedRoles.js";
@@ -34,5 +34,5 @@ staffRouter.get("/branch/:branch_id/staff", getStaffByBranch);
 // Authentication routes
 staffRouter.post("/login", login);
 staffRouter.post("/logout", logout);
-
+staffRouter.post("/forgotpassword",forgotPassword);
 export default staffRouter;

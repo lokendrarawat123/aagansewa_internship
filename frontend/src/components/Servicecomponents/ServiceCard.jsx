@@ -1,7 +1,7 @@
 import React from "react";
 
-const ServiceCard = ({ allServices, image_url, children }) => {
-    
+const ServiceCard = ({ allServices = [], image_url, children }) => {
+
   return (
     <div className="bg-white p-4">
       <div className="max-w-6xl mx-auto">
