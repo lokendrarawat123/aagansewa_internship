@@ -34,6 +34,7 @@ const DistrictDashboard = () => {
 
   const districts = districtData?.data;
   const provinces = provinceData?.provinces;
+  console.log(provinces);
 
   // Handle form input changes
   const handleChange = (e) => {

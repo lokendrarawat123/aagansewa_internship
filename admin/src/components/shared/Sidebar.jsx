@@ -26,7 +26,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 const Sidebar = ({ active, setActive }) => {
   const { role } = useSelector((state) => state.user);
-  console.log("User Role:", role); // Debugging line to check the role value
+
   const [signout] = useSignOutMutation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -40,103 +40,93 @@ const Sidebar = ({ active, setActive }) => {
       toast.error(error.data?.message || "logout failed");
     }
   };
-  const menu = [
+  const menus = [
     {
       name: "Dashboard",
       key: "dashboard",
       icon: <House size={18} />,
-      path: "dashboard",
-      role: ["admin", "manager"],
+      path: "/admin/dashboard",
+      roles: ["admin", "manager"],
     },
+
+    // ADMIN ONLY
     {
       name: "Province Management",
       key: "province",
       icon: <MapPin size={18} />,
       path: "/admin/province-dashboard",
+      roles: ["admin"],
     },
     {
       name: "District Management",
       key: "district",
       icon: <Layers size={18} />,
       path: "/admin/district-dashboard",
+      roles: ["admin"],
     },
     {
       name: "Branch Management",
       key: "branch",
       icon: <Building2 size={18} />,
       path: "/admin/branch-dashboard",
+      roles: ["admin"],
     },
     {
       name: "Manager Management",
       key: "manager",
       icon: <UserCheck size={18} />,
       path: "/admin/manager-dashboard",
+      roles: ["admin"],
     },
+
+    // ADMIN + MANAGER
     {
       name: "Service Management",
       key: "service",
       icon: <Settings size={18} />,
       path: "/admin/service-dashboard",
+      roles: ["admin", "manager"],
     },
     {
       name: "Inquiry Management",
       key: "inquiry",
       icon: <MessageCircleQuestionMark size={18} />,
       path: "/admin/inquiry-dashboard",
+      roles: ["admin", "manager"],
     },
     {
       name: "Staff Management",
       key: "staff",
       icon: <UserRoundCog size={18} />,
       path: "/admin/staff-dashboard",
+      roles: ["admin", "manager"],
     },
-  ];
 
-  const managerMenu = [
-    {
-      name: "Home",
-      key: "home",
-      icon: <House size={18} />,
-      path: "/dashboard", // Clean URL
-    },
-    {
-      name: "Service Management",
-      key: "service",
-      icon: <Settings size={18} />,
-      path: "/service-management",
-    },
-    {
-      name: "Staff Management",
-      key: "staff",
-      icon: <UserRoundCog size={18} />,
-      path: "/staff-management",
-    },
-    {
-      name: "Inquiry Management",
-      key: "inquiry",
-      icon: <MessageCircleQuestionMark size={18} />,
-      path: "/inquiry-management",
-    },
+    // MANAGER ONLY (no admin prefix needed)
     {
       name: "Review Management",
       key: "review",
       icon: <Star size={18} />,
-      path: "/review-management",
+      path: "/admin/review-dashboard",
+      roles: ["manager"],
     },
     {
       name: "Profile",
       key: "profile",
       icon: <UserCircle size={18} />,
-      path: "/profile",
+      path: "admin/profile",
+      roles: ["manager"],
     },
     {
       name: "Reports",
       key: "report",
       icon: <BarChart3 size={18} />,
-      path: "/reports",
+      path: "admin/reports",
+      roles: ["manager"],
     },
   ];
-  const currentMenu = role === "admin" ? menu : managerMenu;
+
+  const currentMenu = menus.filter((item) => item.roles.includes(role));
   return (
     <aside className="fixed-0 w-64 h-screen bg-slate-900 text-slate-200 flex flex-col shadow-xl">
       {/* Brand */}
