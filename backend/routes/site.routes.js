@@ -29,7 +29,6 @@ import { isLogin } from "../middlewares/isLogin.js";
 import { authorizeRoles } from "../middlewares/isAuthorizedRoles.js";
 
 const siteRouter = express.Router();
-
 // Trusted Customer/Partner routes
 siteRouter.post(
   "/add-trusted-costumer",
@@ -43,7 +42,6 @@ siteRouter.delete(
   isLogin,
   deleteTrustedCustomer,
 );
-
 // Partner routes (aliases for trusted customer)
 siteRouter.get("/get-partner/:id", getPartnerById);
 siteRouter.get("/get-allPartner", getAllPartner);
@@ -61,23 +59,20 @@ siteRouter.patch(
   updatePartner,
 );
 siteRouter.delete("/delete-partner/:id", isLogin, deletePartner);
-
 // Review routes
 siteRouter.post("/add-review", addReview);
 siteRouter.get("/get-review", getReview);
-siteRouter.delete("/delete-review/:id", isLogin, deleteReview);
+siteRouter.delete("/delete-review/:id", isLogin,authorizeRoles("manager"), deleteReview);
 siteRouter.get("/get-review/:id", getReviewById);
 siteRouter.get("/get-allReview", getAllReview);
 siteRouter.get("/branch/:branch_id/review", getReviewByBranch);
-siteRouter.patch("/update-review/:id", isLogin, updateReview);
-
+siteRouter.patch("/update-review/:id", isLogin,authorizeRoles("manager"), updateReview);
 // Inquiry routes
-siteRouter.post("/add-inquiry", isLogin, addInquiry);
+siteRouter.post("/add-inquiry", isLogin,authorizeRoles("manager"), addInquiry);
 siteRouter.get("/get-inquiry", getInquiry);
-siteRouter.delete("/delete-inquiry/:id", isLogin, deleteInquiry);
+siteRouter.delete("/delete-inquiry/:id", isLogin,authorizeRoles("manager"), deleteInquiry);
 siteRouter.get("/get-inquiry/:id", getInquiryById);
 siteRouter.get("/get-allInquiry", getAllInquiry); // for the all inquiry not authenticated
 siteRouter.get("/branch/:branch_id/inquiry", getInquiryByBranch);
-siteRouter.patch("/update-inquiry/:id", isLogin, updateInquiry);
-
+siteRouter.patch("/update-inquiry/:id", isLogin, authorizeRoles("manager"),updateInquiry);
 export default siteRouter;

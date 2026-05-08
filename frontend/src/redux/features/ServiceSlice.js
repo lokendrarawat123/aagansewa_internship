@@ -3,7 +3,7 @@ export const ServiceApi = indexSlice.injectEndpoints({
   endpoints: (builder) => ({
     getAllServices: builder.query({
       query: (filters) => ({
-        url: "/services/getAll-services",
+        url: "/services/get-all-service",
         method: "GET",
         params: {
           province_id: filters?.province_id,

@@ -8,7 +8,7 @@ import {
   logout,
   getStaffById,
   getAllStaff,
-  getStaffByBranch,
+  getStaffByBranch,forgotPassword
 } from "../controllers/staff.controller.js";
 import { isLogin } from "../middlewares/isLogin.js";
 import { authorizeRoles } from "../middlewares/isAuthorizedRoles.js";
@@ -16,14 +16,14 @@ import { authorizeRoles } from "../middlewares/isAuthorizedRoles.js";
 const staffRouter = express.Router();
 
 // Staff CRUD operations
-staffRouter.post("/add-staff", isLogin, authorizeRoles("manager"), addStaff);
+staffRouter.post("/add-staff", isLogin, addStaff);
 staffRouter.get("/get-staff", isLogin, getStaff);
 staffRouter.patch("/update-staff/:id", isLogin, updateStaff);
 staffRouter.delete(
   "/delete-staff/:id",
   isLogin,
   authorizeRoles("manager"),
-  deleteStaff,
+  deleteStaff
 );
 
 // Additional staff routes
@@ -34,5 +34,5 @@ staffRouter.get("/branch/:branch_id/staff", getStaffByBranch);
 // Authentication routes
 staffRouter.post("/login", login);
 staffRouter.post("/logout", logout);
-
+staffRouter.post("/forgotpassword",forgotPassword);
 export default staffRouter;
