@@ -47,6 +47,7 @@ const Sidebar = ({ active, setActive }) => {
       key: "dashboard",
       icon: <House size={18} />,
       path: "dashboard",
+      role: ["admin", "manager"],
     },
     {
       name: "Province Management",
