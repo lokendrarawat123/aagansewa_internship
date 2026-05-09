@@ -129,10 +129,12 @@ export const addManager = async (req, res, next) => {
       "SELECT * FROM users WHERE branch_id = ?",
       [branch_id],
     );
-    if (existBranchManager.length > 0)
-      return res
-        .status(404)
-        .json({ message: " branch manager is already exist" });
+    if (existingManager.length > 0) {
+      return res.status(409).json({
+        success: false,
+        message: "This branch already has a manager",
+      });
+    }
 
     // Check branch exists
     const [branch] = await db.execute(

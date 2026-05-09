@@ -61,6 +61,7 @@ branchRouter.get("/get-branch", getAllBranch);
 branchRouter.get("/get-branchs/:district_id", getBranchByDistrict);
 branchRouter.get("/get-branch/:id", getBranchById);
 branchRouter.get("/get-filteredBranches", filteredBranches);
+branchRouter.get("/get-branches/:district_id", getBranchByDistrict);
 
 branchRouter.delete(
   "/delete-branch/:id",

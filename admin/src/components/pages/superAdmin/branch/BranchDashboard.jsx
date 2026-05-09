@@ -11,9 +11,11 @@ import Input from "../../../shared/Input";
 import DetailsModal from "../../../shared/Modal";
 import { Loading } from "../../../shared/IsLoading";
 import { Error } from "../../../shared/Error";
+import Select from "../../../shared/Select.jsx";
 
 const BranchDashboard = () => {
   // State for managing modal and form
+  
   const [selectProvince, setSelectProvince] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
@@ -206,7 +208,49 @@ const BranchDashboard = () => {
       >
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <div className="grid grid-cols-2 gap-4 mb-2">
+              <div className="flex-1">
+                <label className="block text-md font-medium text-gray-700 mb-1">
+                  Province
+                </label>
+                <Select
+                  id="province_id" // ← id pass गर्नुहोस्
+                  options={
+                    provinces?.map((province) => ({
+                      value: province.province_id,
+                      label: province.province_name,
+                    })) || []
+                  }
+                  value={formData.province_id}
+                  onChange={handleChange}
+                  placeholder="Select Province"
+                  size="lg"
+                />
+              </div>
+              {/* District Select */}
+              <div className="flex-1">
+                <label className="block text-md font-medium text-gray-700 mb-1">
+                  District
+                </label>
+                <Select
+                  id="district_id" // ← id pass गर्नुहोस्
+                  options={
+                    filteredDistricts?.map((district) => ({
+                      value: district.district_id,
+                      label: district.district_name,
+                    })) || []
+                  }
+                  value={formData.district_id}
+                  onChange={handleChange}
+                  placeholder={
+                    !formData.province_id
+                      ? "Select Province First"
+                      : "Select District"
+                  }
+                />
+              </div>
+            </div>
+            <label className="block text-sm font-medium text-gray-700  mt-4 mb-2 ">
               Branch Name
             </label>
             <Input
@@ -219,52 +263,7 @@ const BranchDashboard = () => {
             />
           </div>
 
-          {/* ADDED: Province Selection */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Province
-            </label>
-            <select
-              id="province_id"
-              value={formData.province_id}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            >
-              <option value="">Select Province</option>
-              {provinces?.map((province) => (
-                <option key={province.province_id} value={province.province_id}>
-                  {province.province_name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* UPDATED: District Selection - depends on province */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              District
-            </label>
-            <select
-              id="district_id"
-              value={formData.district_id}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-              disabled={!formData.province_id} // Disable until province is selected
-            >
-              <option value="">
-                {!formData.province_id
-                  ? "Select Province First"
-                  : "Select District"}
-              </option>
-              {filteredDistricts?.map((district) => (
-                <option key={district.district_id} value={district.district_id}>
-                  {district.district_name}
-                </option>
-              ))}
-            </select>
-          </div>
+          {/* Province Select */}
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
