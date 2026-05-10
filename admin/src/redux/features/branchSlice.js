@@ -105,7 +105,7 @@ export const branchApi = indexSlice.injectEndpoints({
     }),
     addManager: builder.mutation({
       query: (data) => ({
-        url: "/user/add-manager",
+        url: "/auth/add-manager",
         method: "POST",
         body: data,
       }),
@@ -113,15 +113,15 @@ export const branchApi = indexSlice.injectEndpoints({
     }),
     updateManager: builder.mutation({
       query: ({ id, data }) => ({
-        url: `/user/update-manager/${id}`,
-        method: "PUT",
+        url: `/auth/update-manager/${id}`,
+        method: "PATCH",
         body: data,
       }),
       invalidatesTags: ["branch"],
     }),
     deleteManager: builder.mutation({
       query: (id) => ({
-        url: `/user/delete-manager/${id}`,
+        url: `/auth/delete-manager/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["branch"],

@@ -1,24 +1,24 @@
 import React, { useState } from "react";
 import {
+  useGetManagersQuery,
   useAddManagerMutation,
   useUpdateManagerMutation,
   useDeleteManagerMutation,
-  useGetBranchByDistrictQuery,
-  useGetDistrictByProvinceQuery,
-  useGetManagersQuery,
-  useGetProvinceQuery,
 } from "../../../../redux/features/branchSlice.js";
 
 import { Loading } from "../../../shared/IsLoading";
 import { Error } from "../../../shared/Error";
 import DetailsModal from "../../../shared/Modal.jsx";
 import Input from "../../../shared/Input.jsx";
+import Select from "../../../shared/Select.jsx";
 import LocationSelect from "../../../shared/LocationFilterd.jsx";
+import Button from "../../../shared/Button.jsx";
 import { toast } from "react-toastify";
 
 const BranchManager = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedManager, setSelectedManager] = useState(null);
 
   const [formData, setFormData] = useState({
@@ -28,136 +28,20 @@ const BranchManager = () => {
     province_id: "",
     district_id: "",
     branch_id: "",
-    remarks: "",
   });
 
-  // RTK Query & Mutations
+  // API
   const { data, isLoading, error } = useGetManagersQuery();
-  const { data: provincesData } = useGetProvinceQuery();
-  const { data: districtData } = useGetDistrictByProvinceQuery(
-    formData.province_id,
-    {
-      skip: !formData.province_id,
-    },
-  );
-  const { data: branchData } = useGetBranchByDistrictQuery(
-    formData.district_id,
-    {
-      skip: !formData.district_id,
-    },
-  );
 
   const [addManager, { isLoading: isAdding }] = useAddManagerMutation();
   const [updateManager, { isLoading: isUpdating }] = useUpdateManagerMutation();
   const [deleteManager, { isLoading: isDeleting }] = useDeleteManagerMutation();
 
-  const provinces = provincesData?.data || [];
-  const districts = districtData?.data || [];
-  const branches = branchData?.data || [];
   const managers = data?.managers || [];
 
-  // Handle Input Change
   const handleChange = (e) => {
     const { id, value } = e.target;
     setFormData((prev) => ({ ...prev, [id]: value }));
-  };
-
-  // Open Add Modal
-  const openAddModal = () => {
-    setFormData({
-      name: "",
-      email: "",
-      password: "",
-      province_id: "",
-      district_id: "",
-      branch_id: "",
-      remarks: "",
-    });
-    setShowAddModal(true);
-  };
-
-  // Open Edit Modal
-  const openEditModal = (manager) => {
-    setSelectedManager(manager);
-    setFormData({
-      name: manager.name || "",
-      email: manager.email || "",
-      password: "", // Password खाली राख्ने (security को लागि)
-      province_id: "", // Location select को लागि अहिले खाली
-      district_id: "",
-      branch_id: manager.branch_id || "",
-      remarks: manager.remarks || "",
-    });
-    setShowEditModal(true);
-  };
-
-  // Add Manager
-  const handleAddSubmit = async (e) => {
-    e.preventDefault();
-    if (
-      !formData.name ||
-      !formData.email ||
-      !formData.password ||
-      !formData.branch_id
-    ) {
-      return toast.error("Please fill all required fields");
-    }
-
-    try {
-      const res = await addManager({
-        name: formData.name,
-        email: formData.email,
-        password: formData.password,
-        branch_id: formData.branch_id,
-        remarks: formData.remarks,
-      }).unwrap();
-
-      toast.success(res.message || "Manager added successfully");
-      setShowAddModal(false);
-      resetForm();
-    } catch (err) {
-      toast.error(err?.data?.message || "Failed to add manager");
-    }
-  };
-
-  // Update Manager
-  const handleEditSubmit = async (e) => {
-    e.preventDefault();
-    if (!formData.name || !formData.email || !formData.branch_id) {
-      return toast.error("Please fill all required fields");
-    }
-
-    try {
-      const res = await updateManager({
-        id: selectedManager.user_id,
-        data: {
-          name: formData.name,
-          email: formData.email,
-          branch_id: formData.branch_id,
-          remarks: formData.remarks,
-          // password पठाउने कि नपठाउने भन्ने तपाईंको decision अनुसार
-        },
-      }).unwrap();
-
-      toast.success(res.message || "Manager updated successfully");
-      setShowEditModal(false);
-      resetForm();
-    } catch (err) {
-      toast.error(err?.data?.message || "Failed to update manager");
-    }
-  };
-
-  // Delete Manager
-  const handleDelete = async (manager) => {
-    if (!window.confirm(`Are you sure you want to delete ${manager.name}?`))
-      return;
-
-    try {
-      await deleteManager(manager.user_id).unwrap();
-      toast.success("Manager deleted successfully");
-    } catch (err) {
-      toast.error(err?.data?.message || "Failed to delete manager");
-    }
   };
 
   const resetForm = () => {
@@ -168,9 +52,97 @@ const BranchManager = () => {
       province_id: "",
       district_id: "",
       branch_id: "",
-      remarks: "",
     });
     setSelectedManager(null);
+  };
+
+  const openAddModal = () => {
+    resetForm();
+    setShowAddModal(true);
+  };
+
+  const openEditModal = (manager) => {
+    setSelectedManager(manager);
+
+    setFormData({
+      name: manager.name || "",
+      email: manager.email || "",
+      password: "",
+      province_id: "",
+      district_id: "",
+      branch_id: manager.branch_id || "",
+    });
+
+    setShowEditModal(true);
+  };
+
+  const openDeleteConfirm = (manager) => {
+    setSelectedManager(manager);
+    setConfirmOpen(true);
+  };
+
+  // ADD
+  const handleAddSubmit = async (e) => {
+    e.preventDefault();
+
+    if (
+      !formData.name ||
+      !formData.email ||
+      !formData.password ||
+      !formData.branch_id
+    ) {
+      return toast.error("Please fill all required fields");
+    }
+
+    try {
+      const res = await addManager(formData).unwrap();
+      toast.success(res.message || "Manager added");
+
+      setShowAddModal(false);
+      resetForm();
+    } catch (err) {
+      toast.error(err?.data?.message || "Failed to add manager");
+    }
+  };
+
+  // UPDATE
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const payload = {
+        name: formData.name,
+        email: formData.email,
+        branch_id: formData.branch_id,
+      };
+
+      if (formData.password) payload.password = formData.password;
+
+      const res = await updateManager({
+        id: selectedManager.user_id,
+        data: payload,
+      }).unwrap();
+
+      toast.success(res.message || "Manager updated");
+
+      setShowEditModal(false);
+      resetForm();
+    } catch (err) {
+      toast.error(err?.data?.message || "Update failed");
+    }
+  };
+
+  // DELETE
+  const confirmDelete = async () => {
+    try {
+      await deleteManager(selectedManager.user_id).unwrap();
+      toast.success("Manager deleted");
+
+      setConfirmOpen(false);
+      setSelectedManager(null);
+    } catch (err) {
+      toast.error(err?.data?.message || "Delete failed");
+    }
   };
 
   if (isLoading) return <Loading isLoading={isLoading} />;
@@ -178,58 +150,51 @@ const BranchManager = () => {
 
   return (
     <div className="p-6">
+      {/* HEADER */}
       <div className="flex justify-between mb-6">
         <h1 className="text-2xl font-bold">Manager Management</h1>
-        <button
-          onClick={openAddModal}
-          className="bg-green-500 text-white px-6 py-3 rounded-full hover:bg-green-600 transition"
-        >
+
+        <Button variant="success" size="lg" onClick={openAddModal}>
           Add New Manager
-        </button>
+        </Button>
       </div>
 
-      {/* Table */}
+      {/* TABLE */}
       <div className="bg-white shadow rounded-lg overflow-hidden">
-        <table className="w-full text-left">
-          <thead className="bg-gray-50 border-b">
+        <table className="w-full">
+          <thead className="bg-slate-100">
             <tr>
-              <th className="p-4 font-semibold text-sm text-center">S.N</th>
-              <th className="p-4 font-semibold text-sm">Name</th>
-              <th className="p-4 font-semibold text-sm">Email</th>
-              <th className="p-4 font-semibold text-sm">Branch</th>
-              <th className="p-4 font-semibold text-sm">Joined Date</th>
-              <th className="p-4 font-semibold text-sm text-center">Action</th>
+              <th className="p-3 text-left">Name</th>
+              <th className="p-3 text-left">Email</th>
+              <th className="p-3 text-left">Branch</th>
+              <th className="p-3 text-center">Action</th>
             </tr>
           </thead>
+
           <tbody>
-            {managers.map((m, index) => (
-              <tr key={m.user_id} className="border-b hover:bg-gray-50">
-                <td className="p-4 text-center">{index + 1}</td>
-                <td className="p-4 font-medium">{m.name}</td>
-                <td className="p-4">{m.email}</td>
-                <td className="p-4">
-                  {m.branch_name
-                    ? `${m.branch_name} (${m.branch_id})`
-                    : m.branch_id}
-                </td>
-                <td className="p-4 text-gray-500">
-                  {new Date(m.created_at).toLocaleDateString()}
-                </td>
-                <td className="p-4">
+            {managers.map((m) => (
+              <tr key={m.user_id} className="border-b hover:bg-slate-50">
+                <td className="p-3">{m.name}</td>
+                <td className="p-3">{m.email}</td>
+                <td className="p-3">{m.branch_name}</td>
+
+                <td className="p-3">
                   <div className="flex gap-2 justify-center">
-                    <button
+                    <Button
+                      variant="primary"
+                      size="sm"
                       onClick={() => openEditModal(m)}
-                      className="px-3 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600"
                     >
                       Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(m)}
-                      disabled={isDeleting}
-                      className="px-3 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600 disabled:opacity-50"
+                    </Button>
+
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      onClick={() => openDeleteConfirm(m)}
                     >
                       Delete
-                    </button>
+                    </Button>
                   </div>
                 </td>
               </tr>
@@ -238,94 +203,161 @@ const BranchManager = () => {
         </table>
       </div>
 
-      {/* Add Modal */}
+      {/* ADD MODAL */}
       <DetailsModal
         show={showAddModal}
         onClose={() => setShowAddModal(false)}
-        title="Add New Manager"
+        title="Add Manager"
         size="lg"
       >
-        {/* ... Add form (माथिको handleAddSubmit प्रयोग गर्ने) */}
-        <form onSubmit={handleAddSubmit} className="space-y-5">
-          {/* Name, Email, Password, LocationSelect, Remarks */}
-          {/* तपाईंले पहिलेको जस्तै राख्न सक्नुहुन्छ */}
+        <form onSubmit={handleAddSubmit} className="space-y-4">
+          <LocationSelect formData={formData} setFormData={setFormData} />
+
+          <Input id="name" value={formData.name} onChange={handleChange} />
+          <Input id="email" value={formData.email} onChange={handleChange} />
+          <Input
+            id="password"
+            type="password"
+            value={formData.password}
+            onChange={handleChange}
+          />
+
+          <div className="flex justify-end gap-3">
+            <Button
+              variant="outline"
+              type="button"
+              onClick={() => setShowAddModal(false)}
+            >
+              Cancel
+            </Button>
+
+            {/* IMPORTANT: type="submit" only */}
+            <Button variant="success" loading={isAdding} type="submit">
+              Add Manager
+            </Button>
+          </div>
         </form>
       </DetailsModal>
 
-      {/* Edit Modal */}
+      {/* EDIT MODAL */}
+      {/* ================= EDIT MODAL ================= */}
       <DetailsModal
         show={showEditModal}
         onClose={() => setShowEditModal(false)}
         title="Edit Manager"
         size="lg"
       >
-        <form onSubmit={handleEditSubmit} className="space-y-5">
-          {/* Same fields as Add but without password or with optional password */}
-          <div className="grid grid-cols-3 gap-4">
+        <form onSubmit={handleEditSubmit} className="space-y-6">
+          {/* HEADER INFO */}
+          <div className="bg-blue-50 border border-blue-100 p-4 rounded-lg">
+            <p className="text-sm text-blue-700">
+              Updating: <b>{selectedManager?.name}</b>
+            </p>
+            <p className="text-xs text-blue-500">
+              You can update basic details or change password (optional)
+            </p>
+          </div>
+
+          {/* GRID FORM */}
+          <div className="grid grid-cols-2 gap-4">
+            {/* NAME */}
             <div>
-              <label>Full Name</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Full Name
+              </label>
               <Input
                 id="name"
                 value={formData.name}
                 onChange={handleChange}
-                required
+                placeholder="Enter full name"
               />
             </div>
+
+            {/* EMAIL */}
             <div>
-              <label>Email</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Email Address
+              </label>
               <Input
                 id="email"
-                type="email"
                 value={formData.email}
                 onChange={handleChange}
-                required
+                placeholder="Enter email"
               />
             </div>
-            <div>
-              <label>New Password (Optional)</label>
+
+            {/* BRANCH */}
+            <div className="col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Branch
+              </label>
+
+              <Select
+                id="branch_id"
+                value={formData.branch_id}
+                onChange={handleChange}
+                options={[]}
+                placeholder="Select branch"
+              />
+            </div>
+
+            {/* PASSWORD */}
+            <div className="col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                New Password
+              </label>
+
               <Input
                 id="password"
                 type="password"
                 value={formData.password}
                 onChange={handleChange}
+                placeholder="Leave blank if you don't want to change password"
               />
+
+              <p className="text-xs text-gray-400 mt-1">
+                Password will only update if you enter new value
+              </p>
             </div>
           </div>
 
-          <LocationSelect
-            provinces={provinces}
-            districts={districts}
-            branches={branches}
-            formData={formData}
-            setFormData={setFormData}
-          />
-
-          <div>
-            <label>Remarks (Optional)</label>
-            <Input
-              id="remarks"
-              value={formData.remarks}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div className="flex justify-end gap-3 pt-6">
-            <button
+          {/* FOOTER BUTTONS */}
+          <div className="flex justify-end gap-3 pt-4 border-t">
+            <Button
+              variant="outline"
               type="button"
               onClick={() => setShowEditModal(false)}
-              className="px-4 py-2 border rounded"
             >
               Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isUpdating}
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-            >
-              {isUpdating ? "Updating..." : "Update Manager"}
-            </button>
+            </Button>
+
+            <Button variant="primary" loading={isUpdating} type="submit">
+              Update Manager
+            </Button>
           </div>
         </form>
+      </DetailsModal>
+
+      {/* DELETE MODAL */}
+      <DetailsModal
+        show={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        title="Delete Manager"
+        size="sm"
+      >
+        <p className="mb-4">
+          Are you sure you want to delete <b>{selectedManager?.name}</b>?
+        </p>
+
+        <div className="flex justify-end gap-3">
+          <Button variant="outline" onClick={() => setConfirmOpen(false)}>
+            Cancel
+          </Button>
+
+          <Button variant="danger" loading={isDeleting} onClick={confirmDelete}>
+            Delete
+          </Button>
+        </div>
       </DetailsModal>
     </div>
   );

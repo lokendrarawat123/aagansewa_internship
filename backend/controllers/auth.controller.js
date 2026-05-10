@@ -124,12 +124,12 @@ export const addManager = async (req, res, next) => {
         message: `email  already exist use diffrent email `,
       });
     }
-    // Check service exists
+    // Check branch manager exists for this branch
     const [existBranchManager] = await db.execute(
       "SELECT * FROM users WHERE branch_id = ?",
       [branch_id],
     );
-    if (existingManager.length > 0) {
+    if (existBranchManager.length > 0) {
       return res.status(409).json({
         success: false,
         message: "This branch already has a manager",
@@ -223,8 +223,7 @@ export const updateManager = async (req, res, next) => {
     }
     const oldStaff = existing[0];
 
-    // Optional: Validate service and branch if provided
-
+    // Optional: Validate branch if provided
     if (branch_id) {
       const [branch] = await db.execute(
         "SELECT * FROM branch WHERE branch_id = ?",
@@ -235,15 +234,22 @@ export const updateManager = async (req, res, next) => {
     }
 
     const updateName = name || oldStaff.name;
-
     const updateEmail = email || oldStaff.email;
+    const updateBranchId = branch_id || oldStaff.branch_id;
 
-    const updteBranchId = branch_id || oldStaff.branch_id;
+    const params = [updateName, updateEmail, updateBranchId];
+    let updateSql = "UPDATE users SET name=?, email=?, branch_id=?";
 
-    await db.execute(
-      "UPDATE users SET name=?, email=?,  branch_id=? WHERE user_id=?",
-      [updateName, updateEmail, updteBranchId, id],
-    );
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      updateSql += ", password=?";
+      params.push(hashedPassword);
+    }
+
+    updateSql += " WHERE user_id=?";
+    params.push(id);
+
+    await db.execute(updateSql, params);
 
     res.status(200).json({ message: "Manager updated successfully" });
   } catch (error) {

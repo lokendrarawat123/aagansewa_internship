@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
+
 import {
   useGetBranchQuery,
   useAddBranchMutation,
@@ -7,19 +8,19 @@ import {
   useGetProvinceQuery,
   useGetDistrictByProvinceQuery,
 } from "../../../../redux/features/branchSlice.js";
+
 import Input from "../../../shared/Input";
 import DetailsModal from "../../../shared/Modal";
 import { Loading } from "../../../shared/IsLoading";
 import { Error } from "../../../shared/Error";
 import Select from "../../../shared/Select.jsx";
+import Button from "../../../shared/Button"; // ✅ NEW IMPORT
 
 const BranchDashboard = () => {
-  // State for managing modal and form
-  
-  const [selectProvince, setSelectProvince] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [selectedBranch, setSelectedBranch] = useState(null);
+
   const [formData, setFormData] = useState({
     branch_name: "",
     province_id: "",
@@ -27,32 +28,29 @@ const BranchDashboard = () => {
     remarks: "",
   });
 
-  // API hooks
+  // API
   const { data: branchData, isLoading, error } = useGetBranchQuery();
-
   const { data: districtData } = useGetDistrictByProvinceQuery(
     formData.province_id,
   );
   const { data: provinceData } = useGetProvinceQuery();
+
   const [addBranch] = useAddBranchMutation();
   const [deleteBranch] = useDeleteBranchMutation();
 
   const branches = branchData?.data || [];
+  const provinces = provinceData?.data || [];
+  const districts = districtData?.data || [];
 
-  const filteredDistricts = districtData?.data;
-
-  const provinces = provinceData?.data;
-
-  // Handle form input changes
+  // CHANGE HANDLER
   const handleChange = (e) => {
     const { id, value } = e.target;
 
-    // If province changes, reset district selection
     if (id === "province_id") {
       setFormData((prev) => ({
         ...prev,
-        [id]: value,
-        district_id: "", // Reset district when province changes
+        province_id: value,
+        district_id: "",
       }));
     } else {
       setFormData((prev) => ({
@@ -62,307 +60,180 @@ const BranchDashboard = () => {
     }
   };
 
-  // Handle form submission
+  // SUBMIT
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
-      // Only send required fields to backend
-      const submitData = {
+      const res = await addBranch({
         branch_name: formData.branch_name,
         district_id: formData.district_id,
         remarks: formData.remarks,
-      };
+      }).unwrap();
 
-      const res = await addBranch(submitData).unwrap();
+      toast.success(res.message || "Branch added");
+
       setFormData({
         branch_name: "",
         province_id: "",
         district_id: "",
         remarks: "",
       });
+
       setShowAddModal(false);
-      toast.success(res.message || "Branch added successfully");
-    } catch (error) {
-      toast.error(error.data?.message || "Failed to add branch");
+    } catch (err) {
+      toast.error(err?.data?.message || "Failed to add branch");
     }
   };
 
-  // Handle delete branch
+  // DELETE
   const handleDelete = async (branch) => {
     try {
       await deleteBranch(branch.branch_id).unwrap();
-      toast.success("Branch deleted successfully");
-    } catch (error) {
-      toast.error(error.data?.message || "Failed to delete branch");
+      toast.success("Branch deleted");
+    } catch (err) {
+      toast.error(err?.data?.message || "Delete failed");
     }
   };
 
-  // Handle view branch details
-  const handleViewDetails = (branch) => {
-    setSelectedBranch(branch);
-    setShowDetailsModal(true);
-  };
-
-  // Loading and error states
-  if (isLoading) {
-    return <Loading isLoading={isLoading} />;
-  }
-  if (error) {
-    return <Error error={error} />;
-  }
+  if (isLoading) return <Loading />;
+  if (error) return <Error error={error} />;
 
   return (
     <div className="p-6">
-      {/* Header */}
+      {/* HEADER */}
       <div className="flex justify-between mb-6">
-        <h1 className="text-2xl font-bold mb-4">Branch Management</h1>
-        <button
+        <h1 className="text-2xl font-bold">Branch Management</h1>
+
+        <Button
+          variant="success"
+          size="lg"
           onClick={() => setShowAddModal(true)}
-          className="cursor-pointer bg-green-400 text-white px-6 py-3 rounded-full hover:bg-green-500 transition"
         >
           Add New Branch
-        </button>
+        </Button>
       </div>
 
-      {/* Table */}
+      {/* TABLE */}
       <div className="bg-white shadow rounded-lg overflow-hidden">
-        <table className="w-full border-collapse">
+        <table className="w-full">
           <thead className="bg-slate-100">
             <tr>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-slate-700">
-                Branch ID
-              </th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-slate-700">
-                Branch Name
-              </th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-slate-700">
-                District Name
-              </th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-slate-700">
-                Action
-              </th>
+              <th className="p-3 text-left">ID</th>
+              <th className="p-3 text-left">Branch</th>
+              <th className="p-3 text-left">District</th>
+              <th className="p-3 text-center">Action</th>
             </tr>
           </thead>
 
           <tbody>
-            {branches?.length > 0 ? (
-              branches.map((branch, index) => (
-                <tr
-                  key={branch.branch_id || index}
-                  className="border-b last:border-none hover:bg-slate-50 transition"
-                >
-                  <td className="px-4 py-3 text-sm">{branch.branch_id}</td>
-                  <td className="px-4 py-3 text-sm">{branch.branch_name}</td>
-                  <td className="px-4 py-3 text-sm">{branch.district_name}</td>
-                  <td className="px-4 py-3 text-sm">
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => handleViewDetails(branch)}
-                        className="px-3 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600 transition"
-                      >
-                        View
-                      </button>
-                      <button
-                        onClick={() => handleDelete(branch)}
-                        className="px-3 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600 transition"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="4" className="px-4 py-12 text-center">
-                  <div className="flex flex-col items-center space-y-3">
-                    <div className="text-gray-400 text-4xl">🏢</div>
-                    <p className="text-gray-500 font-medium">
-                      No branches found
-                    </p>
-                    <p className="text-gray-400 text-sm">
-                      Add your first branch to get started
-                    </p>
+            {branches.map((b) => (
+              <tr key={b.branch_id} className="border-b hover:bg-slate-50">
+                <td className="p-3">{b.branch_id}</td>
+                <td className="p-3">{b.branch_name}</td>
+                <td className="p-3">{b.district_name}</td>
+
+                <td className="p-3">
+                  <div className="flex gap-2 justify-center">
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={() => {
+                        setSelectedBranch(b);
+                        setShowDetailsModal(true);
+                      }}
+                    >
+                      View
+                    </Button>
+
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      onClick={() => handleDelete(b)}
+                    >
+                      Delete
+                    </Button>
                   </div>
                 </td>
               </tr>
-            )}
+            ))}
           </tbody>
         </table>
       </div>
 
-      {/* Add Branch Modal */}
+      {/* ================= ADD MODAL ================= */}
       <DetailsModal
         show={showAddModal}
-        onClose={() => {
-          setShowAddModal(false);
-          setFormData({
-            branch_name: "",
-            province_id: "",
-            district_id: "",
-            remarks: "",
-          });
-        }}
-        title="Add New Branch"
+        onClose={() => setShowAddModal(false)}
+        title="Add Branch"
         size="md"
       >
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <div className="grid grid-cols-2 gap-4 mb-2">
-              <div className="flex-1">
-                <label className="block text-md font-medium text-gray-700 mb-1">
-                  Province
-                </label>
-                <Select
-                  id="province_id" // ← id pass गर्नुहोस्
-                  options={
-                    provinces?.map((province) => ({
-                      value: province.province_id,
-                      label: province.province_name,
-                    })) || []
-                  }
-                  value={formData.province_id}
-                  onChange={handleChange}
-                  placeholder="Select Province"
-                  size="lg"
-                />
-              </div>
-              {/* District Select */}
-              <div className="flex-1">
-                <label className="block text-md font-medium text-gray-700 mb-1">
-                  District
-                </label>
-                <Select
-                  id="district_id" // ← id pass गर्नुहोस्
-                  options={
-                    filteredDistricts?.map((district) => ({
-                      value: district.district_id,
-                      label: district.district_name,
-                    })) || []
-                  }
-                  value={formData.district_id}
-                  onChange={handleChange}
-                  placeholder={
-                    !formData.province_id
-                      ? "Select Province First"
-                      : "Select District"
-                  }
-                />
-              </div>
-            </div>
-            <label className="block text-sm font-medium text-gray-700  mt-4 mb-2 ">
-              Branch Name
-            </label>
-            <Input
-              type="text"
-              id="branch_name"
-              placeholder="Enter branch name"
-              value={formData.branch_name}
-              onChange={handleChange}
-              required
-            />
-          </div>
+          <Select
+            id="province_id"
+            value={formData.province_id}
+            onChange={handleChange}
+            options={provinces.map((p) => ({
+              value: p.province_id,
+              label: p.province_name,
+            }))}
+            placeholder="Select Province"
+          />
 
-          {/* Province Select */}
+          <Select
+            id="district_id"
+            value={formData.district_id}
+            onChange={handleChange}
+            options={districts.map((d) => ({
+              value: d.district_id,
+              label: d.district_name,
+            }))}
+            placeholder="Select District"
+          />
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Remarks (Optional)
-            </label>
-            <Input
-              type="text"
-              id="remarks"
-              placeholder="Enter remarks"
-              value={formData.remarks}
-              onChange={handleChange}
-            />
-          </div>
+          <Input
+            id="branch_name"
+            value={formData.branch_name}
+            onChange={handleChange}
+            placeholder="Branch Name"
+          />
 
-          <div className="flex justify-end gap-3 pt-4">
-            <button
-              type="button"
-              onClick={() => {
-                setShowAddModal(false);
-                setFormData({
-                  branch_name: "",
-                  province_id: "",
-                  district_id: "",
-                  remarks: "",
-                });
-              }}
-              className="px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-50 transition"
-            >
+          <Input
+            id="remarks"
+            value={formData.remarks}
+            onChange={handleChange}
+            placeholder="Remarks"
+          />
+
+          <div className="flex justify-end gap-3">
+            <Button variant="outline" onClick={() => setShowAddModal(false)}>
               Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition"
-            >
+            </Button>
+
+            <Button variant="success" type="submit">
               Add Branch
-            </button>
+            </Button>
           </div>
         </form>
       </DetailsModal>
 
-      {/* View Branch Details Modal */}
+      {/* ================= DETAILS MODAL ================= */}
       <DetailsModal
         show={showDetailsModal}
-        onClose={() => {
-          setShowDetailsModal(false);
-          setSelectedBranch(null);
-        }}
-        title={`Branch Details: ${selectedBranch?.branch_name || "Branch"}`}
+        onClose={() => setShowDetailsModal(false)}
+        title="Branch Details"
         size="md"
       >
-        <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <h3 className="text-sm font-medium text-gray-600 mb-1">
-                Branch ID
-              </h3>
-              <p className="text-lg font-semibold text-gray-900">
-                {selectedBranch?.branch_id}
-              </p>
-            </div>
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <h3 className="text-sm font-medium text-gray-600 mb-1">
-                Branch Name
-              </h3>
-              <p className="text-lg font-semibold text-gray-900">
-                {selectedBranch?.branch_name}
-              </p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <h3 className="text-sm font-medium text-gray-600 mb-1">
-                District Name
-              </h3>
-              <p className="text-lg font-semibold text-gray-900">
-                {selectedBranch?.district_name}
-              </p>
-            </div>
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <h3 className="text-sm font-medium text-gray-600 mb-1">
-                Created At
-              </h3>
-              <p className="text-lg font-semibold text-gray-900">
-                {selectedBranch?.created_at
-                  ? new Date(selectedBranch.created_at).toLocaleDateString()
-                  : "N/A"}
-              </p>
-            </div>
-          </div>
-
-          {selectedBranch?.remarks && (
-            <div className="p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500">
-              <h3 className="text-sm font-medium text-blue-600 mb-1">
-                Remarks
-              </h3>
-              <p className="text-gray-800">{selectedBranch.remarks}</p>
-            </div>
-          )}
+        <div className="space-y-3">
+          <p>
+            <b>ID:</b> {selectedBranch?.branch_id}
+          </p>
+          <p>
+            <b>Name:</b> {selectedBranch?.branch_name}
+          </p>
+          <p>
+            <b>District:</b> {selectedBranch?.district_name}
+          </p>
         </div>
       </DetailsModal>
     </div>
