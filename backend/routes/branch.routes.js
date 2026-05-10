@@ -58,9 +58,10 @@ branchRouter.delete(
 );
 branchRouter.post("/add-branch", isLogin, authorizeRoles("admin"), addBranch);
 branchRouter.get("/get-branch", getAllBranch);
-branchRouter.get("/get-branchs/:district_id", getBranchByDistrict);
+
 branchRouter.get("/get-branch/:id", getBranchById);
-branchRouter.get("/get-filteredBranches{/:province_id}{/:district_id}", filteredBranches);
+branchRouter.get("/get-filteredBranches", filteredBranches);
+branchRouter.get("/get-branches/:district_id", getBranchByDistrict);
 
 branchRouter.delete(
   "/delete-branch/:id",

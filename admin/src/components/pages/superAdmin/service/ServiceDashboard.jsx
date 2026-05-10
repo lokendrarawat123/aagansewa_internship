@@ -1,24 +1,34 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
+
 import {
   useAddServiceMutation,
   useUpdateServiceMutation,
   useDeleteServiceMutation,
   useGetsAllServiceWithBranchNameQuery,
 } from "../../../../redux/features/serviceSlice.js";
+
 import { useGetBranchQuery } from "../../../../redux/features/branchSlice.js";
+
 import Input from "../../../shared/Input.jsx";
+import Select from "../../../shared/Select.jsx";
 import DetailsModal from "../../../shared/Modal.jsx";
+import Button from "../../../shared/Button.jsx";
 import { Loading } from "../../../shared/IsLoading.jsx";
 import { Error } from "../../../shared/Error.jsx";
+import { isAdmin } from "../../../shared/RolesCheck.jsx";
 
 const ServiceManager = () => {
-  // State for managing modals and forms
+  const baseUrl = import.meta.env.VITE_IMG_URL;
+
+  // MODALS
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showDetailsModal, setShowDetailsModal] = useState(false);
+
   const [selectedService, setSelectedService] = useState(null);
+
+  // FORM
   const [formData, setFormData] = useState({
     service_name: "",
     description: "",
@@ -26,28 +36,26 @@ const ServiceManager = () => {
     service_image: null,
   });
 
-  // API hooks
-  const {
-    data: servicesData,
-    isLoading,
-    error,
-  } = useGetsAllServiceWithBranchNameQuery();
+  // API
+  const { data, isLoading, error } = useGetsAllServiceWithBranchNameQuery();
+
   const { data: branchData } = useGetBranchQuery();
+
   const [addService] = useAddServiceMutation();
   const [updateService] = useUpdateServiceMutation();
   const [deleteService] = useDeleteServiceMutation();
 
-  const services = servicesData?.data || servicesData?.services;
-  const branches = branchData?.branch;
-  console.log("Fetched services:", services);
+  const services = data?.data || [];
+  const branches = branchData?.branch || [];
 
-  // Handle form input changes
+  // INPUT
   const handleChange = (e) => {
     const { id, value, files } = e.target;
+
     if (id === "service_image") {
       setFormData((prev) => ({
         ...prev,
-        [id]: files[0],
+        service_image: files[0],
       }));
     } else {
       setFormData((prev) => ({
@@ -57,515 +65,312 @@ const ServiceManager = () => {
     }
   };
 
-  // Handle add form submission
-  const handleAddSubmit = async (e) => {
+  // RESET
+  const resetForm = () => {
+    setFormData({
+      service_name: "",
+      description: "",
+      branch_id: "",
+      service_image: null,
+    });
+    setSelectedService(null);
+  };
+
+  // ADD
+  const handleAdd = async (e) => {
     e.preventDefault();
+
     try {
-      const submitData = new FormData();
-      submitData.append("service_name", formData.service_name);
-      submitData.append("description", formData.description);
-      submitData.append("branch_id", formData.branch_id);
+      const fd = new FormData();
+      fd.append("service_name", formData.service_name);
+      fd.append("description", formData.description);
+      fd.append("branch_id", formData.branch_id);
       if (formData.service_image) {
-        submitData.append("service_image", formData.service_image);
+        fd.append("service_image", formData.service_image);
       }
 
-      const res = await addService(submitData).unwrap();
-      setFormData({
-        service_name: "",
-        description: "",
-        branch_id: "",
-        service_image: null,
-      });
+      const res = await addService(fd).unwrap();
+      toast.success(res.message || "Service added");
+
       setShowAddModal(false);
-      toast.success(res.message || "Service added successfully");
-    } catch (error) {
-      toast.error(error.data?.message || "Failed to add service");
+      resetForm();
+    } catch (err) {
+      toast.error(err?.data?.message || "Failed to add service");
     }
   };
 
-  // Handle edit form submission
-  const handleEditSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const updateData = new FormData();
-      updateData.append("service_name", formData.service_name);
-      updateData.append("description", formData.description);
-      if (formData.service_image) {
-        updateData.append("service_image", formData.service_image);
-      }
-
-      const res = await updateService({
-        id: selectedService.service_id,
-        data: updateData,
-      }).unwrap();
-      setFormData({
-        service_name: "",
-        description: "",
-        branch_id: "",
-        service_image: null,
-      });
-      setShowEditModal(false);
-      setSelectedService(null);
-      toast.success(res.message || "Service updated successfully");
-    } catch (error) {
-      toast.error(error.data?.message || "Failed to update service");
-    }
-  };
-
-  // Handle delete service
-  const handleDelete = async () => {
-    try {
-      await deleteService(selectedService.service_id).unwrap();
-      toast.success("Service deleted successfully");
-      setShowDeleteModal(false);
-      setSelectedService(null);
-    } catch (error) {
-      toast.error(error.data?.message || "Failed to delete service");
-      setShowDeleteModal(false);
-    }
-  };
-
-  // Handle view service details
-  const handleViewDetails = (service) => {
+  // OPEN EDIT
+  const openEdit = (service) => {
     setSelectedService(service);
-    setShowDetailsModal(true);
-  };
 
-  // Handle edit service
-  const handleEdit = (service) => {
-    setSelectedService(service);
     setFormData({
       service_name: service.service_name,
       description: service.description || "",
       branch_id: service.branch_id,
       service_image: null,
     });
+
     setShowEditModal(true);
   };
 
-  // Handle delete modal
-  const handleDeleteModal = (service) => {
-    setSelectedService(service);
-    setShowDeleteModal(true);
+  // UPDATE
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+
+    try {
+      const fd = new FormData();
+      fd.append("service_name", formData.service_name);
+      fd.append("description", formData.description);
+      fd.append("branch_id", formData.branch_id);
+
+      if (formData.service_image) {
+        fd.append("service_image", formData.service_image);
+      }
+
+      const res = await updateService({
+        id: selectedService.service_id,
+        data: fd,
+      }).unwrap();
+
+      toast.success(res.message || "Updated");
+
+      setShowEditModal(false);
+      resetForm();
+    } catch (err) {
+      toast.error(err?.data?.message || "Update failed");
+    }
   };
 
-  // Close modals
-  const closeAddModal = () => {
-    setShowAddModal(false);
-    setFormData({
-      service_name: "",
-      description: "",
-      branch_id: "",
-      service_image: null,
-    });
+  // DELETE
+  const handleDelete = async () => {
+    try {
+      await deleteService(selectedService.service_id).unwrap();
+
+      toast.success("Deleted successfully");
+      setShowDeleteModal(false);
+      setSelectedService(null);
+    } catch (err) {
+      toast.error(err?.data?.message || "Delete failed");
+    }
+  };
+  const handleView = (service) => {
+    console.log(service);
   };
 
-  const closeEditModal = () => {
-    setShowEditModal(false);
-    setSelectedService(null);
-    setFormData({
-      service_name: "",
-      description: "",
-      branch_id: "",
-      service_image: null,
-    });
-  };
-
-  const closeDeleteModal = () => {
-    setShowDeleteModal(false);
-    setSelectedService(null);
-  };
-
-  // Loading and error states
-  if (isLoading) {
-    return <Loading isLoading={isLoading} />;
-  }
-  if (error) {
-    return <Error error={error} />;
-  }
+  if (isLoading) return <Loading />;
+  if (error) return <Error error={error} />;
 
   return (
     <div className="p-6">
-      {/* Header */}
-      <div className="flex justify-between mb-6">
-        <h1 className="text-2xl font-bold mb-4">Service Management</h1>
-        <button
-          onClick={() => setShowAddModal(true)}
-          className="cursor-pointer bg-green-400 text-white px-6 py-3 rounded-full hover:bg-green-500 transition"
-        >
-          Add New Service
-        </button>
-      </div>
+      {/* HEADER */}
+      {!isAdmin && (
+        <div className="flex justify-between mb-6">
+          <h1 className="text-2xl font-bold">Service Management</h1>
 
-      {/* Table */}
+          <Button
+            variant="success"
+            size="lg"
+            onClick={() => setShowAddModal(true)}
+          >
+            Add Service
+          </Button>
+        </div>
+      )}
+
+      {/* TABLE */}
       <div className="bg-white shadow rounded-lg overflow-hidden">
-        <table className="w-full border-collapse">
+        <table className="w-full">
           <thead className="bg-slate-100">
             <tr>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-slate-700">
-                Service ID
-              </th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-slate-700">
-                Service Name
-              </th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-slate-700">
-                Description
-              </th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-slate-700">
-                Branch Name
-              </th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-slate-700">
-                Image
-              </th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-slate-700">
-                Action
-              </th>
+              <th className="p-3 text-left">ID</th>
+              <th className="p-3 text-left">Service</th>
+              <th className="p-3 text-left">Branch</th>
+              <th className="p-3 text-left">Image</th>
+              <th className="p-3 text-center">Action</th>
             </tr>
           </thead>
 
           <tbody>
-            {services?.length > 0 ? (
-              services.map((service, index) => (
-                <tr
-                  key={service.service_id || index}
-                  className="border-b last:border-none hover:bg-slate-50 transition"
-                >
-                  <td className="px-4 py-3 text-sm">{service.service_id}</td>
-                  <td className="px-4 py-3 text-sm">{service.service_name}</td>
-                  <td className="px-4 py-3 text-sm">
-                    {service.description
-                      ? service.description.length > 50
-                        ? service.description.substring(0, 50) + "..."
-                        : service.description
-                      : "No description"}
-                  </td>
-                  <td className="px-4 py-3 text-sm">{service.branch_name}</td>
-                  <td className="px-4 py-3 text-sm">
-                    {service.service_image ? (
-                      <img
-                        src={`http://localhost:3000/${service.service_image}`}
-                        alt={service.service_name}
-                        className="w-12 h-12 object-cover rounded"
-                      />
-                    ) : (
-                      <span className="text-gray-400">No image</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3 text-sm">
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => handleViewDetails(service)}
-                        className="px-3 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600 transition"
+            {services.map((s) => (
+              <tr key={s.service_id} className="border-b hover:bg-slate-50">
+                <td className="p-3">{s.service_id}</td>
+                <td className="p-3">{s.service_name}</td>
+                <td className="p-3">{s.branch_name}</td>
+
+                <td className="p-3">
+                  {s.service_image ? (
+                    <img
+                      src={`${baseUrl}${s.service_image}`}
+                      className="w-10 h-10 rounded object-cover"
+                    />
+                  ) : (
+                    "No image"
+                  )}
+                </td>
+
+                <td className="p-3">
+                  {isAdmin ? (
+                    <div className="flex gap-2 justify-center">
+                      <Button
+                        variant="primary"
+                        size="sm"
+                        onClick={() => handleView(s)}
                       >
-                        View
-                      </button>
-                      <button
-                        onClick={() => handleEdit(service)}
-                        className="px-3 py-1 bg-yellow-500 text-white text-xs rounded hover:bg-yellow-600 transition"
+                        view
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="flex gap-2 justify-center">
+                      <Button
+                        variant="primary"
+                        size="sm"
+                        onClick={() => {
+                          setSelectedService(s);
+                          openEdit(s);
+                        }}
                       >
                         Edit
-                      </button>
-                      <button
-                        onClick={() => handleDeleteModal(service)}
-                        className="px-3 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600 transition"
+                      </Button>
+
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={() => {
+                          setSelectedService(s);
+                          setShowDeleteModal(true);
+                        }}
                       >
                         Delete
-                      </button>
+                      </Button>
                     </div>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="6" className="px-4 py-12 text-center">
-                  <div className="flex flex-col items-center space-y-3">
-                    <div className="text-gray-400 text-4xl">🛠️</div>
-                    <p className="text-gray-500 font-medium">
-                      No services found
-                    </p>
-                    <p className="text-gray-400 text-sm">
-                      Add your first service to get started
-                    </p>
-                  </div>
+                  )}
                 </td>
               </tr>
-            )}
+            ))}
           </tbody>
         </table>
       </div>
 
-      {/* Add Service Modal */}
+      {/* ================= ADD MODAL ================= */}
       <DetailsModal
         show={showAddModal}
-        onClose={closeAddModal}
-        title="Add New Service"
-        size="md"
+        onClose={() => setShowAddModal(false)}
+        title="Add Service"
       >
-        <form onSubmit={handleAddSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Service Name
-            </label>
-            <Input
-              type="text"
-              id="service_name"
-              placeholder="Enter service name"
-              value={formData.service_name}
-              onChange={handleChange}
-              required
-            />
-          </div>
+        <form onSubmit={handleAdd} className="space-y-4">
+          <Input
+            label="Service Name"
+            id="service_name"
+            value={formData.service_name}
+            onChange={handleChange}
+            placeholder="Enter service name"
+            required
+            fullWidth
+          />
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Description
-            </label>
-            <textarea
-              id="description"
-              placeholder="Enter service description"
-              value={formData.description}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              rows="3"
-            />
-          </div>
+          <Input
+            label="Description"
+            id="description"
+            value={formData.description}
+            onChange={handleChange}
+            placeholder="Enter description"
+          />
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Branch
-            </label>
-            <select
-              id="branch_id"
-              value={formData.branch_id}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            >
-              <option value="">Select Branch</option>
-              {branches?.map((branch) => (
-                <option key={branch.branch_id} value={branch.branch_id}>
-                  {branch.branch_name}
-                </option>
-              ))}
-            </select>
-          </div>
+          <Select
+            id="branch_id"
+            value={formData.branch_id}
+            onChange={handleChange}
+            options={branches.map((b) => ({
+              value: b.branch_id,
+              label: b.branch_name,
+            }))}
+          />
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Service Image
-            </label>
-            <input
-              type="file"
-              id="service_image"
-              accept="image/*"
-              onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+          <Input
+            type="file"
+            id="service_image"
+            onChange={handleChange}
+            fullWidth
+          />
 
-          <div className="flex justify-end gap-3 pt-4">
-            <button
-              type="button"
-              onClick={closeAddModal}
-              className="px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-50 transition"
-            >
+          <div className="flex justify-end gap-3">
+            <Button variant="outline" onClick={() => setShowAddModal(false)}>
               Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition"
-            >
-              Add Service
-            </button>
+            </Button>
+
+            <Button variant="success" type="submit">
+              Save
+            </Button>
           </div>
         </form>
       </DetailsModal>
 
-      {/* Edit Service Modal */}
+      {/* ================= EDIT MODAL ================= */}
       <DetailsModal
         show={showEditModal}
-        onClose={closeEditModal}
+        onClose={() => setShowEditModal(false)}
         title="Edit Service"
-        size="md"
       >
-        <form onSubmit={handleEditSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Service Name
-            </label>
-            <Input
-              type="text"
-              id="service_name"
-              placeholder="Enter service name"
-              value={formData.service_name}
-              onChange={handleChange}
-              required
-            />
-          </div>
+        <form onSubmit={handleUpdate} className="space-y-4">
+          <Input
+            id="service_name"
+            value={formData.service_name}
+            onChange={handleChange}
+            fullWidth
+          />
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Description
-            </label>
-            <textarea
-              id="description"
-              placeholder="Enter service description"
-              value={formData.description}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              rows="3"
-            />
-          </div>
+          <Input
+            id="description"
+            value={formData.description}
+            onChange={handleChange}
+            fullWidth
+          />
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Service Image (Optional)
-            </label>
-            <input
-              type="file"
-              id="service_image"
-              accept="image/*"
-              onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            {selectedService?.service_image && (
-              <div className="mt-2">
-                <p className="text-sm text-gray-600">Current image:</p>
-                <img
-                  src={`http://localhost:3000/${selectedService.service_image}`}
-                  alt={selectedService.service_name}
-                  className="w-20 h-20 object-cover rounded mt-1"
-                />
-              </div>
-            )}
-          </div>
+          <Select
+            id="branch_id"
+            value={formData.branch_id}
+            onChange={handleChange}
+            options={branches.map((b) => ({
+              value: b.branch_id,
+              label: b.branch_name,
+            }))}
+          />
 
-          <div className="flex justify-end gap-3 pt-4">
-            <button
-              type="button"
-              onClick={closeEditModal}
-              className="px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-50 transition"
-            >
+          <Input
+            type="file"
+            id="service_image"
+            onChange={handleChange}
+            fullWidth
+          />
+
+          <div className="flex justify-end gap-3">
+            <Button variant="outline" onClick={() => setShowEditModal(false)}>
               Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
-            >
-              Update Service
-            </button>
+            </Button>
+
+            <Button variant="primary" type="submit">
+              Update
+            </Button>
           </div>
         </form>
       </DetailsModal>
 
-      {/* View Service Details Modal */}
-      <DetailsModal
-        show={showDetailsModal}
-        onClose={() => {
-          setShowDetailsModal(false);
-          setSelectedService(null);
-        }}
-        title={`Service Details: ${selectedService?.service_name || "Service"}`}
-        size="md"
-      >
-        <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <h3 className="text-sm font-medium text-gray-600 mb-1">
-                Service ID
-              </h3>
-              <p className="text-lg font-semibold text-gray-900">
-                {selectedService?.service_id}
-              </p>
-            </div>
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <h3 className="text-sm font-medium text-gray-600 mb-1">
-                Service Name
-              </h3>
-              <p className="text-lg font-semibold text-gray-900">
-                {selectedService?.service_name}
-              </p>
-            </div>
-          </div>
-
-          <div className="p-4 bg-gray-50 rounded-lg">
-            <h3 className="text-sm font-medium text-gray-600 mb-1">
-              Description
-            </h3>
-            <p className="text-lg font-semibold text-gray-900">
-              {selectedService?.description || "No description provided"}
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <h3 className="text-sm font-medium text-gray-600 mb-1">
-                Branch ID
-              </h3>
-              <p className="text-lg font-semibold text-gray-900">
-                {selectedService?.branch_id}
-              </p>
-            </div>
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <h3 className="text-sm font-medium text-gray-600 mb-1">
-                Created At
-              </h3>
-              <p className="text-lg font-semibold text-gray-900">
-                {selectedService?.created_at
-                  ? new Date(selectedService.created_at).toLocaleDateString()
-                  : "N/A"}
-              </p>
-            </div>
-          </div>
-
-          {selectedService?.service_image && (
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <h3 className="text-sm font-medium text-gray-600 mb-2">
-                Service Image
-              </h3>
-              <img
-                src={`http://localhost:3000/${selectedService.service_image}`}
-                alt={selectedService.service_name}
-                className="w-full max-w-xs h-48 object-cover rounded"
-              />
-            </div>
-          )}
-        </div>
-      </DetailsModal>
-
-      {/* Delete Confirmation Modal */}
+      {/* ================= DELETE ================= */}
       <DetailsModal
         show={showDeleteModal}
-        onClose={closeDeleteModal}
-        title="Confirm Delete"
-        size="sm"
+        onClose={() => setShowDeleteModal(false)}
+        title="Delete Service"
       >
-        <div className="text-center space-y-4">
-          <div className="text-red-500 text-6xl">⚠️</div>
-          <div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              Delete Service
-            </h3>
-            <p className="text-gray-600">
-              Are you sure you want to delete "{selectedService?.service_name}"?
-              This action cannot be undone.
-            </p>
-          </div>
+        <p>Are you sure?</p>
 
-          <div className="flex justify-center gap-3 pt-4">
-            <button
-              onClick={closeDeleteModal}
-              className="px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-50 transition"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleDelete}
-              className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition"
-            >
-              Delete
-            </button>
-          </div>
+        <div className="flex justify-end gap-3 mt-4">
+          <Button variant="outline" onClick={() => setShowDeleteModal(false)}>
+            Cancel
+          </Button>
+
+          <Button variant="danger" onClick={handleDelete}>
+            Delete
+          </Button>
         </div>
       </DetailsModal>
     </div>
