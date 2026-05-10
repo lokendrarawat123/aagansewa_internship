@@ -9,6 +9,7 @@ import {
   getServicesBySlug,
   publicGetServices,
   updateService,
+  vision,
 } from "../controllers/services.controller.js";
 import { uploadService } from "../utils/multerHandler.js";
 import { isLogin } from "../middlewares/isLogin.js";
@@ -50,5 +51,5 @@ serviceRouter.delete(
   authorizeRoles("admin", "manager"),
   deleteService,
 );
-
+serviceRouter.get("/getservice/:province_id", vision);
 export default serviceRouter;
