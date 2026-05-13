@@ -28,7 +28,7 @@ serviceRouter.get("/get/:slug", getServicesBySlug);
 serviceRouter.post(
   "/add-service",
   isLogin,
-  authorizeRoles("admin", "manager"),
+  authorizeRoles("manager"),
   uploadService.single("image"),
   addService,
 );

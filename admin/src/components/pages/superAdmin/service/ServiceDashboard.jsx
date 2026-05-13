@@ -6,6 +6,7 @@ import {
   useUpdateServiceMutation,
   useDeleteServiceMutation,
   useGetsAllServiceWithBranchNameQuery,
+  useGetServicesByBranchQuery,
 } from "../../../../redux/features/serviceSlice.js";
 
 import { useGetBranchQuery } from "../../../../redux/features/branchSlice.js";
@@ -16,7 +17,7 @@ import DetailsModal from "../../../shared/Modal.jsx";
 import Button from "../../../shared/Button.jsx";
 import { Loading } from "../../../shared/IsLoading.jsx";
 import { Error } from "../../../shared/Error.jsx";
-import { useIsAdmin } from "../../../shared/RolesCheck.jsx";
+import { useIsAdmin, useIsManager } from "../../../shared/RolesCheck.jsx";
 
 const ServiceManager = () => {
   const baseUrl = import.meta.env.VITE_IMG_URL;
@@ -38,6 +39,11 @@ const ServiceManager = () => {
 
   // API
   const { data, isLoading, error } = useGetsAllServiceWithBranchNameQuery();
+  const {
+    data: branchshWiseData,
+    isLoading: branchWiseDataLoading,
+    error: branchWiseDataError,
+  } = useGetServicesByBranchQuery();
 
   const { data: branchData } = useGetBranchQuery();
 
@@ -47,8 +53,11 @@ const ServiceManager = () => {
 
   const services = data?.data || [];
   const branches = branchData?.branch || [];
+  const branchWiseData = branchshWiseData?.data || [];
   const isAdmin = useIsAdmin();
-  console.log(isAdmin);
+  const isManager = useIsManager();
+  console.log(isManager);
+  const filteredServices = isAdmin ? services : isManager ? branchWiseData : [];
 
   // INPUT
   const handleChange = (e) => {
@@ -155,9 +164,7 @@ const ServiceManager = () => {
       toast.error(err?.data?.message || "Delete failed");
     }
   };
-  const handleView = (service) => {
-    console.log(service);
-  };
+  const handleView = (service) => {};
 
   if (isLoading) return <Loading />;
   if (error) return <Error error={error} />;
@@ -193,7 +200,7 @@ const ServiceManager = () => {
           </thead>
 
           <tbody>
-            {services.map((s) => (
+            {filteredServices.map((s) => (
               <tr key={s.service_id} className="border-b hover:bg-slate-50">
                 <td className="p-3">{s.service_id}</td>
                 <td className="p-3">{s.service_name}</td>

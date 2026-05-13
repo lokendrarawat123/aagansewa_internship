@@ -7,7 +7,9 @@ import { generateUniqueSlug } from "../utils/slugify.js";
 
 export const addService = async (req, res, next) => {
   try {
-    const { service_name, description, branch_id } = req.body;
+    const branch_id = req.user.branch_id;
+
+    const { service_name, description } = req.body;
 
     if (!req.file || !service_name || !branch_id) {
       if (req.file) removeImg(req.file.path);
@@ -173,7 +175,7 @@ export const deleteService = async (req, res, next) => {
 // Get By Branch
 export const getServicesByBranchId = async (req, res, next) => {
   try {
-    const { branchId } = req.params;
+    const { branchId } = req.user.branch_id;
 
     // ✅ validation
     if (!branchId) {

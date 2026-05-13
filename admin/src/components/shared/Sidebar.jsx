@@ -41,12 +41,14 @@ const Sidebar = ({ active, setActive }) => {
       toast.error(error.data?.message || "logout failed");
     }
   };
+  const dashboardPath =
+    role === "admin" ? "/admin/dashboard" : "/admin/manager-dashboard";
   const menus = [
     {
       name: "Dashboard",
       key: "dashboard",
       icon: <House size={18} />,
-      path: "/admin/dashboard",
+      path: dashboardPath,
       roles: ["admin", "manager"],
     },
 
@@ -76,7 +78,7 @@ const Sidebar = ({ active, setActive }) => {
       name: "Manager Management",
       key: "manager",
       icon: <UserCheck size={18} />,
-      path: "/admin/manager-dashboard",
+      path: "/admin/BranchManager-dashboard",
       roles: ["admin"],
     },
 
@@ -128,6 +130,9 @@ const Sidebar = ({ active, setActive }) => {
   ];
 
   const currentMenu = menus.filter((item) => item.roles.includes(role));
+
+  console.log(currentMenu);
+
   return (
     <aside className="fixed-0 w-64 h-screen bg-slate-900 text-slate-200 flex flex-col shadow-xl">
       {/* Brand */}

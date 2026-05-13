@@ -26,7 +26,7 @@ export const adminRoutes = [
     element: <BranchDashboard />,
   },
   {
-    path: "manager-dashboard",
+    path: "BranchManager-dashboard",
     element: <BranchManagerDashboard />,
   },
   {
