@@ -5,7 +5,7 @@ import {
   getAllServicesWithBranch,
   getServiceById,
   getServices,
-  getServicesByBranchId,
+  getServicesByBranch,
   getServicesBySlug,
   publicGetServices,
   updateService,
@@ -21,7 +21,12 @@ const serviceRouter = express.Router();
 serviceRouter.get("/get-all-service", getAllServicesWithBranch);
 serviceRouter.get("/get-service", publicGetServices);
 serviceRouter.get("/get-service/:id", getServiceById);
-serviceRouter.get("/get-services/:branchId", getServicesByBranchId);
+serviceRouter.get(
+  "/get-servicesByBranch",
+  isLogin,
+  authorizeRoles("manager", "admin"),
+  getServicesByBranch,
+);
 serviceRouter.get("/get/:slug", getServicesBySlug);
 
 // Protected Routes (Admin/Manager)

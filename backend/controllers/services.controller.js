@@ -8,6 +8,7 @@ import { generateUniqueSlug } from "../utils/slugify.js";
 export const addService = async (req, res, next) => {
   try {
     const branch_id = req.user.branch_id;
+    console.log(branch_id);
 
     const { service_name, description } = req.body;
 
@@ -22,8 +23,10 @@ export const addService = async (req, res, next) => {
     const slug = await generateUniqueSlug(db, "services", "slug", service_name);
 
     const [exist] = await db.execute(
-      "SELECT service_name FROM services WHERE service_name = ?",
-      [service_name],
+      `SELECT service_name 
+   FROM services 
+   WHERE service_name = ? AND branch_id = ?`,
+      [service_name, branch_id],
     );
 
     if (exist.length > 0) {
@@ -173,9 +176,9 @@ export const deleteService = async (req, res, next) => {
 };
 
 // Get By Branch
-export const getServicesByBranchId = async (req, res, next) => {
+export const getServicesByBranch = async (req, res, next) => {
   try {
-    const { branchId } = req.user.branch_id;
+    const branchId = req.user.branch_id;
 
     // ✅ validation
     if (!branchId) {

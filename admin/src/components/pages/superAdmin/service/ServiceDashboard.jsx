@@ -54,10 +54,11 @@ const ServiceManager = () => {
   const services = data?.data || [];
   const branches = branchData?.branch || [];
   const branchWiseData = branchshWiseData?.data || [];
+  console.log(branchWiseData);
   const isAdmin = useIsAdmin();
   const isManager = useIsManager();
   console.log(isManager);
-  const filteredServices = isAdmin ? services : isManager ? branchWiseData : [];
+  const filteredServices = isAdmin ? services : branchWiseData;
 
   // INPUT
   const handleChange = (e) => {
