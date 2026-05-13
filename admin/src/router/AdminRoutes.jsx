@@ -6,6 +6,7 @@ import BranchManagerDashboard from "../components/pages/superAdmin/branchmanager
 import ServiceManager from "../components/pages/superAdmin/service/ServiceDashboard";
 import InquiryDashboard from "../components/pages/superAdmin/inquiry/InquiryDashboard";
 import StaffDashboard from "../components/pages/superAdmin/staff/StaffDashboard";
+import Manager from "../components/pages/manager/Manager";
 
 export const adminRoutes = [
   {
@@ -39,5 +40,9 @@ export const adminRoutes = [
   {
     path: "staff-dashboard",
     element: <StaffDashboard />,
+  },
+  {
+    path: "manager-dashboard",
+    element: <Manager />,
   },
 ];

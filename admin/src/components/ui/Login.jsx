@@ -1,29 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Input from "../shared/Input";
 import { toast } from "react-toastify";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useSignInMutation } from "../../redux/features/authSlice";
 import { useNavigate } from "react-router-dom";
 import { setUser } from "../../redux/features/authState";
 
 const Login = () => {
-  // 1. User ko data pani line state bata
-  const { isAuth, role } = useSelector((state) => state.user);
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [login] = useSignInMutation();
-
-  // 2. Dashboard protection logic yaha sudharnu parcha
-  useEffect(() => {
-    if (isAuth && role) {
-      if (role === "admin") {
-        navigate("/admin/dashboard");
-      } else if (role === "manager") {
-        navigate("/manager/dashboard");
-      }
-    }
-  }, [isAuth, role, navigate]); // user ra isAuth dubai dependancy ma rakhne
 
   const [data, setData] = useState({
     email: "",
@@ -32,6 +18,7 @@ const Login = () => {
 
   const handleChange = (e) => {
     const { id, value } = e.target;
+
     setData((prev) => ({
       ...prev,
       [id]: value,
@@ -40,29 +27,32 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!data.email || !data.password) {
-      toast.error("please fill all the fields");
+      toast.error("Please fill all fields");
       return;
     }
 
     try {
       const res = await login(data).unwrap();
-      toast.success(res.message || "logged in");
 
+      toast.success(res.message || "Login successful");
+
+      // set redux user
       dispatch(setUser(res?.user));
 
-      // 3. Login successful bhae bittikai pani role herne
       const role = res?.user?.role;
 
+      // role-based redirect
       if (role === "admin") {
-        navigate("/admin/dashboard");
+        navigate("/admin/dashboard", { replace: true });
       } else if (role === "manager") {
-        navigate("/manager/dashboard");
+        navigate("/admin/manager-dashboard", { replace: true });
       } else {
-        navigate("/");
+        navigate("/", { replace: true });
       }
     } catch (error) {
-      toast.error(error.data?.message || "something went wrong");
+      toast.error(error?.data?.message || "Something went wrong");
     }
   };
 
@@ -75,21 +65,23 @@ const Login = () => {
           <Input
             label="Email"
             type="text"
-            placeholder="Enter the email"
+            placeholder="Enter email"
             id="email"
-            required
             value={data.email}
             onChange={handleChange}
+            required
           />
+
           <Input
             label="Password"
             type="password"
-            placeholder="Enter the password"
+            placeholder="Enter password"
             id="password"
-            required
             value={data.password}
             onChange={handleChange}
+            required
           />
+
           <button
             type="submit"
             className="bg-blue-600 text-white p-2 rounded-lg mt-3"
