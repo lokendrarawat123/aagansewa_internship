@@ -27,7 +27,7 @@ import { Link, useNavigate } from "react-router-dom";
 const Sidebar = ({ active, setActive }) => {
   const { role } = useSelector((state) => state.user);
 
-  const [signout] = useSignOutMutation();
+  const [signout, { isLoading }] = useSignOutMutation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const handleLogout = async () => {
@@ -37,6 +37,7 @@ const Sidebar = ({ active, setActive }) => {
       dispatch(logout());
       navigate("/");
     } catch (error) {
+      console.error("Logout Error:", error);
       toast.error(error.data?.message || "logout failed");
     }
   };
@@ -157,10 +158,11 @@ const Sidebar = ({ active, setActive }) => {
       <div className="p-4 border-t border-slate-700">
         <button
           onClick={handleLogout}
-          className="w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-medium transition"
+          disabled={isLoading}
+          className="w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white py-3 rounded-lg font-medium transition"
         >
           <LogOut size={18} />
-          Logout
+          {isLoading ? "Logging out..." : "Logout"}
         </button>
       </div>
     </aside>

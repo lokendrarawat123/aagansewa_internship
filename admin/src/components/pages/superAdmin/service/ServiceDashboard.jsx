@@ -16,7 +16,7 @@ import DetailsModal from "../../../shared/Modal.jsx";
 import Button from "../../../shared/Button.jsx";
 import { Loading } from "../../../shared/IsLoading.jsx";
 import { Error } from "../../../shared/Error.jsx";
-import { isAdmin } from "../../../shared/RolesCheck.jsx";
+import { useIsAdmin } from "../../../shared/RolesCheck.jsx";
 
 const ServiceManager = () => {
   const baseUrl = import.meta.env.VITE_IMG_URL;
@@ -47,6 +47,8 @@ const ServiceManager = () => {
 
   const services = data?.data || [];
   const branches = branchData?.branch || [];
+  const isAdmin = useIsAdmin();
+  console.log(isAdmin);
 
   // INPUT
   const handleChange = (e) => {

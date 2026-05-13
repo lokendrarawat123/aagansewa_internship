@@ -13,7 +13,7 @@ import { authorizeRoles } from "../middlewares/isAuthorizedRoles.js";
 
 const authRouter = express.Router();
 authRouter.post("/login", login);
-authRouter.post("/logout", logout);
+authRouter.post("/logout", isLogin, logout);
 // Add manager
 authRouter.post("/add-manager", isLogin, authorizeRoles("admin"), addManager);
 

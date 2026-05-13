@@ -23,19 +23,19 @@ galleryRouter.post(
   authorizeRoles("admin", "manager"),
   uploadGallery.array("images", 20),
   authorizeBranchAccess,
-  addGallery
+  addGallery,
 );
 galleryRouter.get(
   "/get-gallery",
   isLogin,
   authorizeRoles("admin", "manager"),
-  getGallery
+  getGallery,
 );
 galleryRouter.delete(
   "/delete-gallery/:id",
   isLogin,
   authorizeRoles("admin", "manager"),
-  deleteGallery
+  deleteGallery,
 );
 
 // Additional gallery routes
@@ -47,7 +47,7 @@ galleryRouter.patch(
   isLogin,
   authorizeRoles("admin", "manager"),
   uploadGallery.array("images", 20),
-  updateGallery
+  updateGallery,
 );
 
 export default galleryRouter;

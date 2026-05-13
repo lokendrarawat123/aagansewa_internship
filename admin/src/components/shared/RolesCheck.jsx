@@ -1,23 +1,11 @@
 import { useSelector } from "react-redux";
 
-export const useRole = () => {
-  return useSelector((state) => state.auth.role);
-};
-
+// ADMIN हो कि होइन (true / false)
 export const useIsAdmin = () => {
-  return useSelector((state) => state.auth.role === "admin");
+  return useSelector((state) => state.user.role === "admin");
 };
 
+// MANAGER हो कि होइन (true / false)
 export const useIsManager = () => {
-  return useSelector((state) => state.auth.role === "manager");
-};
-
-export const useIsAdminOrManager = () => {
-  return useSelector(
-    (state) => state.auth.role === "admin" || state.auth.role === "manager",
-  );
-};
-
-export const useIsAuth = () => {
-  return useSelector((state) => state.auth.isAuth);
+  return useSelector((state) => state.user.role === "manager");
 };
