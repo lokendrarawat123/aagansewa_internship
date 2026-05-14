@@ -86,7 +86,7 @@ CREATE TABLE staff (
     role VARCHAR(50) DEFAULT 'staff',
     description TEXT,
 
-    service_id INT NOT NULL,
+    service_id INT  NULL,
     branch_id INT NOT NULL,
 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -94,6 +94,7 @@ CREATE TABLE staff (
     CONSTRAINT fk_staff_service
       FOREIGN KEY (service_id)
       REFERENCES services(service_id),
+      ON DELETE SET NULL;
       
 
 

@@ -54,10 +54,10 @@ const ServiceManager = () => {
   const services = data?.data || [];
   const branches = branchData?.branch || [];
   const branchWiseData = branchshWiseData?.data || [];
-  console.log(branchWiseData);
+
   const isAdmin = useIsAdmin();
   const isManager = useIsManager();
-  console.log(isManager);
+
   const filteredServices = isAdmin ? services : branchWiseData;
 
   // INPUT
@@ -96,9 +96,8 @@ const ServiceManager = () => {
       const fd = new FormData();
       fd.append("service_name", formData.service_name);
       fd.append("description", formData.description);
-      fd.append("branch_id", formData.branch_id);
       if (formData.service_image) {
-        fd.append("service_image", formData.service_image);
+        fd.append("image", formData.service_image);
       }
 
       const res = await addService(fd).unwrap();
@@ -194,7 +193,8 @@ const ServiceManager = () => {
             <tr>
               <th className="p-3 text-left">ID</th>
               <th className="p-3 text-left">Service</th>
-              <th className="p-3 text-left">Branch</th>
+              {isAdmin && <th className="p-3 text-left">Branch</th>}
+
               <th className="p-3 text-left">Image</th>
               <th className="p-3 text-center">Action</th>
             </tr>
@@ -205,7 +205,7 @@ const ServiceManager = () => {
               <tr key={s.service_id} className="border-b hover:bg-slate-50">
                 <td className="p-3">{s.service_id}</td>
                 <td className="p-3">{s.service_name}</td>
-                <td className="p-3">{s.branch_name}</td>
+                {isAdmin && <td className="p-3">{s.branch_name}</td>}
 
                 <td className="p-3">
                   {s.service_image ? (
@@ -264,8 +264,12 @@ const ServiceManager = () => {
       {/* ================= ADD MODAL ================= */}
       <DetailsModal
         show={showAddModal}
-        onClose={() => setShowAddModal(false)}
+        onClose={() => {
+          setShowAddModal(false);
+          resetForm(); // ← Reset on close
+        }}
         title="Add Service"
+        size="lg"
       >
         <form onSubmit={handleAdd} className="space-y-4">
           <Input
@@ -286,21 +290,14 @@ const ServiceManager = () => {
             placeholder="Enter description"
           />
 
-          <Select
-            id="branch_id"
-            value={formData.branch_id}
-            onChange={handleChange}
-            options={branches.map((b) => ({
-              value: b.branch_id,
-              label: b.branch_name,
-            }))}
-          />
-
           <Input
+            label="Select Service Image"
             type="file"
             id="service_image"
+            value={formData.service_image}
             onChange={handleChange}
-            fullWidth
+            style="cursor-pointer "
+            required
           />
 
           <div className="flex justify-end gap-3">
@@ -309,7 +306,7 @@ const ServiceManager = () => {
             </Button>
 
             <Button variant="success" type="submit">
-              Save
+              Add
             </Button>
           </div>
         </form>
@@ -318,7 +315,10 @@ const ServiceManager = () => {
       {/* ================= EDIT MODAL ================= */}
       <DetailsModal
         show={showEditModal}
-        onClose={() => setShowEditModal(false)}
+        onClose={() => {
+          setShowAddModal(false);
+          resetForm(); // ← Reset on close
+        }}
         title="Edit Service"
       >
         <form onSubmit={handleUpdate} className="space-y-4">
@@ -334,16 +334,6 @@ const ServiceManager = () => {
             value={formData.description}
             onChange={handleChange}
             fullWidth
-          />
-
-          <Select
-            id="branch_id"
-            value={formData.branch_id}
-            onChange={handleChange}
-            options={branches.map((b) => ({
-              value: b.branch_id,
-              label: b.branch_name,
-            }))}
           />
 
           <Input

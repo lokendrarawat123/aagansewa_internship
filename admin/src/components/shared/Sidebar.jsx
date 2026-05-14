@@ -131,8 +131,6 @@ const Sidebar = ({ active, setActive }) => {
 
   const currentMenu = menus.filter((item) => item.roles.includes(role));
 
-  console.log(currentMenu);
-
   return (
     <aside className="fixed-0 w-64 h-screen bg-slate-900 text-slate-200 flex flex-col shadow-xl">
       {/* Brand */}

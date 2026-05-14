@@ -48,7 +48,7 @@ export const serviceApi = indexSlice.injectEndpoints({
     // Add Service
     addService: builder.mutation({
       query: (data) => ({
-        url: "/services/add-services",
+        url: "/services/add-service",
         method: "POST",
         body: data,
       }),
@@ -66,7 +66,7 @@ export const serviceApi = indexSlice.injectEndpoints({
     // Delete Service
     deleteService: builder.mutation({
       query: (id) => ({
-        url: `/services/delete-services/${id}`,
+        url: `/services/delete-service/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["services"],

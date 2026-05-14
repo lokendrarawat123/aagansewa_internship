@@ -8,7 +8,6 @@ import { generateUniqueSlug } from "../utils/slugify.js";
 export const addService = async (req, res, next) => {
   try {
     const branch_id = req.user.branch_id;
-    console.log(branch_id);
 
     const { service_name, description } = req.body;
 

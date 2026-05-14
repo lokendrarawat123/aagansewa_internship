@@ -49,7 +49,7 @@ const DetailsModal = ({
               </div>
               <button
                 onClick={onClose}
-                className="group p-3  rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500/20"
+                className="group p-3  rounded-xl transition-all duration-200 focus:outline-none  focus:ring-red-500/20"
               >
                 <FaTimes className="h-5 w-5 text-red-400 group-hover:text-red-600 transition-all duration-500 transform hover:rotate-360" />
               </button>
