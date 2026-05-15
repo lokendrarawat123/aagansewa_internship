@@ -160,43 +160,51 @@ export const deleteReview = async (req, res, next) => {
     next(error);
   }
 };
-//inquiry api
-//add inquiry
+
+//add inquiry **
 export const addInquiry = async (req, res, next) => {
   try {
-    const { name, email, phone, address, branch_id, description } = req.body;
-    console.log(name, email, phone, address, branch_id, description); // getting data from the fronted or req.body
-    //return msg for the if any field is missing
-    if (!name || !phone || !address || !branch_id) {
-      return res
-        .status(400)
-        .json({ message: "please provide province all field " });
-    }
-    const [branch] = await db.execute(
-      "select branch_id ,branch_name from branch where branch_id = ?",
-      [branch_id],
-    );
-    if (branch.length === 0) {
-      return res.status(404).json({
-        message: "the branch id does not exist please use valid id",
+    const branch_id = req.user.branch_id;
+
+    const { name, email, phone, address, description } = req.body;
+
+    // required fields (branch_id frontend बाट लिने होइन)
+    if (!name || !phone || !address) {
+      return res.status(400).json({
+        success: false,
+        message: "Name, phone and address are required",
       });
     }
 
-    //3. insert in inquiry table
+    // branch verify (optional but good safety)
+    const [branch] = await db.execute(
+      "SELECT branch_id, branch_name FROM branch WHERE branch_id = ?",
+      [branch_id],
+    );
+
+    if (branch.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Invalid branch",
+      });
+    }
+
+    // insert inquiry
     await db.execute(
-      `INSERT INTO inquiry (name, phone, address, email, description, branch_id) 
+      `INSERT INTO inquiry (name, phone, address, email, description, branch_id)
        VALUES (?, ?, ?, ?, ?, ?)`,
       [name, phone, address, email || null, description || null, branch_id],
     );
 
-    res.status(201).json({
-      message: ` your inquiry submitted successfully in ${branch[0].branch_name} branch thank you. we will contact in few minute  `,
+    return res.status(201).json({
+      success: true,
+      message: `Inquiry submitted successfully in ${branch[0].branch_name}`,
     });
   } catch (error) {
     next(error);
   }
 };
-//delete inquiry
+//delete inquiry **
 export const deleteInquiry = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -250,7 +258,7 @@ export const getInquiryById = async (req, res, next) => {
   }
 };
 
-// Get all inquiries
+// Get all inquiries **
 export const getAllInquiry = async (req, res, next) => {
   try {
     // inquiry (i) ra branch (b) table join gareko
@@ -278,19 +286,48 @@ export const getAllInquiry = async (req, res, next) => {
 // Get inquiries by branch ID
 export const getInquiryByBranch = async (req, res, next) => {
   try {
-    const { branch_id } = req.params;
+    const branch_id = req.user.branch_id;
 
     if (!branch_id) {
-      return res.status(400).json({ message: "Please provide branch ID" });
+      return res.status(400).json({
+        success: false,
+        message: "Branch ID not found in user",
+      });
     }
 
-    const [result] = await db.execute(
-      "SELECT * FROM inquiry WHERE branch_id = ? ORDER BY created_at DESC",
+    // ================= SMART PAGINATION =================
+    const page = req.query.page ? Number(req.query.page) : 1;
+    const limit = req.query.limit ? Number(req.query.limit) : 10;
+    const offset = (page - 1) * limit;
+
+    // ================= COUNT =================
+    const [countResult] = await db.execute(
+      `SELECT COUNT(*) AS total 
+       FROM inquiry 
+       WHERE branch_id = ?`,
       [branch_id],
     );
 
-    res.status(200).json({
+    const total = countResult[0].total;
+
+    // ================= DATA =================
+    const [result] = await db.execute(
+      `SELECT * 
+       FROM inquiry 
+       WHERE branch_id = ? 
+       ORDER BY created_at DESC
+       LIMIT ? OFFSET ?`,
+      [branch_id, limit, offset],
+    );
+
+    return res.status(200).json({
+      success: true,
       message: "Branch inquiries fetched successfully",
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+      count: result.length,
       data: result,
     });
   } catch (error) {

@@ -1,90 +1,210 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
+
 import {
+  useAddInquiryMutation,
   useGetAllInquiriesQuery,
   useUpdateInquiryMutation,
   useDeleteInquiryMutation,
 } from "../../../../redux/features/siteSlice";
+
 import DetailsModal from "../../../shared/Modal";
+import Input from "../../../shared/Input";
+import Button from "../../../shared/Button";
+
 import { Loading } from "../../../shared/IsLoading";
 import { Error } from "../../../shared/Error";
 
 const InquiryDashboard = () => {
+  // ================= MODALS =================
   const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  // ================= DATA =================
   const [selectedInquiry, setSelectedInquiry] = useState(null);
+  const [deleteId, setDeleteId] = useState(null);
 
-  // API hooks
+  // ================= FORMS =================
+  const [addData, setAddData] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    address: "",
+    description: "",
+  });
+
+  const [editData, setEditData] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    address: "",
+    description: "",
+  });
+
+  // ================= API =================
   const { data: inquiriesData, isLoading, error } = useGetAllInquiriesQuery();
-  const [deleteInquiry] = useDeleteInquiryMutation();
 
-  const inquiries = inquiriesData?.data || []; // Controller ko response 'data' field ma chha
-  console.log(inquiries);
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete?")) {
-      try {
-        await deleteInquiry(id).unwrap();
-        toast.success("Inquiry deleted successfully");
-      } catch (err) {
-        toast.error("Failed to delete");
-      }
+  const [addInquiry, { isLoading: adding }] = useAddInquiryMutation();
+  const [updateInquiry, { isLoading: updating }] = useUpdateInquiryMutation();
+  const [deleteInquiry, { isLoading: deleting }] = useDeleteInquiryMutation();
+
+  const inquiries = inquiriesData?.data || [];
+
+  // ================= ADD =================
+  const handleAddChange = (e) => {
+    const { id, value } = e.target;
+    setAddData((prev) => ({ ...prev, [id]: value }));
+  };
+
+  const handleAddSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const res = await addInquiry(addData).unwrap();
+      toast.success(res?.message || "Inquiry added");
+
+      setShowAddModal(false);
+      setAddData({
+        name: "",
+        phone: "",
+        email: "",
+        address: "",
+        description: "",
+      });
+    } catch (err) {
+      toast.error(err?.data?.message || "Add failed");
     }
   };
 
-  if (isLoading) return <Loading isLoading={isLoading} />;
+  // ================= EDIT =================
+  const handleEditOpen = (inquiry) => {
+    setSelectedInquiry(inquiry);
+
+    setEditData({
+      name: inquiry.name || "",
+      phone: inquiry.phone || "",
+      email: inquiry.email || "",
+      address: inquiry.address || "",
+      description: inquiry.description || "",
+    });
+
+    setShowEditModal(true);
+  };
+
+  const handleEditChange = (e) => {
+    const { id, value } = e.target;
+    setEditData((prev) => ({ ...prev, [id]: value }));
+  };
+
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+
+    try {
+      const res = await updateInquiry({
+        id: selectedInquiry.inquiry_id,
+        data: editData,
+      }).unwrap();
+
+      toast.success(res?.message || "Updated successfully");
+      setShowEditModal(false);
+    } catch (err) {
+      toast.error(err?.data?.message || "Update failed");
+    }
+  };
+
+  // ================= DELETE =================
+  const openDeleteModal = (inquiry) => {
+    setSelectedInquiry(inquiry);
+    setDeleteId(inquiry.inquiry_id);
+    setShowDeleteModal(true);
+  };
+
+  const handleDelete = async () => {
+    try {
+      const res = await deleteInquiry(deleteId).unwrap();
+
+      toast.success(res?.message || "Deleted successfully");
+
+      setShowDeleteModal(false);
+      setDeleteId(null);
+      setSelectedInquiry(null);
+    } catch (err) {
+      toast.error(err?.data?.message || "Delete failed");
+    }
+  };
+
+  if (isLoading) return <Loading />;
   if (error) return <Error error={error} />;
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">Inquiry Management</h1>
+      {/* HEADER */}
+      <div className="flex justify-between mb-6">
+        <h1 className="text-2xl font-bold">Inquiry Management</h1>
 
-      <div className="bg-white shadow rounded-lg overflow-x-auto">
-        <table className="w-full text-left border-collapse">
-          <thead className="bg-gray-100">
+        <Button
+          variant="success"
+          size="lg"
+          onClick={() => setShowAddModal(true)}
+        >
+          Add Inquiry
+        </Button>
+      </div>
+
+      {/* TABLE */}
+      <div className="bg-white rounded-2xl shadow border overflow-hidden">
+        <table className="w-full text-left">
+          <thead className="bg-slate-100 text-sm">
             <tr>
-              <th className="p-3 border-b">ID</th>
-              <th className="p-3 border-b">Name</th>
-              <th className="p-3 border-b">Branch</th>
-              <th className="p-3 border-b">Address/Phone</th>
-              <th className="p-3 border-b">Date</th>
-              <th className="p-3 border-b">Action</th>
+              <th className="px-5 py-4">ID</th>
+              <th className="px-5 py-4">Name</th>
+              <th className="px-5 py-4">Branch</th>
+              <th className="px-5 py-4">Phone</th>
+              <th className="px-5 py-4">Date</th>
+              <th className="px-5 py-4 text-center">Actions</th>
             </tr>
           </thead>
+
           <tbody>
             {inquiries.map((inquiry) => (
-              <tr
-                key={inquiry.inquiry_id}
-                className="hover:bg-gray-50 border-b"
-              >
-                <td className="p-3">{inquiry.inquiry_id}</td>
-                <td className="p-3 font-medium">{inquiry.name}</td>
-                <td className="p-3">
-                  <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs uppercase font-bold">
-                    {inquiry.branch_name || "N/A"}
-                  </span>
-                </td>
-                <td className="p-3 text-sm">
-                  {inquiry.address} <br />
-                  <span className="text-gray-500">{inquiry.phone}</span>
-                </td>
-                <td className="p-3 text-sm">
+              <tr key={inquiry.inquiry_id} className="border-t">
+                <td className="px-5 py-4">#{inquiry.inquiry_id}</td>
+                <td className="px-5 py-4">{inquiry.name}</td>
+                <td className="px-5 py-4">{inquiry.branch_name || "N/A"}</td>
+                <td className="px-5 py-4">{inquiry.phone}</td>
+                <td className="px-5 py-4">
                   {new Date(inquiry.created_at).toLocaleDateString()}
                 </td>
-                <td className="p-3 flex gap-2">
-                  <button
+
+                <td className="px-5 py-4 flex gap-2 justify-center">
+                  <Button
+                    variant="primary"
+                    size="sm"
                     onClick={() => {
                       setSelectedInquiry(inquiry);
                       setShowDetailsModal(true);
                     }}
-                    className="bg-blue-500 text-white px-3 py-1 rounded text-xs"
                   >
                     View
-                  </button>
-                  <button
-                    onClick={() => handleDelete(inquiry.inquiry_id)}
-                    className="bg-red-500 text-white px-3 py-1 rounded text-xs"
+                  </Button>
+
+                  <Button
+                    variant="warning"
+                    size="sm"
+                    onClick={() => handleEditOpen(inquiry)}
+                  >
+                    Edit
+                  </Button>
+
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    onClick={() => openDeleteModal(inquiry)}
                   >
                     Delete
-                  </button>
+                  </Button>
                 </td>
               </tr>
             ))}
@@ -92,43 +212,168 @@ const InquiryDashboard = () => {
         </table>
       </div>
 
-      {/* Simplified View Modal */}
+      {/* ================= VIEW MODAL ================= */}
       <DetailsModal
         show={showDetailsModal}
         onClose={() => setShowDetailsModal(false)}
         title="Inquiry Details"
       >
         {selectedInquiry && (
-          <div className="space-y-3">
-            <div className="grid grid-cols-2 gap-2 text-sm">
-              <p>
-                <strong>ID:</strong> {selectedInquiry.inquiry_id}
-              </p>
-              <p>
-                <strong>Branch:</strong> {selectedInquiry.branch_name}
-              </p>
-              <p>
-                <strong>Name:</strong> {selectedInquiry.name}
-              </p>
-              <p>
-                <strong>Phone:</strong> {selectedInquiry.phone}
-              </p>
-              <p>
-                <strong>Address:</strong> {selectedInquiry.address}
-              </p>
-              <p>
-                <strong>Email:</strong> {selectedInquiry.email || "N/A"}
-              </p>
-            </div>
-            <hr />
-            <div>
-              <p className="text-sm font-bold">Description/Message:</p>
-              <p className="text-sm text-gray-700 p-2 bg-gray-50 rounded">
-                {selectedInquiry.description || "No description provided."}
-              </p>
-            </div>
+          <div className="space-y-2">
+            <p>
+              <b>Name:</b> {selectedInquiry.name}
+            </p>
+            <p>
+              <b>Phone:</b> {selectedInquiry.phone}
+            </p>
+            <p>
+              <b>Email:</b> {selectedInquiry.email}
+            </p>
+            <p>
+              <b>Address:</b> {selectedInquiry.address}
+            </p>
+            <p>
+              <b>Description:</b> {selectedInquiry.description}
+            </p>
           </div>
         )}
+      </DetailsModal>
+
+      {/* ================= ADD MODAL ================= */}
+      <DetailsModal
+        show={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        title="Add Inquiry"
+      >
+        <form onSubmit={handleAddSubmit} className="space-y-4">
+          <Input
+            id="name"
+            label="Name"
+            value={addData.name}
+            onChange={handleAddChange}
+          />
+          <Input
+            id="phone"
+            label="Phone"
+            value={addData.phone}
+            onChange={handleAddChange}
+          />
+          <Input
+            id="email"
+            label="Email"
+            value={addData.email}
+            onChange={handleAddChange}
+          />
+          <Input
+            id="address"
+            label="Address"
+            value={addData.address}
+            onChange={handleAddChange}
+          />
+
+          <textarea
+            id="description"
+            value={addData.description}
+            onChange={handleAddChange}
+            className="w-full border p-2 rounded"
+            placeholder="Description"
+          />
+
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setShowAddModal(false)}>
+              Cancel
+            </Button>
+
+            <Button variant="success" type="submit">
+              {adding ? "Adding..." : "Add"}
+            </Button>
+          </div>
+        </form>
+      </DetailsModal>
+
+      {/* ================= EDIT MODAL ================= */}
+      <DetailsModal
+        show={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        title="Edit Inquiry"
+      >
+        <form onSubmit={handleUpdate} className="space-y-4">
+          <Input
+            id="name"
+            label="Name"
+            value={editData.name}
+            onChange={handleEditChange}
+          />
+          <Input
+            id="phone"
+            label="Phone"
+            value={editData.phone}
+            onChange={handleEditChange}
+          />
+          <Input
+            id="email"
+            label="Email"
+            value={editData.email}
+            onChange={handleEditChange}
+          />
+          <Input
+            id="address"
+            label="Address"
+            value={editData.address}
+            onChange={handleEditChange}
+          />
+
+          <textarea
+            id="description"
+            value={editData.description}
+            onChange={handleEditChange}
+            className="w-full border p-2 rounded"
+          />
+
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setShowEditModal(false)}>
+              Cancel
+            </Button>
+
+            <Button variant="primary" type="submit">
+              {updating ? "Updating..." : "Update"}
+            </Button>
+          </div>
+        </form>
+      </DetailsModal>
+
+      {/* ================= DELETE MODAL (IMPORTANT PART) ================= */}
+      <DetailsModal
+        show={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        title="Confirm Delete"
+      >
+        <div className="space-y-4">
+          <p className="text-gray-600">
+            Are you sure you want to delete this inquiry?
+          </p>
+
+          {selectedInquiry && (
+            <div className="bg-gray-50 p-3 rounded">
+              <p>
+                <b>Name:</b> {selectedInquiry.name}
+              </p>
+              <p>
+                <b>Phone:</b> {selectedInquiry.phone}
+              </p>
+            </div>
+          )}
+
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setShowDeleteModal(false)}>
+              Cancel
+            </Button>
+
+            <Button variant="danger" onClick={handleDelete} disabled={deleting}>
+              {deleting ? "Deleting..." : "Delete"}
+            </Button>
+          </div>
+        </div>
       </DetailsModal>
     </div>
   );
