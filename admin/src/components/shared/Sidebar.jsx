@@ -41,14 +41,14 @@ const Sidebar = ({ active, setActive }) => {
       toast.error(error.data?.message || "logout failed");
     }
   };
-  const dashboardPath =
-    role === "admin" ? "/admin/dashboard" : "/admin/manager-dashboard";
+  const basePath = role === "admin" ? "/admin" : "/manager";
+
   const menus = [
     {
       name: "Dashboard",
       key: "dashboard",
       icon: <House size={18} />,
-      path: dashboardPath,
+      path: `${basePath}/dashboard`,
       roles: ["admin", "manager"],
     },
 
@@ -57,28 +57,28 @@ const Sidebar = ({ active, setActive }) => {
       name: "Province Management",
       key: "province",
       icon: <MapPin size={18} />,
-      path: "/admin/province-dashboard",
+      path: `${basePath}/province-dashboard`,
       roles: ["admin"],
     },
     {
       name: "District Management",
       key: "district",
       icon: <Layers size={18} />,
-      path: "/admin/district-dashboard",
+      path: `${basePath}/district-dashboard`,
       roles: ["admin"],
     },
     {
       name: "Branch Management",
       key: "branch",
       icon: <Building2 size={18} />,
-      path: "/admin/branch-dashboard",
+      path: `${basePath}/branch-dashboard`,
       roles: ["admin"],
     },
     {
       name: "Manager Management",
       key: "manager",
       icon: <UserCheck size={18} />,
-      path: "/admin/BranchManager-dashboard",
+      path: `${basePath}/BranchManager-dashboard`,
       roles: ["admin"],
     },
 
@@ -87,44 +87,44 @@ const Sidebar = ({ active, setActive }) => {
       name: "Service Management",
       key: "service",
       icon: <Settings size={18} />,
-      path: "/admin/service-dashboard",
+      path: `${basePath}/service-dashboard`,
       roles: ["admin", "manager"],
     },
     {
       name: "Inquiry Management",
       key: "inquiry",
       icon: <MessageCircleQuestionMark size={18} />,
-      path: "/admin/inquiry-dashboard",
+      path: `${basePath}/inquiry-dashboard`,
       roles: ["admin", "manager"],
     },
     {
       name: "Staff Management",
       key: "staff",
       icon: <UserRoundCog size={18} />,
-      path: "/admin/staff-dashboard",
+      path: `${basePath}/staff-dashboard`,
       roles: ["admin", "manager"],
     },
 
-    // MANAGER ONLY (no admin prefix needed)
+    // MANAGER ONLY
     {
       name: "Review Management",
       key: "review",
       icon: <Star size={18} />,
-      path: "/admin/review-dashboard",
+      path: `${basePath}/review-dashboard`,
       roles: ["manager"],
     },
     {
       name: "Profile",
       key: "profile",
       icon: <UserCircle size={18} />,
-      path: "admin/profile",
+      path: `${basePath}/profile`,
       roles: ["manager"],
     },
     {
       name: "Reports",
       key: "report",
       icon: <BarChart3 size={18} />,
-      path: "admin/reports",
+      path: `${basePath}/reports`,
       roles: ["manager"],
     },
   ];

@@ -18,7 +18,7 @@ const InquiryDashboard = () => {
   const [deleteInquiry] = useDeleteInquiryMutation();
 
   const inquiries = inquiriesData?.data || []; // Controller ko response 'data' field ma chha
-
+  console.log(inquiries);
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete?")) {
       try {
