@@ -28,8 +28,8 @@ export const serviceApi = indexSlice.injectEndpoints({
     }),
     // Get Services by Branch
     getServicesByBranch: builder.query({
-      query: () => ({
-        url: `/services/get-servicesByBranch`,
+      query: (page = 1) => ({
+        url: `/services/get-servicesByBranch?page=${page}`,
         method: "GET",
       }),
       providesTags: ["services"],

@@ -18,6 +18,7 @@ import Button from "../../../shared/Button.jsx";
 import { Loading } from "../../../shared/IsLoading.jsx";
 import { Error } from "../../../shared/Error.jsx";
 import { useIsAdmin, useIsManager } from "../../../shared/RolesCheck.jsx";
+import Pagination from "../../../shared/Pagignation.jsx";
 
 const ServiceManager = () => {
   const baseUrl = import.meta.env.VITE_IMG_URL;
@@ -28,6 +29,7 @@ const ServiceManager = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const [selectedService, setSelectedService] = useState(null);
+  const [page, setPage] = useState(1);
 
   // FORM
   const [formData, setFormData] = useState({
@@ -43,7 +45,7 @@ const ServiceManager = () => {
     data: branchshWiseData,
     isLoading: branchWiseDataLoading,
     error: branchWiseDataError,
-  } = useGetServicesByBranchQuery();
+  } = useGetServicesByBranchQuery(page);
 
   const { data: branchData } = useGetBranchQuery();
 
@@ -54,6 +56,8 @@ const ServiceManager = () => {
   const services = data?.data || [];
   const branches = branchData?.branch || [];
   const branchWiseData = branchshWiseData?.data || [];
+  const totalPages = branchshWiseData?.totalPages || 1;
+  console.log(branchWiseData);
 
   const isAdmin = useIsAdmin();
   const isManager = useIsManager();
@@ -168,6 +172,10 @@ const ServiceManager = () => {
 
   if (isLoading) return <Loading />;
   if (error) return <Error error={error} />;
+  const closeModal = () => {
+    setShowEditModal(false);
+    resetForm();
+  };
 
   return (
     <div className="p-6">
@@ -259,15 +267,17 @@ const ServiceManager = () => {
             ))}
           </tbody>
         </table>
+        <Pagination
+          page={page}
+          totalPages={totalPages}
+          onPageChange={setPage}
+        />
       </div>
 
       {/* ================= ADD MODAL ================= */}
       <DetailsModal
         show={showAddModal}
-        onClose={() => {
-          setShowAddModal(false);
-          resetForm(); // ← Reset on close
-        }}
+        onClose={closeModal}
         title="Add Service"
         size="lg"
       >
@@ -294,14 +304,14 @@ const ServiceManager = () => {
             label="Select Service Image"
             type="file"
             id="service_image"
-            value={formData.service_image}
+            // value={formData.service_image}
             onChange={handleChange}
             style="cursor-pointer "
             required
           />
 
           <div className="flex justify-end gap-3">
-            <Button variant="outline" onClick={() => setShowAddModal(false)}>
+            <Button variant="outline" onClose={closeModal}>
               Cancel
             </Button>
 
@@ -315,10 +325,7 @@ const ServiceManager = () => {
       {/* ================= EDIT MODAL ================= */}
       <DetailsModal
         show={showEditModal}
-        onClose={() => {
-          setShowAddModal(false);
-          resetForm(); // ← Reset on close
-        }}
+        onClose={closeModal}
         title="Edit Service"
       >
         <form onSubmit={handleUpdate} className="space-y-4">
@@ -337,14 +344,17 @@ const ServiceManager = () => {
           />
 
           <Input
+            label="Select Service Image"
             type="file"
             id="service_image"
+            value={formData.service_image}
             onChange={handleChange}
-            fullWidth
+            style="cursor-pointer "
+            required
           />
 
           <div className="flex justify-end gap-3">
-            <Button variant="outline" onClick={() => setShowEditModal(false)}>
+            <Button variant="outline" onClose={closeModal}>
               Cancel
             </Button>
 

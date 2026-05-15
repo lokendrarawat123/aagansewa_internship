@@ -9,7 +9,7 @@ import { setUser } from "../../redux/features/authState";
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [login] = useSignInMutation();
+  const [login, { isLoading }] = useSignInMutation();
 
   const [data, setData] = useState({
     email: "",
@@ -86,7 +86,7 @@ const Login = () => {
             type="submit"
             className="bg-blue-600 text-white p-2 rounded-lg mt-3"
           >
-            Login
+            {isLoading ? "Loading..." : "Login"}
           </button>
         </form>
       </div>

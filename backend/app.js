@@ -19,7 +19,7 @@ app.use(
   cors({
     origin: ["http://localhost:5173", "http://localhost:5174"],
     credentials: true,
-  })
+  }),
 );
 const port = process.env.PORT;
 app.use("/api/branch", branchRouter);
@@ -32,7 +32,7 @@ app.use("/api/auth", authRouter);
 try {
   db.connect();
 
-  // console.log("connected to database");
+  console.log("connected to database");
 } catch (error) {
   console.log("database connection failed" + error);
 }
