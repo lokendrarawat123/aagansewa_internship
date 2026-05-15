@@ -88,7 +88,7 @@ siteRouter.delete(
 );
 siteRouter.get("/get-inquiry/:id", getInquiryById);
 siteRouter.get("/get-allInquiry", getAllInquiry); // for the all inquiry not authenticated
-siteRouter.get("/site/getInquiryByBranch", getInquiryByBranch);
+siteRouter.get("/get-inquiry-branch", isLogin, getInquiryByBranch);
 siteRouter.patch(
   "/update-inquiry/:id",
   isLogin,

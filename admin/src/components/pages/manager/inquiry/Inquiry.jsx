@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 
 import {
   useAddInquiryMutation,
-  useGetAllInquiriesQuery,
+  useGetInquiriesByBranchQuery,
   useUpdateInquiryMutation,
   useDeleteInquiryMutation,
 } from "../../../../redux/features/siteSlice";
@@ -44,13 +44,18 @@ const InquiryDashboard = () => {
   });
 
   // ================= API =================
-  const { data: inquiriesData, isLoading, error } = useGetAllInquiriesQuery();
+  const {
+    data: inquiriesData,
+    isLoading,
+    error,
+  } = useGetInquiriesByBranchQuery();
 
   const [addInquiry, { isLoading: adding }] = useAddInquiryMutation();
   const [updateInquiry, { isLoading: updating }] = useUpdateInquiryMutation();
   const [deleteInquiry, { isLoading: deleting }] = useDeleteInquiryMutation();
 
   const inquiries = inquiriesData?.data || [];
+  console.log(inquiries);
 
   // ================= ADD =================
   const handleAddChange = (e) => {
@@ -160,7 +165,7 @@ const InquiryDashboard = () => {
             <tr>
               <th className="px-5 py-4">ID</th>
               <th className="px-5 py-4">Name</th>
-              <th className="px-5 py-4">Branch</th>
+
               <th className="px-5 py-4">Phone</th>
               <th className="px-5 py-4">Date</th>
               <th className="px-5 py-4 text-center">Actions</th>
@@ -172,7 +177,7 @@ const InquiryDashboard = () => {
               <tr key={inquiry.inquiry_id} className="border-t">
                 <td className="px-5 py-4">#{inquiry.inquiry_id}</td>
                 <td className="px-5 py-4">{inquiry.name}</td>
-                <td className="px-5 py-4">{inquiry.branch_name || "N/A"}</td>
+
                 <td className="px-5 py-4">{inquiry.phone}</td>
                 <td className="px-5 py-4">
                   {new Date(inquiry.created_at).toLocaleDateString()}
@@ -251,24 +256,32 @@ const InquiryDashboard = () => {
             label="Name"
             value={addData.name}
             onChange={handleAddChange}
+            placeholder="e.g. Lokendra Rawat"
+            required
           />
           <Input
             id="phone"
-            label="Phone"
+            label="Phone Number"
             value={addData.phone}
             onChange={handleAddChange}
+            placeholder="e.g. 98XXXXXXXX"
+            required
           />
           <Input
             id="email"
             label="Email"
             value={addData.email}
             onChange={handleAddChange}
+            placeholder="example@domain.com"
+            required
           />
           <Input
             id="address"
             label="Address"
             value={addData.address}
             onChange={handleAddChange}
+            placeholder="e.g. Kathmandu, Nepal"
+            required
           />
 
           <textarea
@@ -277,6 +290,8 @@ const InquiryDashboard = () => {
             onChange={handleAddChange}
             className="w-full border p-2 rounded"
             placeholder="Description"
+            placeholder="Write a brief description about the inquiry..."
+            required
           />
 
           <div className="flex justify-end gap-2">

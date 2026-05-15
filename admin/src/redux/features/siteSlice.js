@@ -141,8 +141,8 @@ export const siteApi = indexSlice.injectEndpoints({
       providesTags: ["inquiry"],
     }),
     getInquiriesByBranch: builder.query({
-      query: (branchId) => ({
-        url: `/site/branch/${branchId}/inquiry`,
+      query: () => ({
+        url: `/site/get-inquiry-branch`,
         method: "GET",
       }),
       providesTags: ["inquiry"],

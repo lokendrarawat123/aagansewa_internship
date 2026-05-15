@@ -283,10 +283,10 @@ export const getAllInquiry = async (req, res, next) => {
   }
 };
 
-// Get inquiries by branch ID
+// Get inquiries by branch
 export const getInquiryByBranch = async (req, res, next) => {
   try {
-    const branch_id = req.user.branch_id;
+    const branch_id = req.user?.branch_id;
 
     if (!branch_id) {
       return res.status(400).json({
@@ -295,38 +295,40 @@ export const getInquiryByBranch = async (req, res, next) => {
       });
     }
 
-    // ================= SMART PAGINATION =================
-    const page = req.query.page ? Number(req.query.page) : 1;
-    const limit = req.query.limit ? Number(req.query.limit) : 10;
-    const offset = (page - 1) * limit;
+    // 1. Pagination Values
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
 
-    // ================= COUNT =================
+    const safePage = page > 0 ? page : 1;
+    const safeLimit = limit > 0 ? limit : 10;
+    const offset = (safePage - 1) * safeLimit;
+
+    // 2. Total Count
     const [countResult] = await db.execute(
-      `SELECT COUNT(*) AS total 
-       FROM inquiry 
-       WHERE branch_id = ?`,
+      `SELECT COUNT(*) AS total FROM inquiry WHERE branch_id = ?`,
       [branch_id],
     );
 
     const total = countResult[0].total;
 
-    // ================= DATA =================
+    // ================= DATA QUERY =================
     const [result] = await db.execute(
       `SELECT * 
-       FROM inquiry 
-       WHERE branch_id = ? 
-       ORDER BY created_at DESC
-       LIMIT ? OFFSET ?`,
-      [branch_id, limit, offset],
+   FROM inquiry 
+   WHERE branch_id = ? 
+   ORDER BY created_at DESC
+   LIMIT ${safeLimit} OFFSET ${offset}`, // ✅ Variables lai direct query string ma halne
+      [branch_id],
     );
 
+    // 4. Final Response
     return res.status(200).json({
       success: true,
       message: "Branch inquiries fetched successfully",
-      page,
-      limit,
+      page: safePage,
+      limit: safeLimit,
       total,
-      totalPages: Math.ceil(total / limit),
+      totalPages: Math.ceil(total / safeLimit),
       count: result.length,
       data: result,
     });
