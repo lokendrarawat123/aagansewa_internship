@@ -4,6 +4,7 @@ import { adminRoutes } from "./AdminRoutes";
 import Login from "../components/ui/Login";
 import NotFound from "../components/shared/NotFound";
 import Guard from "./Guard";
+import { managerRoutes } from "./ManagerRoutes";
 
 export const router = createBrowserRouter([
   {
@@ -14,6 +15,15 @@ export const router = createBrowserRouter([
       </Guard>
     ),
     children: adminRoutes,
+  },
+  {
+    path: "/manager",
+    element: (
+      <Guard>
+        <AdminLayout />
+      </Guard>
+    ),
+    children: managerRoutes,
   },
 
   {
