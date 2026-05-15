@@ -1,10 +1,5 @@
 import { useState } from "react";
-import { toast } from "react-toastify";
-import {
-  useGetAllInquiriesQuery,
-  useUpdateInquiryMutation,
-  useDeleteInquiryMutation,
-} from "../../../../redux/features/siteSlice";
+import { useGetAllInquiriesQuery } from "../../../../redux/features/siteSlice";
 import DetailsModal from "../../../shared/Modal";
 import { Loading } from "../../../shared/IsLoading";
 import { Error } from "../../../shared/Error";
@@ -13,22 +8,10 @@ const InquiryDashboard = () => {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [selectedInquiry, setSelectedInquiry] = useState(null);
 
-  // API hooks
+  // API hook
   const { data: inquiriesData, isLoading, error } = useGetAllInquiriesQuery();
-  const [deleteInquiry] = useDeleteInquiryMutation();
 
-  const inquiries = inquiriesData?.data || []; // Controller ko response 'data' field ma chha
-
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete?")) {
-      try {
-        await deleteInquiry(id).unwrap();
-        toast.success("Inquiry deleted successfully");
-      } catch (err) {
-        toast.error("Failed to delete");
-      }
-    }
-  };
+  const inquiries = inquiriesData?.data || [];
 
   if (isLoading) return <Loading isLoading={isLoading} />;
   if (error) return <Error error={error} />;
@@ -44,88 +27,112 @@ const InquiryDashboard = () => {
               <th className="p-3 border-b">ID</th>
               <th className="p-3 border-b">Name</th>
               <th className="p-3 border-b">Branch</th>
-              <th className="p-3 border-b">Address/Phone</th>
+              <th className="p-3 border-b">Phone</th>
               <th className="p-3 border-b">Date</th>
               <th className="p-3 border-b">Action</th>
             </tr>
           </thead>
+
           <tbody>
-            {inquiries.map((inquiry) => (
-              <tr
-                key={inquiry.inquiry_id}
-                className="hover:bg-gray-50 border-b"
-              >
-                <td className="p-3">{inquiry.inquiry_id}</td>
-                <td className="p-3 font-medium">{inquiry.name}</td>
-                <td className="p-3">
-                  <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs uppercase font-bold">
-                    {inquiry.branch_name || "N/A"}
-                  </span>
-                </td>
-                <td className="p-3 text-sm">
-                  {inquiry.address} <br />
-                  <span className="text-gray-500">{inquiry.phone}</span>
-                </td>
-                <td className="p-3 text-sm">
-                  {new Date(inquiry.created_at).toLocaleDateString()}
-                </td>
-                <td className="p-3 flex gap-2">
-                  <button
-                    onClick={() => {
-                      setSelectedInquiry(inquiry);
-                      setShowDetailsModal(true);
-                    }}
-                    className="bg-blue-500 text-white px-3 py-1 rounded text-xs"
-                  >
-                    View
-                  </button>
-                  <button
-                    onClick={() => handleDelete(inquiry.inquiry_id)}
-                    className="bg-red-500 text-white px-3 py-1 rounded text-xs"
-                  >
-                    Delete
-                  </button>
+            {inquiries.length > 0 ? (
+              inquiries.map((inquiry) => (
+                <tr
+                  key={inquiry.inquiry_id}
+                  className="hover:bg-gray-50 border-b"
+                >
+                  <td className="p-3">{inquiry.inquiry_id}</td>
+
+                  <td className="p-3 font-medium">{inquiry.name}</td>
+
+                  <td className="p-3">
+                    <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs uppercase font-bold">
+                      {inquiry.branch_name || "N/A"}
+                    </span>
+                  </td>
+
+                  <td className="p-3">{inquiry.phone}</td>
+
+                  <td className="p-3 text-sm">
+                    {new Date(inquiry.created_at).toLocaleDateString()}
+                  </td>
+
+                  <td className="p-3">
+                    <button
+                      onClick={() => {
+                        setSelectedInquiry(inquiry);
+                        setShowDetailsModal(true);
+                      }}
+                      className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs"
+                    >
+                      View
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="6" className="text-center py-5 text-gray-500">
+                  No inquiries found
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
 
-      {/* Simplified View Modal */}
+      {/* View Details Modal */}
       <DetailsModal
         show={showDetailsModal}
         onClose={() => setShowDetailsModal(false)}
         title="Inquiry Details"
       >
         {selectedInquiry && (
-          <div className="space-y-3">
-            <div className="grid grid-cols-2 gap-2 text-sm">
-              <p>
-                <strong>ID:</strong> {selectedInquiry.inquiry_id}
-              </p>
-              <p>
-                <strong>Branch:</strong> {selectedInquiry.branch_name}
-              </p>
-              <p>
-                <strong>Name:</strong> {selectedInquiry.name}
-              </p>
-              <p>
-                <strong>Phone:</strong> {selectedInquiry.phone}
-              </p>
-              <p>
-                <strong>Address:</strong> {selectedInquiry.address}
-              </p>
-              <p>
-                <strong>Email:</strong> {selectedInquiry.email || "N/A"}
-              </p>
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+              <div>
+                <p className="font-semibold text-gray-700">Inquiry ID</p>
+                <p>{selectedInquiry.inquiry_id}</p>
+              </div>
+
+              <div>
+                <p className="font-semibold text-gray-700">Branch</p>
+                <p>{selectedInquiry.branch_name || "N/A"}</p>
+              </div>
+
+              <div>
+                <p className="font-semibold text-gray-700">Name</p>
+                <p>{selectedInquiry.name}</p>
+              </div>
+
+              <div>
+                <p className="font-semibold text-gray-700">Phone</p>
+                <p>{selectedInquiry.phone}</p>
+              </div>
+
+              <div>
+                <p className="font-semibold text-gray-700">Email</p>
+                <p>{selectedInquiry.email || "N/A"}</p>
+              </div>
+
+              <div>
+                <p className="font-semibold text-gray-700">Address</p>
+                <p>{selectedInquiry.address}</p>
+              </div>
+
+              <div>
+                <p className="font-semibold text-gray-700">Inquiry Date</p>
+                <p>{new Date(selectedInquiry.created_at).toLocaleString()}</p>
+              </div>
             </div>
-            <hr />
+
             <div>
-              <p className="text-sm font-bold">Description/Message:</p>
-              <p className="text-sm text-gray-700 p-2 bg-gray-50 rounded">
-                {selectedInquiry.description || "No description provided."}
+              <p className="font-semibold text-gray-700 mb-2">
+                Message / Description
               </p>
+
+              <div className="bg-gray-100 p-3 rounded-md text-sm text-gray-700">
+                {selectedInquiry.description || "No description provided"}
+              </div>
             </div>
           </div>
         )}
