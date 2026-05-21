@@ -13,6 +13,8 @@ import Button from "../../../shared/Button"; // Button component use gareko
 import DetailsModal from "../../../shared/Modal";
 import { Loading } from "../../../shared/IsLoading";
 import { Error } from "../../../shared/Error";
+import { useGetServicesByBranchQuery } from "../../../../redux/features/serviceSlice";
+import Select from "../../../shared/Select";
 
 const StaffDashboard = () => {
   // ================= STATE MANAGEMENT =================
@@ -27,9 +29,9 @@ const StaffDashboard = () => {
     email: "",
     password: "",
     phone: "",
-    address: "",
-    position: "",
-    branch_id: "",
+    position: "staff", // default value logic anusar
+    description: "",
+    service_id: "", // Select garna ko lagi
   });
 
   // ================= API HOOKS =================
@@ -39,6 +41,12 @@ const StaffDashboard = () => {
   const [addStaff, { isLoading: adding }] = useAddStaffMutation();
   const [updateStaff, { isLoading: updating }] = useUpdateStaffMutation();
   const [deleteStaff, { isLoading: deleting }] = useDeleteStaffMutation();
+  const {
+    data: servicesData,
+    isLoading: servicesLoading,
+    isError: servicesError,
+  } = useGetServicesByBranchQuery();
+  const services = servicesData?.data || [];
 
   const staff = staffData?.staff || staffData?.allStaff || [];
   const branches = branchData?.branch || [];
@@ -57,7 +65,7 @@ const StaffDashboard = () => {
       phone: "",
       address: "",
       position: "",
-      branch_id: "",
+      service_id: "",
     });
     setSelectedStaff(null);
   };
@@ -211,70 +219,82 @@ const StaffDashboard = () => {
         show={showAddModal}
         onClose={() => setShowAddModal(false)}
         title="Add Staff"
+        size="xl"
       >
         <form onSubmit={handleAddSubmit} className="space-y-4">
-          <Input
-            id="name"
-            label="Full Name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-          />
-          <Input
-            id="email"
-            label="Email"
-            type="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
-          <Input
-            id="password"
-            label="Password"
-            type="password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-          />
-          <Input
-            id="phone"
-            label="Phone"
-            value={formData.phone}
-            onChange={handleChange}
-          />
-          <Input
-            id="address"
-            label="Address"
-            value={formData.address}
-            onChange={handleChange}
-          />
-          <Input
-            id="position"
-            label="Position"
-            value={formData.position}
-            onChange={handleChange}
-            required
-          />
-
-          <div className="flex flex-col">
-            <label className="text-sm font-medium mb-1">Branch</label>
-            <select
-              id="branch_id"
-              value={formData.branch_id}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Input
+              id="name"
+              label="Full Name"
+              value={formData.name}
               onChange={handleChange}
-              className="border p-2 rounded"
               required
-            >
-              <option value="">Select Branch</option>
-              {branches.map((b) => (
-                <option key={b.branch_id} value={b.branch_id}>
-                  {b.branch_name}
-                </option>
-              ))}
-            </select>
+            />
+            <Input
+              id="email"
+              label="Email"
+              type="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
+            <Input
+              id="password"
+              label="Password"
+              type="password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+            />
+            <Input
+              id="phone"
+              label="Phone Number"
+              value={formData.phone}
+              onChange={handleChange}
+            />
+            <Input
+              id="position"
+              label="Position"
+              value={formData.position}
+              onChange={handleChange}
+              required
+            />
+
+            {/* SERVICE SELECT DROPDOWN */}
+            <div className="relative flex flex-col">
+              <label className="text-sm font-medium mb-1">Assign Service</label>
+
+              <Select
+                id="service_id"
+                options={
+                  services?.map((service) => ({
+                    value: service.service_id,
+                    label: service.service_name,
+                  })) || []
+                }
+                value={formData.service_id}
+                onChange={handleChange}
+                placeholder={servicesLoading ? "Loading..." : "Choose Service"}
+              />
+            </div>
           </div>
 
-          <div className="flex justify-end gap-2 pt-4">
+          {/* DESCRIPTION */}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium mb-1">
+              Description (Optional)
+            </label>
+            <textarea
+              id="description"
+              rows="3"
+              value={formData.description}
+              onChange={handleChange}
+              className="border border-gray-300 p-2 rounded-md focus:ring-2 focus:ring-blue-500 outline-none"
+              placeholder="About staff experience or skills..."
+            />
+          </div>
+
+          <div className="flex justify-end gap-2 pt-4 border-t">
             <Button variant="outline" onClick={() => setShowAddModal(false)}>
               Cancel
             </Button>

@@ -7,22 +7,14 @@ const expire = process.env.JWT_EXPIRE;
 
 // Add Staff
 export const addStaff = async (req, res, next) => {
-  console.log(req.body);
   try {
-    const {
-      name,
-      position,
-      email,
-      password,
-      phone,
-      description,
-      service_id,
-      branch_id,
-    } = req.body;
+    const branch_id = req.user.branch_id;
+    const { name, position, email, password, phone, description, service_id } =
+      req.body;
 
     // console.log(req.body);
 
-    if (!name || !email || !password || !service_id || !branch_id) {
+    if (!name || !email || !password || !service_id) {
       return res
         .status(400)
         .json({ message: "Please provide all required fields" });
@@ -39,7 +31,7 @@ export const addStaff = async (req, res, next) => {
     // Check service exists
     const [service] = await db.execute(
       "SELECT * FROM services WHERE service_id = ?",
-      [service_id]
+      [service_id],
     );
     if (service.length === 0)
       return res.status(404).json({ message: "Service not found" });
@@ -47,7 +39,7 @@ export const addStaff = async (req, res, next) => {
     // Check branch exists
     const [branch] = await db.execute(
       "SELECT * FROM branch WHERE branch_id = ?",
-      [branch_id]
+      [branch_id],
     );
     if (branch.length === 0)
       return res.status(404).json({ message: "Branch not found" });
@@ -64,9 +56,9 @@ export const addStaff = async (req, res, next) => {
         phone ?? null,
         description ?? null,
         service_id,
-        branch_id,
+
         hashedPassword,
-      ]
+      ],
     );
 
     res.status(201).json({
@@ -81,14 +73,14 @@ export const addStaff = async (req, res, next) => {
 export const getStaffById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    
+
     if (!id) {
       return res.status(400).json({ message: "Please provide staff ID" });
     }
 
     const [result] = await db.execute(
       "SELECT * FROM staff WHERE staff_id = ?",
-      [id]
+      [id],
     );
 
     if (result.length === 0) {
@@ -108,7 +100,7 @@ export const getStaffById = async (req, res, next) => {
 export const getAllStaff = async (req, res, next) => {
   try {
     const [allStaff] = await db.execute(
-      "SELECT * FROM staff ORDER BY created_at DESC"
+      "SELECT * FROM staff ORDER BY created_at DESC",
     );
 
     res.status(200).json({
@@ -123,15 +115,15 @@ export const getAllStaff = async (req, res, next) => {
 // Get staff by branch ID
 export const getStaffByBranch = async (req, res, next) => {
   try {
-    const { branch_id } = req.params;
-    
+    const branch_id = req.user.branch_id;
+
     if (!branch_id) {
       return res.status(400).json({ message: "Please provide branch ID" });
     }
 
     const [result] = await db.execute(
       "SELECT * FROM staff WHERE branch_id = ? ORDER BY created_at DESC",
-      [branch_id]
+      [branch_id],
     );
 
     res.status(200).json({
@@ -151,29 +143,29 @@ export const getStaff = async (req, res, next) => {
     if (role === "manager") {
       const [id] = await db.execute(
         "select branch_id from  users where email = ?",
-        [email]
+        [email],
       );
       const branch_id = id[0].branch_id;
       const [branchStaffList] = await db.execute(
         "SELECT * FROM staff where branch_id = ?",
-        [branch_id]
+        [branch_id],
       );
 
       const [staffList] = await db.execute(
         "SELECT * FROM staff  where branch_id=?",
-        [branch_id]
+        [branch_id],
       );
       return res.status(200).json({
         message: " Staff fetched successfully ",
         staff: staffList,
       });
     }
-    
+
     // For admin - get all staff
     const [allStaff] = await db.execute(
-      "SELECT * FROM staff ORDER BY created_at DESC"
+      "SELECT * FROM staff ORDER BY created_at DESC",
     );
-    
+
     res.status(200).json({
       message: "Staff fetched successfully",
       staff: allStaff,
@@ -203,14 +195,14 @@ export const updateStaff = async (req, res, next) => {
       `
       SELECT * FROM staff 
       WHERE staff_id = ? `,
-      [id]
+      [id],
     );
     if (existing.length === 0)
       return res.status(404).json({ message: "Staff not found" });
     if (email) {
       const [existEmail] = await db.execute(
         "select email from staff where email = ? and staff_id !=?",
-        [email, id]
+        [email, id],
       );
       if (existEmail.length > 0) {
         return res.status(409).json({
@@ -224,7 +216,7 @@ export const updateStaff = async (req, res, next) => {
     if (service_id) {
       const [service] = await db.execute(
         "SELECT * FROM services WHERE service_id = ?",
-        [service_id]
+        [service_id],
       );
       if (service.length === 0)
         return res.status(404).json({ message: "Service not found" });
@@ -233,7 +225,7 @@ export const updateStaff = async (req, res, next) => {
     if (branch_id) {
       const [branch] = await db.execute(
         "SELECT * FROM branch WHERE branch_id = ?",
-        [branch_id]
+        [branch_id],
       );
       if (branch.length === 0)
         return res.status(404).json({ message: "Branch not found" });
@@ -259,7 +251,7 @@ export const updateStaff = async (req, res, next) => {
         updateServiceId,
         updteBranchId,
         id,
-      ]
+      ],
     );
 
     res.status(200).json({ message: "Staff updated successfully" });
@@ -275,7 +267,7 @@ export const deleteStaff = async (req, res, next) => {
 
     const [existing] = await db.execute(
       "SELECT name FROM staff WHERE staff_id = ?",
-      [id]
+      [id],
     );
     if (existing.length === 0)
       return res.status(404).json({ message: "Staff not found" });
@@ -299,13 +291,14 @@ export const forgotPassword = async (req, res, next) => {
     // Check if staff exists
     const [rows] = await db.execute(
       "SELECT staff_id FROM staff WHERE email = ?",
-      [email]
+      [email],
     );
 
     if (rows.length === 0) {
       // Option 1: Security best practice (recommended)
-      return res.status(200).json({ 
-        message: "If an account with that email exists, a reset code has been sent." 
+      return res.status(200).json({
+        message:
+          "If an account with that email exists, a reset code has been sent.",
       });
 
       // Option 2: If you want to be explicit (less secure against enumeration)
@@ -324,7 +317,7 @@ export const forgotPassword = async (req, res, next) => {
        SET reset_code = ?, 
            reset_code_expires = ? 
        WHERE email = ?`,
-      [resetCode, expiresAt, email]
+      [resetCode, expiresAt, email],
     );
 
     // Send email
@@ -349,10 +342,9 @@ export const forgotPassword = async (req, res, next) => {
       `,
     });
 
-    res.status(200).json({ 
-      message: "Reset code sent to your email" 
+    res.status(200).json({
+      message: "Reset code sent to your email",
     });
-
   } catch (error) {
     console.error("Forgot password error:", error);
     next(error);
@@ -366,7 +358,7 @@ export const verifyCode = async (req, res, next) => {
     // Find staff by code
     const [staff] = await db.execute(
       "SELECT staff_id FROM staff WHERE reset_code = ?",
-      [code]
+      [code],
     );
     if (staff.length === 0)
       return res.status(400).json({ message: "Invalid code" });
@@ -389,7 +381,7 @@ export const resetPassword = async (req, res, next) => {
     // Find staff by code
     const [staff] = await db.execute(
       "SELECT staff_id FROM staff WHERE reset_code = ?",
-      [code]
+      [code],
     );
     if (staff.length === 0)
       return res.status(400).json({ message: "Invalid code" });
@@ -400,7 +392,7 @@ export const resetPassword = async (req, res, next) => {
     // Update password & clear reset_code
     await db.execute(
       "UPDATE staff SET password = ?, reset_code = NULL WHERE reset_code = ?",
-      [hashedPassword, code]
+      [hashedPassword, code],
     );
 
     res.status(200).json({ message: "Password updated successfully" });
@@ -448,7 +440,7 @@ export const login = async (req, res, next) => {
       dot,
       {
         expiresIn: expire,
-      }
+      },
     );
 
     res.cookie("token", token, {
