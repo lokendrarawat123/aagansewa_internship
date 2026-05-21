@@ -12,12 +12,10 @@ import {
 import { useGetBranchQuery } from "../../../../redux/features/branchSlice.js";
 
 import Input from "../../../shared/Input.jsx";
-import Select from "../../../shared/Select.jsx";
 import DetailsModal from "../../../shared/Modal.jsx";
 import Button from "../../../shared/Button.jsx";
 import { Loading } from "../../../shared/IsLoading.jsx";
 import { Error } from "../../../shared/Error.jsx";
-import { useIsAdmin, useIsManager } from "../../../shared/RolesCheck.jsx";
 import Pagination from "../../../shared/Pagignation.jsx";
 
 const ServiceDashboard = () => {
@@ -41,11 +39,8 @@ const ServiceDashboard = () => {
 
   // API
   const { data, isLoading, error } = useGetsAllServiceWithBranchNameQuery();
-  const {
-    data: branchshWiseData,
-    isLoading: branchWiseDataLoading,
-    error: branchWiseDataError,
-  } = useGetServicesByBranchQuery(page);
+
+  const { data: branchWiseData } = useGetServicesByBranchQuery(page);
 
   const { data: branchData } = useGetBranchQuery();
 
@@ -55,14 +50,10 @@ const ServiceDashboard = () => {
 
   const services = data?.data || [];
   const branches = branchData?.branch || [];
-  const branchWiseData = branchshWiseData?.data || [];
-  const totalPages = branchshWiseData?.totalPages || 1;
-  console.log(branchWiseData);
+  const branchWiseDataList = branchWiseData?.data || [];
+  const totalPages = branchWiseData?.totalPages || 1;
 
-  const isAdmin = useIsAdmin();
-  const isManager = useIsManager();
-
-  const filteredServices = isAdmin ? services : branchWiseData;
+  const filteredServices = branchWiseDataList;
 
   // INPUT
   const handleChange = (e) => {
@@ -100,6 +91,8 @@ const ServiceDashboard = () => {
       const fd = new FormData();
       fd.append("service_name", formData.service_name);
       fd.append("description", formData.description);
+      fd.append("branch_id", formData.branch_id);
+
       if (formData.service_image) {
         fd.append("image", formData.service_image);
       }
@@ -168,31 +161,30 @@ const ServiceDashboard = () => {
       toast.error(err?.data?.message || "Delete failed");
     }
   };
-  const handleView = (service) => {};
 
   if (isLoading) return <Loading />;
   if (error) return <Error error={error} />;
+
   const closeModal = () => {
     setShowEditModal(false);
+    setShowAddModal(false);
     resetForm();
   };
 
   return (
     <div className="p-6">
       {/* HEADER */}
-      {!isAdmin && (
-        <div className="flex justify-between mb-6">
-          <h1 className="text-2xl font-bold">Service Management</h1>
+      <div className="flex justify-between mb-6">
+        <h1 className="text-2xl font-bold">Service Management (Manager)</h1>
 
-          <Button
-            variant="success"
-            size="lg"
-            onClick={() => setShowAddModal(true)}
-          >
-            Add Service
-          </Button>
-        </div>
-      )}
+        <Button
+          variant="success"
+          size="lg"
+          onClick={() => setShowAddModal(true)}
+        >
+          Add Service
+        </Button>
+      </div>
 
       {/* TABLE */}
       <div className="bg-white shadow rounded-lg overflow-hidden">
@@ -201,8 +193,7 @@ const ServiceDashboard = () => {
             <tr>
               <th className="p-3 text-left">ID</th>
               <th className="p-3 text-left">Service</th>
-              {isAdmin && <th className="p-3 text-left">Branch</th>}
-
+              <th className="p-3 text-left">Branch</th>
               <th className="p-3 text-left">Image</th>
               <th className="p-3 text-center">Action</th>
             </tr>
@@ -213,7 +204,7 @@ const ServiceDashboard = () => {
               <tr key={s.service_id} className="border-b hover:bg-slate-50">
                 <td className="p-3">{s.service_id}</td>
                 <td className="p-3">{s.service_name}</td>
-                {isAdmin && <td className="p-3">{s.branch_name}</td>}
+                <td className="p-3">{s.branch_name}</td>
 
                 <td className="p-3">
                   {s.service_image ? (
@@ -227,46 +218,32 @@ const ServiceDashboard = () => {
                 </td>
 
                 <td className="p-3">
-                  {isAdmin ? (
-                    <div className="flex gap-2 justify-center">
-                      <Button
-                        variant="primary"
-                        size="sm"
-                        onClick={() => handleView(s)}
-                      >
-                        view
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="flex gap-2 justify-center">
-                      <Button
-                        variant="primary"
-                        size="sm"
-                        onClick={() => {
-                          setSelectedService(s);
-                          openEdit(s);
-                        }}
-                      >
-                        Edit
-                      </Button>
+                  <div className="flex gap-2 justify-center">
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={() => openEdit(s)}
+                    >
+                      Edit
+                    </Button>
 
-                      <Button
-                        variant="danger"
-                        size="sm"
-                        onClick={() => {
-                          setSelectedService(s);
-                          setShowDeleteModal(true);
-                        }}
-                      >
-                        Delete
-                      </Button>
-                    </div>
-                  )}
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      onClick={() => {
+                        setSelectedService(s);
+                        setShowDeleteModal(true);
+                      }}
+                    >
+                      Delete
+                    </Button>
+                  </div>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
+
         <Pagination
           page={page}
           totalPages={totalPages}
@@ -274,55 +251,52 @@ const ServiceDashboard = () => {
         />
       </div>
 
-      {/* ================= ADD MODAL ================= */}
+      {/* ADD MODAL */}
       <DetailsModal
         show={showAddModal}
         onClose={closeModal}
         title="Add Service"
-        size="lg"
       >
         <form onSubmit={handleAdd} className="space-y-4">
           <Input
-            label="Service Name"
             id="service_name"
             value={formData.service_name}
             onChange={handleChange}
-            placeholder="Enter service name"
-            required
             fullWidth
+            required
           />
 
           <Input
-            label="Description"
             id="description"
             value={formData.description}
             onChange={handleChange}
-            placeholder="Enter description"
+            fullWidth
           />
 
-          <Input
-            label="Select Service Image"
-            type="file"
-            id="service_image"
-            // value={formData.service_image}
+          <select
+            id="branch_id"
+            value={formData.branch_id}
             onChange={handleChange}
-            style="cursor-pointer "
+            className="w-full border p-2 rounded"
             required
-          />
+          >
+            <option value="">Select Branch</option>
+            {branches.map((b) => (
+              <option key={b.branch_id} value={b.branch_id}>
+                {b.branch_name}
+              </option>
+            ))}
+          </select>
 
-          <div className="flex justify-end gap-3">
-            <Button variant="outline" onClose={closeModal}>
-              Cancel
-            </Button>
+          <Input type="file" id="service_image" onChange={handleChange} />
 
-            <Button variant="success" type="submit">
-              Add
-            </Button>
-          </div>
+          <Button type="submit" variant="success">
+            Add
+          </Button>
         </form>
       </DetailsModal>
 
-      {/* ================= EDIT MODAL ================= */}
+      {/* EDIT MODAL */}
       <DetailsModal
         show={showEditModal}
         onClose={closeModal}
@@ -343,29 +317,28 @@ const ServiceDashboard = () => {
             fullWidth
           />
 
-          <Input
-            label="Select Service Image"
-            type="file"
-            id="service_image"
-            value={formData.service_image}
+          <select
+            id="branch_id"
+            value={formData.branch_id}
             onChange={handleChange}
-            style="cursor-pointer "
-            required
-          />
+            className="w-full border p-2 rounded"
+          >
+            {branches.map((b) => (
+              <option key={b.branch_id} value={b.branch_id}>
+                {b.branch_name}
+              </option>
+            ))}
+          </select>
 
-          <div className="flex justify-end gap-3">
-            <Button variant="outline" onClose={closeModal}>
-              Cancel
-            </Button>
+          <Input type="file" id="service_image" onChange={handleChange} />
 
-            <Button variant="primary" type="submit">
-              Update
-            </Button>
-          </div>
+          <Button type="submit" variant="primary">
+            Update
+          </Button>
         </form>
       </DetailsModal>
 
-      {/* ================= DELETE ================= */}
+      {/* DELETE MODAL */}
       <DetailsModal
         show={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
@@ -388,4 +361,3 @@ const ServiceDashboard = () => {
 };
 
 export default ServiceDashboard;
-s;

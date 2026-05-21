@@ -55,7 +55,6 @@ const InquiryDashboard = () => {
   const [deleteInquiry, { isLoading: deleting }] = useDeleteInquiryMutation();
 
   const inquiries = inquiriesData?.data || [];
-  c;
 
   // ================= ADD =================
   const handleAddChange = (e) => {
