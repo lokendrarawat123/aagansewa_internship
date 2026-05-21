@@ -3,14 +3,15 @@ import Manager from "../components/pages/manager/Manager";
 import Profile from "../components/pages/manager/profile/Profile";
 import Report from "../components/pages/manager/report/Report";
 import Review from "../components/pages/manager/review/Review";
+import ServiceDashboard from "../components/pages/manager/service/serviceDashboard";
 import StaffDashboard from "../components/pages/manager/staff/Staff";
-import ServiceManager from "../components/pages/superAdmin/service/ServiceDashboard";
 
 export const managerRoutes = [
   {
     path: "dashboard",
     element: <Manager />,
   },
+
   {
     path: "inquiry-dashboard",
     element: <InquiryDashboard />,
@@ -34,6 +35,6 @@ export const managerRoutes = [
 
   {
     path: "service-dashboard",
-    element: <ServiceManager />,
+    element: <ServiceDashboard />,
   },
 ];

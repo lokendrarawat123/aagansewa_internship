@@ -20,7 +20,7 @@ import { Error } from "../../../shared/Error.jsx";
 import { useIsAdmin, useIsManager } from "../../../shared/RolesCheck.jsx";
 import Pagination from "../../../shared/Pagignation.jsx";
 
-const ServiceManager = () => {
+const ServiceDashboard = () => {
   const baseUrl = import.meta.env.VITE_IMG_URL;
 
   // MODALS
@@ -387,5 +387,5 @@ const ServiceManager = () => {
   );
 };
 
-export default ServiceManager;
-s
+export default ServiceDashboard;
+s;
