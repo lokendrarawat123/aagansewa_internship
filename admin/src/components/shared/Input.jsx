@@ -24,7 +24,8 @@ const Input = ({
           id={id}
           required={required}
           onChange={onChange}
-          className="hidden"
+          // Input.jsx भित्र 'hidden' हटाएर यो राख्ने:
+          className="absolute opacity-0 w-0 h-0"
         />
         {/* Custom File Input Box */}
         <label
@@ -43,7 +44,7 @@ const Input = ({
           <div className="mt-3">
             <p className="text-xs text-gray-500 mb-1">Preview:</p>
             <img
-              src={URL.createObjectURL(value)}
+              src={value instanceof File ? URL.createObjectURL(value) : value}
               alt="preview"
               className="w-full max-h-52 object-contain rounded-lg border border-gray-200 bg-gray-50 p-2"
             />

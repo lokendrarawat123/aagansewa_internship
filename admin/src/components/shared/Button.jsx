@@ -10,7 +10,7 @@ const Button = ({
   className = "",
 }) => {
   const baseStyle =
-    "rounded cursor-pointer font-medium transition duration-200 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed";
+    "rounded cursor-pointer font-medium transition duration-200 focus:outline-none flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed";
 
   const variants = {
     primary: "bg-blue-600 text-white hover:bg-blue-700",

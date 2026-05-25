@@ -44,8 +44,8 @@ const ServiceDashboard = () => {
 
   const { data: branchData } = useGetBranchQuery();
 
-  const [addService] = useAddServiceMutation();
-  const [updateService] = useUpdateServiceMutation();
+  const [addService, { isLoading: isAdding }] = useAddServiceMutation();
+  const [updateService, { isLoading: isUpdate }] = useUpdateServiceMutation();
   const [deleteService] = useDeleteServiceMutation();
 
   const services = data?.data || [];
@@ -115,7 +115,7 @@ const ServiceDashboard = () => {
       service_name: service.service_name,
       description: service.description || "",
       branch_id: service.branch_id,
-      service_image: null,
+      service_image: `${baseUrl}${service.service_image}`,
     });
 
     setShowEditModal(true);
@@ -256,43 +256,45 @@ const ServiceDashboard = () => {
         show={showAddModal}
         onClose={closeModal}
         title="Add Service"
+        size="lg"
       >
         <form onSubmit={handleAdd} className="space-y-4">
           <Input
             id="service_name"
+            label="Service Name"
             value={formData.service_name}
             onChange={handleChange}
-            fullWidth
+            placeholder="E.g Ac Repair"
             required
           />
 
           <Input
             id="description"
+            label="description"
             value={formData.description}
             onChange={handleChange}
-            fullWidth
+            placeholder="Description of the service"
+            required
           />
 
-          <select
-            id="branch_id"
-            value={formData.branch_id}
+          <Input
+            type="file"
+            id="service_image"
+            label="Select Image"
+            value={formData.service_image}
             onChange={handleChange}
-            className="w-full border p-2 rounded"
             required
-          >
-            <option value="">Select Branch</option>
-            {branches.map((b) => (
-              <option key={b.branch_id} value={b.branch_id}>
-                {b.branch_name}
-              </option>
-            ))}
-          </select>
+          />
 
-          <Input type="file" id="service_image" onChange={handleChange} />
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setShowAddModal(false)}>
+              Cancel
+            </Button>
 
-          <Button type="submit" variant="success">
-            Add
-          </Button>
+            <Button variant="success" type="submit">
+              {isAdding ? "Adding..." : "Add Service"}
+            </Button>
+          </div>
         </form>
       </DetailsModal>
 
@@ -302,39 +304,42 @@ const ServiceDashboard = () => {
         onClose={closeModal}
         title="Edit Service"
       >
-        <form onSubmit={handleUpdate} className="space-y-4">
+        <form className="space-y-4">
           <Input
             id="service_name"
+            label="Service Name"
             value={formData.service_name}
             onChange={handleChange}
-            fullWidth
+            placeholder="e.g Ac Repair"
+            required
           />
 
           <Input
             id="description"
+            label="description"
             value={formData.description}
             onChange={handleChange}
-            fullWidth
+            placeholder="description of the service"
+            required
           />
 
-          <select
-            id="branch_id"
-            value={formData.branch_id}
+          <Input
+            type="file"
+            id="service_image"
+            label="Select Image"
             onChange={handleChange}
-            className="w-full border p-2 rounded"
-          >
-            {branches.map((b) => (
-              <option key={b.branch_id} value={b.branch_id}>
-                {b.branch_name}
-              </option>
-            ))}
-          </select>
+            value={formData.service_image}
+          />
 
-          <Input type="file" id="service_image" onChange={handleChange} />
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setShowEditModal(false)}>
+              Cancel
+            </Button>
 
-          <Button type="submit" variant="primary">
-            Update
-          </Button>
+            <Button variant="success" type="submit" onClick={handleUpdate}>
+              {isUpdate ? "Updating..." : "Update"}
+            </Button>
+          </div>
         </form>
       </DetailsModal>
 

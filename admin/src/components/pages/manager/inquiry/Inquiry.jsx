@@ -288,7 +288,6 @@ const InquiryDashboard = () => {
             value={addData.description}
             onChange={handleAddChange}
             className="w-full border p-2 rounded"
-            placeholder="Description"
             placeholder="Write a brief description about the inquiry..."
             required
           />
@@ -299,7 +298,7 @@ const InquiryDashboard = () => {
             </Button>
 
             <Button variant="success" type="submit">
-              {adding ? "Adding..." : "Add"}
+              {adding ? "Adding..." : "Add Inquiry"}
             </Button>
           </div>
         </form>
