@@ -121,7 +121,9 @@ export const getServicesBySlug = async (req, res, next) => {
 export const updateService = async (req, res, next) => {
   try {
     const { id } = req.params;
+    console.log(id);
     const { service_name, description } = req.body;
+    console.log(service_name, description);
     const [exist] = await db.execute(
       "SELECT * FROM services WHERE service_id = ?",
       [id],

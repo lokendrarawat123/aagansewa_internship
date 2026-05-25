@@ -56,5 +56,5 @@ serviceRouter.delete(
   authorizeRoles("admin", "manager"),
   deleteService,
 );
-serviceRouter.get("/getservice/:province_id", vision);
+
 export default serviceRouter;
