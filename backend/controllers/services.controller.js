@@ -122,6 +122,7 @@ export const updateService = async (req, res, next) => {
   try {
     const { id } = req.params;
     console.log(id);
+    console.log(req.file);
     const { service_name, description } = req.body;
     console.log(service_name, description);
     const [exist] = await db.execute(
