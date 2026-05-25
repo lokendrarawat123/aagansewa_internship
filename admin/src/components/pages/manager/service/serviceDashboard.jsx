@@ -132,7 +132,7 @@ const ServiceDashboard = () => {
       fd.append("branch_id", formData.branch_id);
 
       if (formData.service_image) {
-        fd.append("service_image", formData.service_image);
+        fd.append("file", formData.service_image);
       }
 
       const res = await updateService({

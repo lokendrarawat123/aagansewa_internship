@@ -57,7 +57,7 @@ export const serviceApi = indexSlice.injectEndpoints({
     // Update Service
     updateService: builder.mutation({
       query: ({ id, data }) => ({
-        url: `/services/update-services/${id}`,
+        url: `/services/update-service/${id}`,
         method: "PATCH",
         body: data,
       }),
