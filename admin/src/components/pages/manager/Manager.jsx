@@ -2,14 +2,15 @@ import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 const Manager = () => {
-  const { user } = useSelector((state) => state.user) || {};
+  const { name } = useSelector((state) => state.user) || {};
+  const displayName = name || "Manager";
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       {/* Header */}
       <h1 className="text-2xl font-bold mb-2">Manager Dashboard</h1>
 
-      <p className="text-gray-600 mb-6">Welcome {user?.name || "Manager"} 👋</p>
+      <p className="text-gray-600 mb-6">Welcome {displayName} 👋</p>
 
       {/* Simple Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
