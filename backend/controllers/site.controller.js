@@ -471,7 +471,7 @@ export const getAllReview = async (req, res, next) => {
 // Get reviews by branch ID
 export const getReviewByBranch = async (req, res, next) => {
   try {
-    const branch_id = req.params.branch_id || req.user?.branch_id;
+    const branch_id = req.user?.branch_id;
 
     if (!branch_id) {
       return res.status(400).json({ message: "Please provide branch ID" });

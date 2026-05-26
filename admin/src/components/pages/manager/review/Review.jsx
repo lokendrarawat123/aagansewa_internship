@@ -2,10 +2,10 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 
 import {
-  useGetReviewsQuery,
   useAddReviewMutation,
   useUpdateReviewMutation,
   useDeleteReviewMutation,
+  useGetReviewsByBranchQuery,
 } from "../../../../redux/features/siteSlice";
 
 import DetailsModal from "../../../shared/Modal";
@@ -35,7 +35,7 @@ const Review = () => {
     description: "",
   });
 
-  const { data: reviewData, isLoading, error } = useGetReviewsQuery();
+  const { data: reviewData, isLoading, error } = useGetReviewsByBranchQuery();
   const [addReview, { isLoading: adding }] = useAddReviewMutation();
   const [updateReview, { isLoading: updating }] = useUpdateReviewMutation();
   const [deleteReview, { isLoading: deleting }] = useDeleteReviewMutation();

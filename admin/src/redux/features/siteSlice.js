@@ -95,7 +95,7 @@ export const siteApi = indexSlice.injectEndpoints({
     }),
     getReviewsByBranch: builder.query({
       query: (branchId) => ({
-        url: `/site/branch/${branchId}/review`,
+        url: `/site/get-review-by-branch`,
         method: "GET",
       }),
       providesTags: ["review"],

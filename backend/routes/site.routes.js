@@ -70,7 +70,12 @@ siteRouter.delete(
 );
 siteRouter.get("/get-review/:id", getReviewById);
 siteRouter.get("/get-allReview", getAllReview);
-siteRouter.get("/branch/:branch_id/review", getReviewByBranch);
+siteRouter.get(
+  "/get-review-by-branch",
+  isLogin,
+  authorizeRoles("manager"),
+  getReviewByBranch,
+);
 siteRouter.patch(
   "/update-review/:id",
   isLogin,
