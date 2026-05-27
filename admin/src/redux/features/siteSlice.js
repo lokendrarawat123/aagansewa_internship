@@ -171,6 +171,7 @@ export const siteApi = indexSlice.injectEndpoints({
       invalidatesTags: ["inquiry"],
     }),
   }),
+  
 });
 
 export const {

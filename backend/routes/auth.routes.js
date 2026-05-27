@@ -3,6 +3,7 @@ import {
   addManager,
   deleteManager,
   getManager,
+  getManagerProfile,
   login,
   logout,
   updateManager,
@@ -35,5 +36,7 @@ authRouter.delete(
   authorizeRoles("admin"),
   deleteManager,
 );
+
+authRouter.get("/profile", isLogin, getManagerProfile);
 
 export default authRouter;

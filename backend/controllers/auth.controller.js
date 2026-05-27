@@ -279,3 +279,38 @@ export const deleteManager = async (req, res, next) => {
     next(error);
   }
 };
+// get branch profile by Id
+export const getManagerProfile = async (req, res, next) => {
+  try {
+    const branch_id = req.user.branch_id;
+
+    const [manager] = await db.execute(
+      `SELECT 
+        users.user_id,
+        users.name,
+        users.email,
+        users.branch_id,
+        branch.branch_name
+      
+      FROM users
+      LEFT JOIN branch 
+      ON users.branch_id = branch.branch_id
+      WHERE users.branch_id = ?`,
+      [branch_id],
+    );
+
+    if (manager.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Manager profile not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: manager[0],
+    });
+  } catch (error) {
+    next(error);
+  }
+};
