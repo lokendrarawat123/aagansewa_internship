@@ -314,3 +314,69 @@ export const getManagerProfile = async (req, res, next) => {
     next(error);
   }
 };
+// change password for manager
+export const changePassword = async (req, res, next) => {
+  try {
+    // logged in user id
+    const userId = req.user.id;
+
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+
+    // validation
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      return res.status(400).json({
+        message: "All fields are required",
+      });
+    }
+
+    // password length
+    // if (newPassword.length < 6) {
+    //   return res.status(400).json({
+    //     message: "Password must be at least 6 characters",
+    //   });
+    // }
+
+    // confirm password check
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({
+        message: "Passwords do not match",
+      });
+    }
+
+    // get user
+    const [user] = await db.execute("SELECT * FROM users WHERE user_id = ?", [
+      userId,
+    ]);
+
+    if (user.length === 0) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    // compare current password
+    const isMatch = await bcrypt.compare(currentPassword, user[0].password);
+
+    if (!isMatch) {
+      return res.status(400).json({
+        message: "Current password is incorrect",
+      });
+    }
+
+    // hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // update password
+    await db.execute("UPDATE users SET password = ? WHERE user_id = ?", [
+      hashedPassword,
+      userId,
+    ]);
+
+    res.status(200).json({
+      success: true,
+      message: "Password changed successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};

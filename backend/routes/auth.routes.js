@@ -1,6 +1,7 @@
 import express from "express";
 import {
   addManager,
+  changePassword,
   deleteManager,
   getManager,
   getManagerProfile,
@@ -38,5 +39,11 @@ authRouter.delete(
 );
 
 authRouter.get("/profile", isLogin, getManagerProfile);
+authRouter.put(
+  "/change-password",
+  isLogin,
+  authorizeRoles("manager"),
+  changePassword,
+);
 
 export default authRouter;

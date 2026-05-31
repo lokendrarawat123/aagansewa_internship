@@ -170,8 +170,23 @@ export const siteApi = indexSlice.injectEndpoints({
       }),
       invalidatesTags: ["inquiry"],
     }),
+    // get profile
+    getProfile: builder.query({
+      query: () => ({
+        url: "/auth/profile",
+        method: "GET",
+      }),
+      providesTags: ["auth"],
+    }),
+    //change password for manager
+    changePassword: builder.mutation({
+      query: (data) => ({
+        url: "/auth/change-password",
+        method: "PUT",
+        body: data,
+      }),
+    }),
   }),
-  
 });
 
 export const {
@@ -205,4 +220,8 @@ export const {
   useAddInquiryMutation,
   useUpdateInquiryMutation,
   useDeleteInquiryMutation,
+  //get profile
+  useGetProfileQuery,
+  // change pasword query
+  useChangePasswordMutation,
 } = siteApi;

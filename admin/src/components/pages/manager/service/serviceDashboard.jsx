@@ -54,6 +54,7 @@ const ServiceDashboard = () => {
   const totalPages = branchWiseData?.totalPages || 1;
 
   const filteredServices = branchWiseDataList;
+  console.log(filteredServices);
 
   // INPUT
   const handleChange = (e) => {
@@ -193,7 +194,7 @@ const ServiceDashboard = () => {
             <tr>
               <th className="p-3 text-left">ID</th>
               <th className="p-3 text-left">Service</th>
-              <th className="p-3 text-left">Branch</th>
+
               <th className="p-3 text-left">Image</th>
               <th className="p-3 text-center">Action</th>
             </tr>
@@ -203,8 +204,12 @@ const ServiceDashboard = () => {
             {filteredServices.map((s) => (
               <tr key={s.service_id} className="border-b hover:bg-slate-50">
                 <td className="p-3">{s.service_id}</td>
-                <td className="p-3">{s.service_name}</td>
-                <td className="p-3">{s.branch_name}</td>
+                <td className="p-3 capitalize">
+                  {s.service_name}
+                  <p className="text-sm text-gray-800 lowercase first-letter:uppercase">
+                    {s.description}
+                  </p>
+                </td>
 
                 <td className="p-3">
                   {s.service_image ? (
