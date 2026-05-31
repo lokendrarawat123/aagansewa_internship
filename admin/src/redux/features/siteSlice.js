@@ -86,20 +86,7 @@ export const siteApi = indexSlice.injectEndpoints({
       }),
       providesTags: (result, error, id) => [{ type: "review", id }],
     }),
-    getAllReviews: builder.query({
-      query: () => ({
-        url: "/site/get-allReview",
-        method: "GET",
-      }),
-      providesTags: ["review"],
-    }),
-    getReviewsByBranch: builder.query({
-      query: (branchId) => ({
-        url: `/site/get-review-by-branch`,
-        method: "GET",
-      }),
-      providesTags: ["review"],
-    }),
+
     addReview: builder.mutation({
       query: (data) => ({
         url: "/site/add-review",
@@ -206,8 +193,6 @@ export const {
   // Review hooks
   useGetReviewsQuery,
   useGetReviewByIdQuery,
-  useGetAllReviewsQuery,
-  useGetReviewsByBranchQuery,
   useAddReviewMutation,
   useUpdateReviewMutation,
   useDeleteReviewMutation,

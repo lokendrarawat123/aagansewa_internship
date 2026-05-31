@@ -7,6 +7,7 @@ import ServiceManager from "../components/pages/superAdmin/service/ServiceDashbo
 import InquiryDashboard from "../components/pages/superAdmin/inquiry/InquiryDashboard";
 import StaffDashboard from "../components/pages/superAdmin/staff/StaffDashboard";
 import Manager from "../components/pages/manager/Manager";
+import Review from "../components/pages/superAdmin/review/Review";
 
 export const adminRoutes = [
   {
@@ -44,5 +45,9 @@ export const adminRoutes = [
   {
     path: "manager-dashboard",
     element: <Manager />,
+  },
+  {
+    path: "review-dashboard",
+    element: <Review />,
   },
 ];

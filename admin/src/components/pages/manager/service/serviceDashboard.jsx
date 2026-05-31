@@ -201,9 +201,9 @@ const ServiceDashboard = () => {
           </thead>
 
           <tbody>
-            {filteredServices.map((s) => (
+            {filteredServices.map((s, index) => (
               <tr key={s.service_id} className="border-b hover:bg-slate-50">
-                <td className="p-3">{s.service_id}</td>
+                <td className="p-3">{index}</td>
                 <td className="p-3 capitalize">
                   {s.service_name}
                   <p className="text-sm text-gray-800 lowercase first-letter:uppercase">

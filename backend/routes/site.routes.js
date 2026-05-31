@@ -13,9 +13,6 @@ import {
   getAllInquiry,
   getInquiryByBranch,
   updateInquiry,
-  getReviewById,
-  getAllReview,
-  getReviewByBranch,
   updateReview,
   getPartnerById,
   getAllPartner,
@@ -59,23 +56,16 @@ siteRouter.patch(
   updatePartner,
 );
 siteRouter.delete("/delete-partner/:id", isLogin, deletePartner);
-// Review routes
+// ...........Review routes......................
 siteRouter.post("/add-review", addReview);
 siteRouter.get("/get-review", getReview);
 siteRouter.delete(
   "/delete-review/:id",
   isLogin,
-  authorizeRoles("manager"),
+  authorizeRoles("admin"),
   deleteReview,
 );
-siteRouter.get("/get-review/:id", getReviewById);
-siteRouter.get("/get-allReview", getAllReview);
-siteRouter.get(
-  "/get-review-by-branch",
-  isLogin,
-  authorizeRoles("manager"),
-  getReviewByBranch,
-);
+
 siteRouter.patch(
   "/update-review/:id",
   isLogin,

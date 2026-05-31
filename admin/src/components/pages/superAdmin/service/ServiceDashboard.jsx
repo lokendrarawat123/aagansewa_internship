@@ -8,8 +8,14 @@ import DetailsModal from "../../../shared/Modal.jsx";
 import Button from "../../../shared/Button.jsx";
 import { Loading } from "../../../shared/IsLoading.jsx";
 import { Error } from "../../../shared/Error.jsx";
+import LocationSelect from "../../../shared/LocationFilterd.jsx";
 
 const ServiceManager = () => {
+  const [locationForm, setLocationForm] = useState({
+    province_id: "",
+    district_id: "",
+    branch_id: "",
+  });
   const baseUrl = import.meta.env.VITE_IMG_URL;
 
   // MODALS
@@ -37,7 +43,10 @@ const ServiceManager = () => {
       <div className="flex justify-between mb-6">
         <h1 className="text-2xl font-bold">Service Management</h1>
       </div>
-
+      {/* == ======= for branch wise filtered */}
+      <div className="mb-6">
+        <LocationSelect formData={locationForm} setFormData={setLocationForm} />
+      </div>
       {/* TABLE */}
       <div className="bg-white shadow rounded-lg overflow-hidden">
         <table className="w-full">
@@ -52,9 +61,9 @@ const ServiceManager = () => {
           </thead>
 
           <tbody>
-            {services.map((s) => (
+            {services.map((s, index) => (
               <tr key={s.service_id} className="border-b hover:bg-slate-50">
-                <td className="p-3">{s.service_id}</td>
+                <td className="p-3">{index + 1}</td>
 
                 <td className="p-3">{s.service_name}</td>
 
@@ -90,7 +99,7 @@ const ServiceManager = () => {
       </div>
 
       {/* ================= VIEW MODAL ================= */}
-   
+
       <DetailsModal
         show={showViewModal}
         onClose={() => setShowViewModal(false)}

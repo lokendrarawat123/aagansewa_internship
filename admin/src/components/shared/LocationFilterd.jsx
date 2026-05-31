@@ -55,13 +55,14 @@ const LocationSelect = ({ formData, setFormData }) => {
   };
 
   return (
-    <div className="grid grid-cols-3 gap-4">
+    <div className="grid grid-cols-3 gap-4 items-end">
+      {/* items-end ले गर्दा सबैको बेसलाइन एउटै लेबलमा चिटिक्क बस्छ */}
+
       {/* Province */}
       <div>
         <label className="block text-sm font-medium mb-1">
           Province <span className="text-red-500">*</span>
         </label>
-
         <Select
           id="province_id"
           value={formData.province_id}
@@ -79,11 +80,11 @@ const LocationSelect = ({ formData, setFormData }) => {
         <label className="block text-sm font-medium mb-1">
           District <span className="text-red-500">*</span>
         </label>
-
         <Select
           id="district_id"
           value={formData.district_id}
           onChange={handleDistrictChange}
+          disabled={!formData.province_id}
           options={districts.map((d) => ({
             value: d.district_id,
             label: d.district_name,
@@ -99,11 +100,11 @@ const LocationSelect = ({ formData, setFormData }) => {
         <label className="block text-sm font-medium mb-1">
           Branch <span className="text-red-500">*</span>
         </label>
-
         <Select
           id="branch_id"
           value={formData.branch_id}
           onChange={handleBranchChange}
+          disabled={!formData.district_id}
           options={branches.map((b) => ({
             value: b.branch_id,
             label: b.branch_name,

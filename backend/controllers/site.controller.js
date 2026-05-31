@@ -136,6 +136,42 @@ export const getReview = async (req, res, next) => {
     next(error);
   }
 };
+// Update review
+export const updateReview = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { name, position, description } = req.body;
+
+    if (!id) {
+      return res.status(400).json({ message: "Please provide review ID" });
+    }
+
+    const [existing] = await db.execute(
+      "SELECT * FROM review WHERE review_id = ?",
+      [id],
+    );
+
+    if (existing.length === 0) {
+      return res.status(404).json({ message: "Review not found" });
+    }
+
+    const oldReview = existing[0];
+
+    await db.execute(
+      "UPDATE review SET name=?, position=?, description=? WHERE review_id=?",
+      [
+        name || oldReview.name,
+        position || oldReview.position,
+        description || oldReview.description,
+        id,
+      ],
+    );
+
+    res.status(200).json({ message: "Review updated successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
 
 // Delete Review
 export const deleteReview = async (req, res, next) => {
@@ -426,107 +462,6 @@ export const getInquiry = async (req, res, next) => {
 };
 
 // Get review by ID
-export const getReviewById = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-
-    if (!id) {
-      return res.status(400).json({ message: "Please provide review ID" });
-    }
-
-    const [result] = await db.execute(
-      "SELECT * FROM review WHERE review_id = ?",
-      [id],
-    );
-
-    if (result.length === 0) {
-      return res.status(404).json({ message: "Review not found" });
-    }
-
-    res.status(200).json({
-      message: "Review fetched successfully",
-      data: result[0],
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-// Get all reviews
-export const getAllReview = async (req, res, next) => {
-  try {
-    const [reviews] = await db.execute(
-      "SELECT * FROM review ORDER BY created_at DESC",
-    );
-
-    res.status(200).json({
-      message: "All reviews fetched successfully",
-      data: reviews,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-// Get reviews by branch ID
-export const getReviewByBranch = async (req, res, next) => {
-  try {
-    const branch_id = req.user?.branch_id;
-
-    if (!branch_id) {
-      return res.status(400).json({ message: "Please provide branch ID" });
-    }
-
-    const [result] = await db.execute(
-      "SELECT * FROM review WHERE branch_id = ? ORDER BY created_at DESC",
-      [branch_id],
-    );
-
-    res.status(200).json({
-      message: "Branch reviews fetched successfully",
-      data: result,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-// Update review
-export const updateReview = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const { name, position, description } = req.body;
-
-    if (!id) {
-      return res.status(400).json({ message: "Please provide review ID" });
-    }
-
-    const [existing] = await db.execute(
-      "SELECT * FROM review WHERE review_id = ?",
-      [id],
-    );
-
-    if (existing.length === 0) {
-      return res.status(404).json({ message: "Review not found" });
-    }
-
-    const oldReview = existing[0];
-
-    await db.execute(
-      "UPDATE review SET name=?, position=?, description=? WHERE review_id=?",
-      [
-        name || oldReview.name,
-        position || oldReview.position,
-        description || oldReview.description,
-        id,
-      ],
-    );
-
-    res.status(200).json({ message: "Review updated successfully" });
-  } catch (error) {
-    next(error);
-  }
-};
 
 // Partner APIs
 // Get partner by ID

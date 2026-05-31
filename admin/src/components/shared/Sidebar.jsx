@@ -111,7 +111,7 @@ const Sidebar = ({ active, setActive }) => {
       key: "review",
       icon: <Star size={18} />,
       path: `${basePath}/review-dashboard`,
-      roles: ["manager"],
+      roles: ["manager", "admin"],
     },
     {
       name: "Profile",
@@ -132,7 +132,7 @@ const Sidebar = ({ active, setActive }) => {
   const currentMenu = menus.filter((item) => item.roles.includes(role));
 
   return (
-    <aside className="fixed-0 w-64 h-screen bg-slate-900 text-slate-200 flex flex-col shadow-xl">
+    <aside className="fixed-0 w-64 min-h-screen bg-slate-900 text-slate-200 flex flex-col shadow-xl">
       {/* Brand */}
       <div className="px-6 py-5 text-xl font-semibold border-b border-slate-700">
         Admin Panel
