@@ -54,11 +54,7 @@ export const addService = async (req, res, next) => {
   }
 };
 
-
-
-
 //getServicesbySlug
-// controllers/serviceController.js
 
 export const getServicesBySlug = async (req, res, next) => {
   try {
@@ -203,8 +199,63 @@ export const getServicesByBranch = async (req, res, next) => {
   }
 };
 
-// Admin List (Commented logic simplified)
+// get service by branch id
+export const getBranchService = async (req, res, next) => {
+  try {
+    const branchId = req.query.branch_id;
 
+    const page = Number(req.query.page) || 1;
+    const limit = 10;
+
+    // offset calculate
+    const offset = (page - 1) * limit;
+
+    // ✅ validation
+    if (!branchId) {
+      return res.status(400).json({
+        success: false,
+        message: "Branch ID is required",
+      });
+    }
+
+    // ✅ total count
+    const [countResult] = await db.query(
+      "SELECT COUNT(*) AS total FROM services WHERE branch_id = ?",
+      [branchId],
+    );
+
+    const total = countResult[0].total;
+
+    // ✅ paginated data
+    const [rows] = await db.query(
+      `SELECT * 
+       FROM services 
+       WHERE branch_id = ?
+       LIMIT ? OFFSET ?`,
+      [branchId, limit, offset],
+    );
+
+    // ✅ no data
+    if (rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No services found for this branch",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+      count: rows.length,
+      data: rows,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 // api for public services
 export const publicGetServices = async (req, res, next) => {
   try {
@@ -273,4 +324,3 @@ export const getAllServicesWithBranch = async (req, res, next) => {
     next(error); // Error handling middleware मा पठाउने
   }
 };
-

@@ -69,33 +69,6 @@ export const addStaff = async (req, res, next) => {
   }
 };
 
-// Get staff by ID
-export const getStaffById = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-
-    if (!id) {
-      return res.status(400).json({ message: "Please provide staff ID" });
-    }
-
-    const [result] = await db.execute(
-      "SELECT * FROM staff WHERE staff_id = ?",
-      [id],
-    );
-
-    if (result.length === 0) {
-      return res.status(404).json({ message: "Staff not found" });
-    }
-
-    res.status(200).json({
-      message: "Staff fetched successfully",
-      data: result[0],
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
 // Get all staff
 export const getAllStaff = async (req, res, next) => {
   try {

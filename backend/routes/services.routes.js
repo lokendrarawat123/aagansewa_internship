@@ -3,6 +3,7 @@ import {
   addService,
   deleteService,
   getAllServicesWithBranch,
+  getBranchService,
   getServicesByBranch,
   getServicesBySlug,
   publicGetServices,
@@ -21,9 +22,15 @@ serviceRouter.get("/get-service", publicGetServices);
 serviceRouter.get(
   "/get-servicesByBranch",
   isLogin,
-  authorizeRoles("manager", "admin"),
+  authorizeRoles("manager"),
   getServicesByBranch,
 );
+serviceRouter.get(
+  "/get-branch-service",
+
+  getBranchService,
+);
+
 serviceRouter.get("/get/:slug", getServicesBySlug);
 
 // Protected Routes (Admin/Manager)

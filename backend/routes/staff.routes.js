@@ -1,12 +1,10 @@
 import express from "express";
 import {
   addStaff,
-  getStaff,
   updateStaff,
   deleteStaff,
   login,
   logout,
-  getStaffById,
   getAllStaff,
   getStaffByBranch,
   forgotPassword,
@@ -18,7 +16,7 @@ const staffRouter = express.Router();
 
 // Staff CRUD operations
 staffRouter.post("/add-staff", isLogin, authorizeRoles("manager"), addStaff);
-staffRouter.get("/get-staff", isLogin, getStaff);
+
 staffRouter.patch("/update-staff/:id", isLogin, updateStaff);
 staffRouter.delete(
   "/delete-staff/:id",
@@ -28,7 +26,7 @@ staffRouter.delete(
 );
 
 // Additional staff routes
-staffRouter.get("/get-staff/:id", getStaffById);
+
 staffRouter.get("/get-allStaff", getAllStaff);
 staffRouter.get("/get-staff-branch", getStaffByBranch);
 
