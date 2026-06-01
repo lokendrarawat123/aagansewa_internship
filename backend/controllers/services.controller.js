@@ -203,14 +203,12 @@ export const getServicesByBranch = async (req, res, next) => {
 export const getBranchService = async (req, res, next) => {
   try {
     const branchId = req.query.branch_id;
+    console.log(branchId);
 
     const page = Number(req.query.page) || 1;
     const limit = 10;
-
-    // offset calculate
     const offset = (page - 1) * limit;
 
-    // ✅ validation
     if (!branchId) {
       return res.status(400).json({
         success: false,
@@ -218,7 +216,7 @@ export const getBranchService = async (req, res, next) => {
       });
     }
 
-    // ✅ total count
+    // total count
     const [countResult] = await db.query(
       "SELECT COUNT(*) AS total FROM services WHERE branch_id = ?",
       [branchId],
@@ -226,18 +224,26 @@ export const getBranchService = async (req, res, next) => {
 
     const total = countResult[0].total;
 
-    // ✅ paginated data
+    // ✅ JOIN QUERY (main fix)
     const [rows] = await db.query(
-      `SELECT * 
-       FROM services 
-       WHERE branch_id = ?
-       LIMIT ? OFFSET ?`,
+      `
+      SELECT 
+        s.service_id,
+        s.service_name,
+        s.description,
+        s.service_image,
+        s.branch_id,
+        b.branch_name
+      FROM services s
+      LEFT JOIN branch b ON s.branch_id = b.branch_id
+      WHERE s.branch_id = ?
+      LIMIT ? OFFSET ?
+      `,
       [branchId, limit, offset],
     );
 
-    // ✅ no data
     if (rows.length === 0) {
-      return res.status(404).json({
+      return res.status(201).json({
         success: false,
         message: "No services found for this branch",
       });

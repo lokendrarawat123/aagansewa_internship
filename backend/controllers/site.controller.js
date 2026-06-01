@@ -319,7 +319,7 @@ export const getAllInquiry = async (req, res, next) => {
   }
 };
 
-// Get inquiries by branch
+// Get inquiries by branch for logged in manager
 export const getInquiryByBranch = async (req, res, next) => {
   try {
     const branch_id = req.user?.branch_id;
@@ -372,7 +372,60 @@ export const getInquiryByBranch = async (req, res, next) => {
     next(error);
   }
 };
+// get branch Inquiry for publci and super admin
+export const getBranchInquiry = async (req, res, next) => {
+  try {
+    // req.user को सट्टा req.query बाट branch_id तानियो
+    const { branch_id } = req.query;
 
+    if (!branch_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Branch ID query parameter is required",
+      });
+    }
+
+    // 1. Pagination Values
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+
+    const safePage = page > 0 ? page : 1;
+    const safeLimit = limit > 0 ? limit : 10;
+    const offset = (safePage - 1) * safeLimit;
+
+    // 2. Total Count
+    const [countResult] = await db.execute(
+      `SELECT COUNT(*) AS total FROM inquiry WHERE branch_id = ?`,
+      [branch_id],
+    );
+
+    const total = countResult[0].total;
+
+    // 3. DATA QUERY
+    // SQL Injection बाट बच्न LIMIT र OFFSET लाई डायरेक्ट स्ट्रिङमा राख्दा पनि safeLimit/safeOffset नम्बर नै हुन् भन्ने पक्का गरिएको छ
+    const [result] = await db.execute(
+      `SELECT * FROM inquiry 
+       WHERE branch_id = ? 
+       ORDER BY created_at DESC
+       LIMIT ${safeLimit} OFFSET ${offset}`,
+      [branch_id],
+    );
+
+    // 4. Final Response
+    return res.status(200).json({
+      success: true,
+      message: "Branch inquiries fetched successfully",
+      page: safePage,
+      limit: safeLimit,
+      total,
+      totalPages: Math.ceil(total / safeLimit),
+      count: result.length,
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 // Update inquiry
 export const updateInquiry = async (req, res, next) => {
   try {
@@ -412,56 +465,6 @@ export const updateInquiry = async (req, res, next) => {
     next(error);
   }
 };
-
-//get inquiry api (for authenticated users)
-export const getInquiry = async (req, res, next) => {
-  try {
-    const { email, role } = req.user;
-
-    let allInquiry = [];
-
-    // admin → all inquiries
-    if (role === "admin") {
-      const [rows] = await db.execute(
-        "SELECT * FROM inquiry ORDER BY created_at DESC",
-      );
-      allInquiry = rows;
-    }
-
-    // manager → own branch inquiries
-    if (role === "manager") {
-      // get manager branch
-      const [branchRows] = await db.execute(
-        "SELECT branch_id FROM users WHERE email = ?",
-        [email],
-      );
-
-      if (branchRows.length === 0 || !branchRows[0].branch_id) {
-        return res.status(400).json({
-          message: "Branch not assigned to this manager",
-        });
-      }
-
-      const branch_id = branchRows[0].branch_id;
-
-      const [rows] = await db.execute(
-        "SELECT * FROM inquiry WHERE branch_id = ? ORDER BY created_at DESC",
-        [branch_id],
-      );
-
-      allInquiry = rows;
-    }
-
-    res.status(200).json({
-      message: "Successfully displayed inquiry",
-      data: allInquiry,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-// Get review by ID
 
 // Partner APIs
 // Get partner by ID

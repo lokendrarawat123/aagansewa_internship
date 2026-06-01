@@ -20,6 +20,7 @@ import {
   addPartner,
   updatePartner,
   deletePartner,
+  getBranchInquiry,
 } from "../controllers/site.controller.js";
 import { uploadCostumer } from "../utils/multerHandler.js";
 import { isLogin } from "../middlewares/isLogin.js";
@@ -74,7 +75,7 @@ siteRouter.patch(
 );
 // Inquiry routes
 siteRouter.post("/add-inquiry", isLogin, authorizeRoles("manager"), addInquiry);
-siteRouter.get("/get-inquiry", getInquiry);
+siteRouter.get("/get-branch-service", getBranchInquiry);
 siteRouter.delete(
   "/delete-inquiry/:id",
   isLogin,

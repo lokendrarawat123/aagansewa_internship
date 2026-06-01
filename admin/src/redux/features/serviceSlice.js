@@ -51,7 +51,7 @@ export const serviceApi = indexSlice.injectEndpoints({
         method: "GET",
       }),
 
-      providesTags: ["services"],
+      providesTags: ["services",],
     }),
     // Add Service
     addService: builder.mutation({
