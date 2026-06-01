@@ -3,13 +3,10 @@ import {
   addService,
   deleteService,
   getAllServicesWithBranch,
-  getServiceById,
-  getServices,
   getServicesByBranch,
   getServicesBySlug,
   publicGetServices,
   updateService,
-  vision,
 } from "../controllers/services.controller.js";
 import { uploadService } from "../utils/multerHandler.js";
 import { isLogin } from "../middlewares/isLogin.js";
@@ -20,7 +17,7 @@ const serviceRouter = express.Router();
 // Public Routes
 serviceRouter.get("/get-all-service", getAllServicesWithBranch);
 serviceRouter.get("/get-service", publicGetServices);
-serviceRouter.get("/get-service/:id", getServiceById);
+
 serviceRouter.get(
   "/get-servicesByBranch",
   isLogin,
@@ -37,12 +34,7 @@ serviceRouter.post(
   uploadService.single("image"),
   addService,
 );
-serviceRouter.get(
-  "/admin/get-list",
-  isLogin,
-  authorizeRoles("admin", "manager"),
-  getServices,
-);
+
 serviceRouter.patch(
   "/update-service/:id",
   isLogin,

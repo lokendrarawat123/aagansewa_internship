@@ -4,7 +4,7 @@ import {
   addGallery,
   deleteGallery,
   getGallery,
-  getGalleryById,
+
   getAllGallery,
   getGalleryByBranch,
   updateGallery,
@@ -39,7 +39,7 @@ galleryRouter.delete(
 );
 
 // Additional gallery routes
-galleryRouter.get("/get-gallery/:id", getGalleryById);
+
 galleryRouter.get("/get-allGallery", getAllGallery);
 galleryRouter.get("/branch/:branch_id/gallery", getGalleryByBranch);
 galleryRouter.patch(

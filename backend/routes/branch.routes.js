@@ -10,12 +10,12 @@ import {
   getBranchByDistrict,
   getAllProvince,
   getProvinceWithDistrict,
-  getprovinceById,
-  getDistrictById,
+  
+
   getAllDistrictWithBranch,
   getDistrictByProvinceID,
   getAllBranch,
-  getBranchById,
+  
   filteredBranches,
 } from "../controllers/branch.controller.js";
 import { isLogin } from "../middlewares/isLogin.js";
@@ -23,7 +23,7 @@ import { isLogin } from "../middlewares/isLogin.js";
 import { authorizeRoles } from "../middlewares/isAuthorizedRoles.js";
 
 const branchRouter = express.Router();
-branchRouter.get("/get-province/:id", getprovinceById);
+
 branchRouter.get("/get-allprovince", getAllProvince);
 branchRouter.get("/get-provinceWithdistrict", getProvinceWithDistrict);
 
@@ -40,7 +40,7 @@ branchRouter.delete(
   deleteProvince,
 );
 
-branchRouter.get("/get-district/:id", getDistrictById);
+
 branchRouter.get("/get-districtwitbranch", getAllDistrictWithBranch);
 branchRouter.get("/get-all-district", getAllDistrict);
 branchRouter.get("/get-districts/:province_id", getDistrictByProvinceID);
@@ -59,7 +59,7 @@ branchRouter.delete(
 branchRouter.post("/add-branch", isLogin, authorizeRoles("admin"), addBranch);
 branchRouter.get("/get-branch", getAllBranch);
 
-branchRouter.get("/get-branch/:id", getBranchById);
+
 branchRouter.get("/get-filteredBranches", filteredBranches);
 branchRouter.get("/get-branches/:district_id", getBranchByDistrict);
 

@@ -1,30 +1,5 @@
 import db from "../config/db_connect.js";
 
-export const getprovinceById = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    if (!id) {
-      return res.status(404).json({ message: "please provide province id" });
-    }
-    const [result] = await db.execute(
-      "select * from province where province_id=?",
-      [id],
-    );
-    console.log(result[0]);
-
-    if (result.length === 0) {
-      return res.status(404).json({
-        message: "province not found",
-      });
-    }
-    res.status(200).json({
-      message: "successfully displayed",
-      data: result[0],
-    });
-  } catch (error) {
-    next(error);
-  }
-};
 
 //get all  province and district by
 export const getProvinceWithDistrict = async (req, res, next) => {
@@ -225,32 +200,7 @@ export const addDistrict = async (req, res, next) => {
     next(error);
   }
 };
-//get district by id api
-export const getDistrictById = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    if (!id) {
-      return res.status(404).json({
-        message: "please provide id of district",
-      });
-    }
-    const [result] = await db.execute(
-      "select * from district where district_id=?",
-      [id],
-    );
-    if (result.length === 0) {
-      return res.status(404).json({
-        message: "district not found",
-      });
-    }
-    res.status(200).json({
-      message: "successfully displayed",
-      data: result[0],
-    });
-  } catch (error) {
-    next(error);
-  }
-};
+
 
 //get all  district with branch and province group concat
 export const getAllDistrictWithBranch = async (req, res, next) => {
@@ -368,15 +318,7 @@ export const deleteDistrict = async (req, res, next) => {
   }
 };
 
-//update district api
-// export const updateDistrict = async (req, res, next) => {
-//   try {
-//     const { id } = req.params;
-//     const { distictName, provinceId } = req.body;
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
+
 
 export const addBranch = async (req, res, next) => {
   try {
@@ -437,35 +379,7 @@ export const deleteBranch = async (req, res, next) => {
   }
 };
 
-//get branch by branch id
-export const getBranchById = async (req, res, next) => {
-  try {
-    const { id } = req.params;
 
-    if (!id) {
-      return res.status(409).json({
-        message: "provide  Id ",
-      });
-    }
-    const [existing] = await db.execute(
-      "select branch_id,branch_name from branch where branch_id = ? ",
-      [id],
-    );
-    const exist_district = existing[0];
-    if (existing.length === 0) {
-      return res.status(404).json({
-        message: `branch not found `,
-      });
-    }
-
-    res.status(200).json({
-      message: "successfully displayed",
-      data: exist_district,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
 
 //get branch api
 export const getAllBranch = async (req, res, next) => {

@@ -136,7 +136,7 @@ export const getStaffByBranch = async (req, res, next) => {
 };
 
 // Get all staff (for authenticated users)
-export const getStaff = async (req, res, next) => {
+export const getStaffByManager = async (req, res, next) => {
   try {
     const { email, role } = req.user;
 

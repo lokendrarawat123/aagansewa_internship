@@ -54,41 +54,9 @@ export const addService = async (req, res, next) => {
   }
 };
 
-// Get All (Public with Search/Filter)
-// export const publicGetServices = async (req, res, next) => {
-//   try {
-//     const { branch_id } = req.query;
-//     let query = "SELECT * FROM services";
-//     let params = [];
 
-//     if (branch_id) {
-//       query += " WHERE branch_id = ?";
-//       params = [branch_id];
-//     }
-//     query += " ORDER BY created_at DESC";
 
-//     const [rows] = await db.execute(query, params);
-//     res.status(200).json({ success: true, data: rows });
-//   } catch (error) {
-//     next(error);
-//   }
-// };
 
-// Get Single by ID
-export const getServiceById = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const [rows] = await db.execute(
-      "SELECT * FROM services WHERE service_id = ?",
-      [id],
-    );
-    if (rows.length === 0)
-      return res.status(404).json({ success: false, message: "Not found" });
-    res.status(200).json({ success: true, data: rows[0] });
-  } catch (error) {
-    next(error);
-  }
-};
 //getServicesbySlug
 // controllers/serviceController.js
 
@@ -236,16 +204,7 @@ export const getServicesByBranch = async (req, res, next) => {
 };
 
 // Admin List (Commented logic simplified)
-export const getServices = async (req, res, next) => {
-  try {
-    const [rows] = await db.execute(
-      "SELECT * FROM services ORDER BY created_at DESC",
-    );
-    res.status(200).json({ success: true, data: rows });
-  } catch (error) {
-    next(error);
-  }
-};
+
 // api for public services
 export const publicGetServices = async (req, res, next) => {
   try {
@@ -314,30 +273,4 @@ export const getAllServicesWithBranch = async (req, res, next) => {
     next(error); // Error handling middleware मा पठाउने
   }
 };
-export const vision = async (req, res, next) => {
-  try {
-    const { province_id, district_id, branch_id } = req.query;
-    // console.log(req.query);
-    let query = "";
-    let params = [];
-    if (province_id && !district_id && !branch_id) {
-      query = "select * from district where province_id=?";
-      params = [province_id];
-    } else if (province_id && district_id && !branch_id) {
-      query = "select * from branch where district_id =?";
-      params = [district_id];
-    } else if (province_id && district_id && branch_id) {
-      query = "select * from services where branch_id =?";
-      params = [branch_id];
-    } else {
-      query = "select * from services order by created_at desc";
-    }
-    const [result] = await db.execute(query, params);
-    return res.status(200).json({
-      message: "service displayed succesfully",
-      data: result,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
+
