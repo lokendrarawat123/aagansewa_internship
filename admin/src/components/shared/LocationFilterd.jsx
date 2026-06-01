@@ -3,6 +3,7 @@ import {
   useGetDistrictByProvinceQuery,
   useGetBranchByDistrictQuery,
 } from "../../redux/features/branchSlice.js";
+import Button from "./Button.jsx";
 
 import Select from "./Select";
 
@@ -50,12 +51,17 @@ const LocationSelect = ({ formData, setFormData }) => {
   const handleBranchChange = (e) => {
     const value = e.target.value;
 
-    console.log("branch selected:", value);
-
     setFormData((prev) => ({
       ...prev,
       branch_id: value,
     }));
+  };
+  const handleClear = () => {
+    setFormData({
+      province_id: "",
+      district_id: "",
+      branch_id: "",
+    });
   };
 
   return (
@@ -117,6 +123,11 @@ const LocationSelect = ({ formData, setFormData }) => {
             !formData.district_id ? "Select District First" : "Select Branch"
           }
         />
+      </div>
+      <div className="col-span-3 flex justify-end mt-2">
+        <Button onClick={handleClear} size="sm" variant="danger">
+          Clear
+        </Button>
       </div>
     </div>
   );

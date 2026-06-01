@@ -42,12 +42,13 @@ const ServiceManager = () => {
       skip: !locationForm.branch_id,
     },
   );
-  console.log("Branch ID:", locationForm.branch_id);
+
   const { data, isLoading, error } = useGetsAllServiceWithBranchNameQuery();
 
   const services = data?.data || [];
   const branchServices = servicesData?.data || [];
-  console.log(branchServices);
+
+  const displayServices = locationForm.branch_id ? branchServices : services;
   // VIEW
   const handleView = (service) => {
     setSelectedService(service);
@@ -81,7 +82,7 @@ const ServiceManager = () => {
           </thead>
 
           <tbody>
-            {services.map((s, index) => (
+            {displayServices.map((s, index) => (
               <tr key={s.service_id} className="border-b hover:bg-slate-50">
                 <td className="p-3">{index + 1}</td>
 

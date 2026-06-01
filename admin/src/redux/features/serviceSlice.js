@@ -47,7 +47,7 @@ export const serviceApi = indexSlice.injectEndpoints({
     }),
     getBranchServices: builder.query({
       query: ({ branch_id, page = 1 }) => ({
-        url: `/service/get-branch-service?branch_id=${branch_id}&page=${page}`,
+        url: `/services/get-branch-service?branch_id=${branch_id}&page=${page}`,
         method: "GET",
       }),
 
