@@ -45,6 +45,14 @@ export const serviceApi = indexSlice.injectEndpoints({
       },
       providesTags: ["services"],
     }),
+    getBranchServices: builder.query({
+      query: ({ branch_id, page = 1 }) => ({
+        url: `/service/get-branch-service?branch_id=${branch_id}&page=${page}`,
+        method: "GET",
+      }),
+
+      providesTags: ["services"],
+    }),
     // Add Service
     addService: builder.mutation({
       query: (data) => ({
@@ -83,4 +91,5 @@ export const {
   useUpdateServiceMutation,
   useDeleteServiceMutation,
   useGetsAllServiceWithBranchNameQuery,
+  useGetBranchServicesQuery,
 } = serviceApi;

@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
 
-import { useGetsAllServiceWithBranchNameQuery } from "../../../../redux/features/serviceSlice.js";
+import {
+  useGetBranchServicesQuery,
+  useGetsAllServiceWithBranchNameQuery,
+} from "../../../../redux/features/serviceSlice.js";
 
 import Input from "../../../shared/Input.jsx";
 import DetailsModal from "../../../shared/Modal.jsx";
@@ -16,6 +19,7 @@ const ServiceManager = () => {
     district_id: "",
     branch_id: "",
   });
+
   const baseUrl = import.meta.env.VITE_IMG_URL;
 
   // MODALS
@@ -24,10 +28,26 @@ const ServiceManager = () => {
   const [selectedService, setSelectedService] = useState(null);
 
   // API
+
+  const {
+    data: servicesData,
+    isLoading: servicesLoading,
+    error: ServicesError,
+  } = useGetBranchServicesQuery(
+    {
+      branch_id: locationForm.branch_id,
+      page: 1,
+    },
+    {
+      skip: !locationForm.branch_id,
+    },
+  );
+  console.log("Branch ID:", locationForm.branch_id);
   const { data, isLoading, error } = useGetsAllServiceWithBranchNameQuery();
 
   const services = data?.data || [];
-
+  const branchServices = servicesData?.data || [];
+  console.log(branchServices);
   // VIEW
   const handleView = (service) => {
     setSelectedService(service);

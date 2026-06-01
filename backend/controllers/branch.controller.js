@@ -1,6 +1,5 @@
 import db from "../config/db_connect.js";
 
-
 //get all  province and district by
 export const getProvinceWithDistrict = async (req, res, next) => {
   try {
@@ -50,9 +49,8 @@ export const getAllProvince = async (req, res, next) => {
 export const addProvince = async (req, res, next) => {
   try {
     const { name } = req.body; // getting data from the fronted or req.body
-    // console.log(req.body);
+
     // 1. check name is provided or not
-    // console.log(name);
 
     if (!name) {
       return res.status(400).json({ message: "please provide province name " });
@@ -201,7 +199,6 @@ export const addDistrict = async (req, res, next) => {
   }
 };
 
-
 //get all  district with branch and province group concat
 export const getAllDistrictWithBranch = async (req, res, next) => {
   try {
@@ -251,7 +248,6 @@ export const getAllDistrict = async (req, res, next) => {
 export const getDistrictByProvinceID = async (req, res, next) => {
   try {
     const { province_id } = req.params;
-    console.log(province_id);
 
     // 🔹 validate
     if (!province_id) {
@@ -318,8 +314,6 @@ export const deleteDistrict = async (req, res, next) => {
   }
 };
 
-
-
 export const addBranch = async (req, res, next) => {
   try {
     const { branch_name, district_id, remarks } = req.body;
@@ -378,8 +372,6 @@ export const deleteBranch = async (req, res, next) => {
     next(error);
   }
 };
-
-
 
 //get branch api
 export const getAllBranch = async (req, res, next) => {

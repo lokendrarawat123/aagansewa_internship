@@ -48,9 +48,13 @@ const LocationSelect = ({ formData, setFormData }) => {
   };
 
   const handleBranchChange = (e) => {
+    const value = e.target.value;
+
+    console.log("branch selected:", value);
+
     setFormData((prev) => ({
       ...prev,
-      branch_id: e.target.value,
+      branch_id: value,
     }));
   };
 
