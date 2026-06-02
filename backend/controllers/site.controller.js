@@ -268,31 +268,6 @@ export const deleteInquiry = async (req, res, next) => {
   }
 };
 // Get inquiry by ID
-export const getInquiryById = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-
-    if (!id) {
-      return res.status(400).json({ message: "Please provide inquiry ID" });
-    }
-
-    const [result] = await db.execute(
-      "SELECT * FROM inquiry WHERE inquiry_id = ?",
-      [id],
-    );
-
-    if (result.length === 0) {
-      return res.status(404).json({ message: "Inquiry not found" });
-    }
-
-    res.status(200).json({
-      message: "Inquiry fetched successfully",
-      data: result[0],
-    });
-  } catch (error) {
-    next(error);
-  }
-};
 
 // Get all inquiries **
 export const getAllInquiry = async (req, res, next) => {

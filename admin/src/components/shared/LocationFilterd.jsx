@@ -60,25 +60,14 @@ const LocationSelect = ({ formData, setFormData }) => {
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-      {/* HEADER (optional clean spacing) */}
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-sm font-semibold text-gray-700">Filter Branch</h2>
+      <h2 className="text-sm font-semibold text-gray-700 mb-3">
+        Filter Branch
+      </h2>
 
-        <Button
-          onClick={handleClear}
-          size="sm"
-          variant="danger"
-          className="px-3 py-1 text-xs"
-        >
-          Clear
-        </Button>
-      </div>
-
-      {/* GRID */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr_1.3fr] gap-4">
         {/* PROVINCE */}
         <div className="space-y-1">
-          <label className="text-xs font-medium text-gray-600">
+          <label className="text-[11px] font-medium text-gray-600">
             Province <span className="text-red-500">*</span>
           </label>
 
@@ -90,12 +79,13 @@ const LocationSelect = ({ formData, setFormData }) => {
               label: p.province_name,
             }))}
             placeholder="Select Province"
+            className="h-9 text-sm"
           />
         </div>
 
         {/* DISTRICT */}
         <div className="space-y-1">
-          <label className="text-xs font-medium text-gray-600">
+          <label className="text-[11px] font-medium text-gray-600">
             District <span className="text-red-500">*</span>
           </label>
 
@@ -118,42 +108,58 @@ const LocationSelect = ({ formData, setFormData }) => {
                   ? "Select District"
                   : "No districts available"
             }
+            className="h-9 text-sm"
           />
 
           {formData.province_id && !hasDistricts && (
-            <p className="text-xs text-red-500">No districts available</p>
+            <p className="text-[11px] text-red-500">No districts available</p>
           )}
         </div>
 
-        {/* BRANCH */}
+        {/* BRANCH + CLEAR */}
+        {/* BRANCH + CLEAR */}
         <div className="space-y-1">
-          <label className="text-xs font-medium text-gray-600">
+          <label className="text-[11px] font-medium text-gray-600">
             Branch <span className="text-red-500">*</span>
           </label>
 
-          <Select
-            value={formData.branch_id}
-            onChange={handleBranchChange}
-            disabled={!formData.district_id}
-            options={
-              hasBranches
-                ? branches.map((b) => ({
-                    value: b.branch_id,
-                    label: b.branch_name,
-                  }))
-                : []
-            }
-            placeholder={
-              !formData.district_id
-                ? "Select District First"
-                : hasBranches
-                  ? "Select Branch"
-                  : "No branches available"
-            }
-          />
+          <div className="flex items-center gap-2">
+            <div className="flex-1">
+              <Select
+                value={formData.branch_id}
+                onChange={handleBranchChange}
+                disabled={!formData.district_id}
+                options={
+                  hasBranches
+                    ? branches.map((b) => ({
+                        value: b.branch_id,
+                        label: b.branch_name,
+                      }))
+                    : []
+                }
+                placeholder={
+                  !formData.district_id
+                    ? "Select District First"
+                    : hasBranches
+                      ? "Select Branch"
+                      : "No branches available"
+                }
+                className="w-full h-9 text-sm"
+              />
+            </div>
+
+            <Button
+              onClick={handleClear}
+              size="sm"
+              variant="danger"
+              className="h-9 px-3 text-[11px] rounded-md whitespace-nowrap"
+            >
+              Clear
+            </Button>
+          </div>
 
           {formData.district_id && !hasBranches && (
-            <p className="text-xs text-red-500">No branches available</p>
+            <p className="text-[11px] text-red-500">No branches available</p>
           )}
         </div>
       </div>

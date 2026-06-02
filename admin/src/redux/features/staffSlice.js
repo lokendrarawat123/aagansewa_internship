@@ -2,21 +2,7 @@ import { indexSlice } from "./indexSlice";
 export const staffApi = indexSlice.injectEndpoints({
   endpoints: (builder) => ({
     // Get Staff (authenticated)
-    getStaff: builder.query({
-      query: () => ({
-        url: "/staff/get-staff",
-        method: "GET",
-      }),
-      providesTags: ["staff"],
-    }),
-    // Get Staff by ID
-    getStaffById: builder.query({
-      query: (id) => ({
-        url: `/staff/get-staff/${id}`,
-        method: "GET",
-      }),
-      providesTags: (result, error, id) => [{ type: "staff", id }],
-    }),
+
     // Get All Staff
     getAllStaff: builder.query({
       query: () => ({
@@ -27,8 +13,15 @@ export const staffApi = indexSlice.injectEndpoints({
     }),
     // Get Staff by Branch
     getStaffByBranch: builder.query({
+      query: () => ({
+        url: `/staff/get-staff-branch`,
+        method: "GET",
+      }),
+      providesTags: ["staff"],
+    }),
+    getBranchStaff: builder.query({
       query: (branchId) => ({
-        url: `/staff/branch/${branchId}/staff`,
+        url: `/staff/get-branch-staff/${branchId}/staff`,
         method: "GET",
       }),
       providesTags: ["staff"],
@@ -80,10 +73,9 @@ export const staffApi = indexSlice.injectEndpoints({
 });
 
 export const {
-  useGetStaffQuery,
-  useGetStaffByIdQuery,
   useGetAllStaffQuery,
   useGetStaffByBranchQuery,
+  useGetBranchStaffQuery,
   useAddStaffMutation,
   useUpdateStaffMutation,
   useDeleteStaffMutation,

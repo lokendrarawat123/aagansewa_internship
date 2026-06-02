@@ -65,16 +65,7 @@ const ServiceManager = () => {
 
       {/* FILTER + SEARCH AREA */}
       <div className="flex flex-col md:flex-row md:items-end gap-4 mb-6 w-full">
-        {/* LEFT - LOCATION FILTER */}
-        <div className="flex-1 w-full">
-          <LocationSelect
-            formData={locationForm}
-            setFormData={setLocationForm}
-          />
-        </div>
-
-        {/* RIGHT - SEARCH AND COUNT CONTAINER */}
-        <div className="w-full md:w-72 flex flex-col justify-end gap-2">
+        <div className="w-full md:w-72 mb-4 flex flex-col justify-end gap-4">
           {/* SEARCH KO MATHI TOTAL COUNT */}
           <div className="flex flex-col items-end justify-center px-4 py-1.5 bg-slate-50 border border-gray-200 rounded-lg w-full">
             <span className="text-[14px] uppercase font-semibold text-gray-400 tracking-wider">
@@ -98,6 +89,13 @@ const ServiceManager = () => {
                          focus:border-blue-500 transition"
             />
           </div>
+        </div>
+
+        <div className="flex-1 w-full">
+          <LocationSelect
+            formData={locationForm}
+            setFormData={setLocationForm}
+          />
         </div>
       </div>
 

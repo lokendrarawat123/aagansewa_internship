@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
 import {
-  useGetStaffQuery,
+  useGetStaffByBranchQuery,
   useAddStaffMutation,
   useUpdateStaffMutation,
   useDeleteStaffMutation,
@@ -35,7 +35,7 @@ const StaffDashboard = () => {
   });
 
   // ================= API HOOKS =================
-  const { data: staffData, isLoading, error } = useGetStaffQuery();
+  const { data: staffData, isLoading, error } = useGetStaffByBranchQuery();
   const { data: branchData } = useGetBranchQuery();
 
   const [addStaff, { isLoading: adding }] = useAddStaffMutation();

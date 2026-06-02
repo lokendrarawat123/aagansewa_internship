@@ -8,6 +8,7 @@ import {
   getAllStaff,
   getStaffByBranch,
   forgotPassword,
+  getBranchStaff,
 } from "../controllers/staff.controller.js";
 import { isLogin } from "../middlewares/isLogin.js";
 import { authorizeRoles } from "../middlewares/isAuthorizedRoles.js";
@@ -26,9 +27,9 @@ staffRouter.delete(
 );
 
 // Additional staff routes
-
+staffRouter.get("/get-brach-staff", getBranchStaff);
 staffRouter.get("/get-allStaff", getAllStaff);
-staffRouter.get("/get-staff-branch", getStaffByBranch);
+staffRouter.get("/get-staff-branch", isLogin, getStaffByBranch); // for manager
 
 // Authentication routes
 staffRouter.post("/login", login);

@@ -1,10 +1,9 @@
 import { useState } from "react";
 
-import { useGetStaffQuery } from "../../../../redux/features/staffSlice";
-
 import DetailsModal from "../../../shared/Modal";
 import { Loading } from "../../../shared/IsLoading";
 import { Error } from "../../../shared/Error";
+import { useGetAllStaffQuery } from "../../../../redux/features/staffSlice";
 
 const StaffDashboard = () => {
   // STATES
@@ -12,7 +11,7 @@ const StaffDashboard = () => {
   const [selectedStaff, setSelectedStaff] = useState(null);
 
   // API hooks
-  const { data: staffData, isLoading, error } = useGetStaffQuery();
+  const { data: staffData, isLoading, error } = useGetAllStaffQuery();
 
   const staff = staffData?.staff || staffData?.allStaff || [];
 

@@ -8,7 +8,6 @@ import {
   deleteTrustedCustomer,
   getReview,
   getTrustedCustomers,
-  getInquiryById,
   getAllInquiry,
   getInquiryByBranch,
   updateInquiry,

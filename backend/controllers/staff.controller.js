@@ -109,39 +109,22 @@ export const getStaffByBranch = async (req, res, next) => {
 };
 
 // Get all staff (for authenticated users)
-export const getStaffByManager = async (req, res, next) => {
+export const getBranchStaff = async (req, res, next) => {
   try {
-    const { email, role } = req.user;
+    const branch_id = req.query.branch_id;
 
-    if (role === "manager") {
-      const [id] = await db.execute(
-        "select branch_id from  users where email = ?",
-        [email],
-      );
-      const branch_id = id[0].branch_id;
-      const [branchStaffList] = await db.execute(
-        "SELECT * FROM staff where branch_id = ?",
-        [branch_id],
-      );
-
-      const [staffList] = await db.execute(
-        "SELECT * FROM staff  where branch_id=?",
-        [branch_id],
-      );
-      return res.status(200).json({
-        message: " Staff fetched successfully ",
-        staff: staffList,
-      });
+    if (!branch_id) {
+      return res.status(400).json({ message: "Please provide branch ID" });
     }
 
-    // For admin - get all staff
-    const [allStaff] = await db.execute(
-      "SELECT * FROM staff ORDER BY created_at DESC",
+    const [result] = await db.execute(
+      "SELECT * FROM staff WHERE branch_id = ? ORDER BY created_at DESC",
+      [branch_id],
     );
 
     res.status(200).json({
-      message: "Staff fetched successfully",
-      staff: allStaff,
+      message: "Branch staff fetched successfully",
+      data: result,
     });
   } catch (error) {
     next(error);
