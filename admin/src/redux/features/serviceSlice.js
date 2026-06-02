@@ -18,14 +18,7 @@ export const serviceApi = indexSlice.injectEndpoints({
       }),
       providesTags: ["services"],
     }),
-    // Get Service by ID
-    getServiceById: builder.query({
-      query: (id) => ({
-        url: `/services/get-service/${id}`,
-        method: "GET",
-      }),
-      providesTags: (result, error, id) => [{ type: "services", id }],
-    }),
+
     // Get Services by Branch
     getServicesByBranch: builder.query({
       query: (page = 1) => ({
@@ -51,7 +44,7 @@ export const serviceApi = indexSlice.injectEndpoints({
         method: "GET",
       }),
 
-      providesTags: ["services",],
+      providesTags: ["services"],
     }),
     // Add Service
     addService: builder.mutation({

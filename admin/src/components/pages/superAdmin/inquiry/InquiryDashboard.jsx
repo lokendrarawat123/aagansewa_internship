@@ -1,171 +1,203 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search } from "lucide-react";
-import { useGetAllInquiriesQuery } from "../../../../redux/features/siteSlice";
+import { useGetBranchInquiryQuery } from "../../../../redux/features/siteSlice";
 import DetailsModal from "../../../shared/Modal";
+import Button from "../../../shared/Button.jsx";
 import { Loading } from "../../../shared/IsLoading";
 import { Error } from "../../../shared/Error";
-import LocationSelect from "../../../shared/LocationFilterd.jsx"; // LocationSelect थपियो
+import LocationSelect from "../../../shared/LocationFilterd.jsx";
 
 const InquiryDashboard = () => {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [selectedInquiry, setSelectedInquiry] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [page, setPage] = useState(1);
 
-  // Location State थपियो
+  // Location State
   const [locationForm, setLocationForm] = useState({
     province_id: "",
     district_id: "",
     branch_id: "",
   });
 
-  // API hook
-  const { data: inquiriesData, isLoading, error } = useGetAllInquiriesQuery();
+  // API hook with proper caching
+  const {
+    data: inquiriesData,
+    isLoading,
+    error,
+    refetch: refetchInquiries,
+  } = useGetBranchInquiryQuery(
+    {
+      branch_id: locationForm.branch_id,
+      page: page,
+      limit: 10,
+    },
+    {
+      skip: !locationForm.branch_id,
+      refetchOnMountOrArgChange: true,
+    },
+  );
+
+  // Force refetch when branch changes
+  useEffect(() => {
+    if (locationForm.branch_id && refetchInquiries) {
+      refetchInquiries();
+      setPage(1); // Reset to first page
+    }
+  }, [locationForm.branch_id, refetchInquiries]);
 
   const inquiries = inquiriesData?.data || [];
+  const totalInquiries = inquiriesData?.total || 0;
+  const totalPages = inquiriesData?.totalPages || 1;
 
-  // १. पहिले Location Form को Branch ID को आधारमा फिल्टर गर्ने
-  const branchFilteredInquiries = locationForm.branch_id
-    ? inquiries.filter(
-        (inquiry) =>
-          String(inquiry.branch_id) === String(locationForm.branch_id),
-      )
-    : inquiries;
-
-  // २. त्यसपछि Search Term को आधारमा फिल्टर गर्ने (Name वा Phone नम्बर)
-  const displayInquiries = branchFilteredInquiries.filter(
+  // Search filter
+  const displayInquiries = inquiries.filter(
     (inquiry) =>
       inquiry.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       inquiry.phone.includes(searchTerm),
   );
 
-  if (isLoading) return <Loading isLoading={isLoading} />;
+  // View handler
+  const handleView = (inquiry) => {
+    setSelectedInquiry(inquiry);
+    setShowDetailsModal(true);
+  };
+
+  if (isLoading) return <Loading />;
   if (error) return <Error error={error} />;
 
   return (
     <div className="p-4 sm:p-6">
       {/* HEADER */}
-      <div className="mb-6">
+      <div className="flex justify-between mb-6">
         <h1 className="text-2xl font-bold">Inquiry Management</h1>
       </div>
 
-      {/* FILTER + SEARCH AREA */}
-      <div className="flex flex-col md:flex-row md:items-end gap-4 mb-6 w-full">
-        {/* LEFT - LOCATION FILTER (ब्रान्च छान्नका लागि) */}
-        <div className="flex-1 w-full">
-          <LocationSelect
-            formData={locationForm}
-            setFormData={setLocationForm}
-          />
+      {/* LOCATION FILTER */}
+      <div className="mb-6">
+        <LocationSelect formData={locationForm} setFormData={setLocationForm} />
+      </div>
+
+      {/* SEARCH AND STATS */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+        <div className="flex items-center gap-4">
+          <div className="bg-blue-50 px-4 py-2 rounded-lg">
+            <span className="text-sm text-blue-600 font-medium">
+              Total Inquiries: {totalInquiries}
+            </span>
+          </div>
         </div>
-
-        {/* RIGHT - SEARCH AND COUNT CONTAINER */}
-        <div className="w-full md:w-72 flex flex-col justify-end gap-2">
-          {/* SEARCH KO MATHI TOTAL COUNT */}
-          <div className="flex flex-col items-end justify-center px-4 py-1.5 bg-slate-50 border border-gray-200 rounded-lg w-full">
-            <span className="text-[14px] uppercase font-semibold text-gray-400 tracking-wider">
-              Total Inquiries
-            </span>
-            <span className="text-sm font-bold text-gray-700">
-              {displayInquiries.length}
-            </span>
-          </div>
-
-          {/* SEARCH INPUT */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search inquiries..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300
-                         focus:outline-none focus:ring-2 focus:ring-blue-500
-                         focus:border-blue-500 transition"
-            />
-          </div>
+        
+        <div className="relative w-full md:w-80">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Search by name or phone..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
         </div>
       </div>
 
       {/* TABLE */}
       <div className="bg-white shadow rounded-lg overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-175 border-collapse text-left">
-            <thead className="bg-slate-100">
+        <table className="w-full">
+          <thead className="bg-slate-100">
+            <tr>
+              <th className="p-3 text-left">ID</th>
+              <th className="p-3 text-left">Name</th>
+              <th className="p-3 text-left">Phone</th>
+              <th className="p-3 text-left">Email</th>
+              <th className="p-3 text-left">Date</th>
+              <th className="p-3 text-center">Action</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {!locationForm.branch_id ? (
               <tr>
-                <th className="p-3 border-b">ID</th>
-                <th className="p-3 border-b">Name</th>
-                <th className="p-3 border-b">Branch</th>
-                <th className="p-3 border-b">Phone</th>
-                <th className="p-3 border-b">Date</th>
-                <th className="p-3 border-b text-center">Action</th>
+                <td colSpan="6" className="p-8 text-center text-gray-500">
+                  Please select a branch to view inquiries
+                </td>
               </tr>
-            </thead>
-
-            <tbody>
-              {displayInquiries.length > 0 ? (
-                displayInquiries.map((inquiry, index) => (
-                  <tr
-                    key={inquiry.inquiry_id}
-                    className="hover:bg-slate-50 border-b"
-                  >
-                    <td className="p-3">{index + 1}</td>
-
-                    <td className="p-3 font-medium">{inquiry.name}</td>
-
-                    <td className="p-3">
-                      <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs uppercase font-bold">
-                        {inquiry.branch_name || "N/A"}
-                      </span>
-                    </td>
-
-                    <td className="p-3">{inquiry.phone}</td>
-
-                    <td className="p-3 text-sm">
-                      {new Date(inquiry.created_at).toLocaleDateString()}
-                    </td>
-
-                    <td className="p-3 text-center">
-                      <button
-                        onClick={() => {
-                          setSelectedInquiry(inquiry);
-                          setShowDetailsModal(true);
-                        }}
-                        className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs transition"
+            ) : displayInquiries.length > 0 ? (
+              displayInquiries.map((inquiry, index) => (
+                <tr key={inquiry.inquiry_id} className="border-b hover:bg-slate-50">
+                  <td className="p-3">{(page - 1) * 10 + (index + 1)}</td>
+                  <td className="p-3 font-medium">{inquiry.name}</td>
+                  <td className="p-3">{inquiry.phone}</td>
+                  <td className="p-3">{inquiry.email || "N/A"}</td>
+                  <td className="p-3 text-sm">
+                    {new Date(inquiry.created_at).toLocaleDateString()}
+                  </td>
+                  <td className="p-3">
+                    <div className="flex gap-2 justify-center">
+                      <Button
+                        variant="primary"
+                        size="sm"
+                        onClick={() => handleView(inquiry)}
                       >
                         View
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="6" className="text-center p-6 text-gray-500">
-                    No inquiries available
+                      </Button>
+                    </div>
                   </td>
                 </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="6" className="p-8 text-center text-gray-500">
+                  No inquiries found for selected branch
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+
+        {/* PAGINATION */}
+        {totalPages > 1 && (
+          <div className="flex justify-between items-center p-4 border-t bg-gray-50">
+            <div className="text-sm text-gray-600">
+              Showing {displayInquiries.length} of {totalInquiries} inquiries
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={page === 1}
+                onClick={() => setPage(p => Math.max(p - 1, 1))}
+              >
+                Previous
+              </Button>
+              <span className="px-3 py-1 text-sm text-gray-600">
+                Page {page} of {totalPages}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={page === totalPages}
+                onClick={() => setPage(p => p + 1)}
+              >
+                Next
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* View Details Modal */}
+      {/* VIEW MODAL */}
       <DetailsModal
         show={showDetailsModal}
         onClose={() => setShowDetailsModal(false)}
         title="Inquiry Details"
       >
         {selectedInquiry && (
-          <div className="space-y-4">
+          <div className="space-y-5">
+            {/* DETAILS GRID */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
               <div>
                 <p className="font-semibold text-gray-700">Inquiry ID</p>
                 <p>{selectedInquiry.inquiry_id}</p>
-              </div>
-
-              <div>
-                <p className="font-semibold text-gray-700">Branch</p>
-                <p>{selectedInquiry.branch_name || "N/A"}</p>
               </div>
 
               <div>
@@ -189,18 +221,24 @@ const InquiryDashboard = () => {
               </div>
 
               <div>
-                <p className="font-semibold text-gray-700">Inquiry Date</p>
+                <p className="font-semibold text-gray-700">Date</p>
                 <p>{new Date(selectedInquiry.created_at).toLocaleString()}</p>
               </div>
             </div>
 
+            {/* DESCRIPTION */}
             <div>
-              <p className="font-semibold text-gray-700 mb-2">
-                Message / Description
-              </p>
-              <div className="bg-gray-100 p-3 rounded-md text-sm text-gray-700">
+              <p className="font-semibold text-gray-700 mb-2">Description</p>
+              <div className="bg-gray-100 p-4 rounded-md text-sm text-gray-700 leading-7">
                 {selectedInquiry.description || "No description provided"}
               </div>
+            </div>
+
+            {/* CLOSE BUTTON */}
+            <div className="flex justify-end">
+              <Button variant="outline" onClick={() => setShowDetailsModal(false)}>
+                Close
+              </Button>
             </div>
           </div>
         )}

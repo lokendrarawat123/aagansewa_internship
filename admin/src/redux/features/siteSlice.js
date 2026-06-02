@@ -113,13 +113,6 @@ export const siteApi = indexSlice.injectEndpoints({
 
     // Inquiry APIs
 
-    getInquiryById: builder.query({
-      query: (id) => ({
-        url: `/site/get-inquiry/${id}`,
-        method: "GET",
-      }),
-      providesTags: (result, error, id) => [{ type: "inquiry", id }],
-    }),
     getAllInquiries: builder.query({
       query: () => ({
         url: "/site/get-allInquiry",
@@ -133,6 +126,19 @@ export const siteApi = indexSlice.injectEndpoints({
         method: "GET",
       }),
       providesTags: ["inquiry"],
+    }),
+    // siteSlice.js भित्र (Inquiry सम्बन्धी एन्डपोइन्ट)
+
+    getBranchInquiry: builder.query({
+      query: ({ branch_id, page = 1, limit = 10 }) => ({
+        url: `/site/get-branch-inquiry?branch_id=${branch_id}&page=${page}&limit=${limit}`,
+        method: "GET",
+      }),
+      providesTags: (result, error, { branch_id }) => [
+        { type: "inquiry", id: `branch-${branch_id}` },
+        "inquiry"
+      ],
+      keepUnusedDataFor: 0,
     }),
     addInquiry: builder.mutation({
       query: (data) => ({
@@ -198,7 +204,7 @@ export const {
   useDeleteReviewMutation,
 
   // Inquiry hooks
-
+  useGetBranchInquiryQuery,
   useGetInquiryByIdQuery,
   useGetAllInquiriesQuery,
   useGetInquiriesByBranchQuery,
