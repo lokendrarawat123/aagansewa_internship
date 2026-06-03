@@ -68,7 +68,7 @@ siteRouter.delete(
 siteRouter.patch(
   "/update-review/:id",
   isLogin,
-  authorizeRoles("manager"),
+  authorizeRoles("admin"),
   updateReview,
 );
 // Inquiry routes

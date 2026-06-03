@@ -129,7 +129,6 @@ const Review = () => {
           Add Review
         </Button>
       </div>
-
       <div className="bg-white rounded-2xl shadow border overflow-hidden">
         <table className="w-full text-left">
           <thead className="bg-slate-100 text-sm">
@@ -137,7 +136,7 @@ const Review = () => {
               <th className="px-5 py-4">ID</th>
               <th className="px-5 py-4">Name</th>
               <th className="px-5 py-4">Position</th>
-              <th className="px-5 py-4">Date</th>
+              <th className="px-5 py-4">Description</th>
               <th className="px-5 py-4 text-center">Actions</th>
             </tr>
           </thead>
@@ -149,16 +148,12 @@ const Review = () => {
                 </td>
               </tr>
             ) : (
-              reviews.map((review) => (
+              reviews.map((review, index) => (
                 <tr key={review.review_id} className="border-t">
-                  <td className="px-5 py-4">#{review.review_id}</td>
+                  <td className="px-5 py-4">{index + 1}</td>
                   <td className="px-5 py-4">{review.name}</td>
                   <td className="px-5 py-4">{review.position || "-"}</td>
-                  <td className="px-5 py-4">
-                    {review.created_at
-                      ? new Date(review.created_at).toLocaleDateString()
-                      : "-"}
-                  </td>
+                  <td className="px-5 py-4 text-sm">{review.description}</td>
                   <td className="px-5 py-4 flex gap-2 justify-center">
                     <Button
                       variant="primary"
@@ -191,7 +186,7 @@ const Review = () => {
           </tbody>
         </table>
       </div>
-
+      {/* ==========VIEW Model========= */}
       <DetailsModal
         show={showDetailsModal}
         onClose={() => setShowDetailsModal(false)}
@@ -199,6 +194,9 @@ const Review = () => {
       >
         {selectedReview && (
           <div className="space-y-3">
+            <p>
+              <b>ID:</b> {selectedReview.review_id}
+            </p>
             <p>
               <b>Name:</b> {selectedReview.name}
             </p>
@@ -211,7 +209,6 @@ const Review = () => {
           </div>
         )}
       </DetailsModal>
-
       <DetailsModal
         show={showAddModal}
         onClose={() => setShowAddModal(false)}
@@ -252,7 +249,6 @@ const Review = () => {
           </div>
         </form>
       </DetailsModal>
-
       <DetailsModal
         show={showEditModal}
         onClose={() => setShowEditModal(false)}
@@ -290,7 +286,6 @@ const Review = () => {
           </div>
         </form>
       </DetailsModal>
-
       <DetailsModal
         show={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}

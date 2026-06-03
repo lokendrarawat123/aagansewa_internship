@@ -79,13 +79,6 @@ export const siteApi = indexSlice.injectEndpoints({
       }),
       providesTags: ["review"],
     }),
-    getReviewById: builder.query({
-      query: (id) => ({
-        url: `/site/get-review/${id}`,
-        method: "GET",
-      }),
-      providesTags: (result, error, id) => [{ type: "review", id }],
-    }),
 
     addReview: builder.mutation({
       query: (data) => ({
@@ -136,7 +129,7 @@ export const siteApi = indexSlice.injectEndpoints({
       }),
       providesTags: (result, error, { branch_id }) => [
         { type: "inquiry", id: `branch-${branch_id}` },
-        "inquiry"
+        "inquiry",
       ],
       keepUnusedDataFor: 0,
     }),
