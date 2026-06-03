@@ -6,14 +6,15 @@ import Input from "../../../shared/Input";
 import Button from "../../../shared/Button";
 import { Loading } from "../../../shared/IsLoading";
 import { Error } from "../../../shared/Error";
+
 import {
   useAddTrustedCustomerMutation,
   useDeleteTrustedCustomerMutation,
   useGetTrustedCustomersQuery,
 } from "../../../../redux/features/siteSlice";
+import { getImageUrl } from "../../../../utils/ImgUrl";
 
 const TrustedCustomerDashboard = () => {
-  const imgUrl = import.meta.env.VITE_IMG_URL;
   // ================= STATES =================
   const [showAddModal, setShowAddModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
@@ -152,7 +153,7 @@ const TrustedCustomerDashboard = () => {
 
                   <td className="px-5 py-4">
                     <img
-                      src={`${imgUrl}${customer.image}`}
+                      src={getImageUrl(customer.image)}
                       alt={customer.name}
                       className="w-14 h-14 rounded-lg object-cover border"
                     />
@@ -200,7 +201,7 @@ const TrustedCustomerDashboard = () => {
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2 flex justify-center">
               <img
-                src={`${imgUrl}${selectedCustomer.image}`}
+                src={getImageUrl(selectedCustomer.image)}
                 alt={selectedCustomer.name}
                 className="w-40 h-40 object-cover rounded-xl border"
               />

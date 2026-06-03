@@ -141,14 +141,14 @@ const Sidebar = ({ active, setActive }) => {
   const currentMenu = menus.filter((item) => item.roles.includes(role));
 
   return (
-    <aside className="fixed-0 w-64 min-h-screen bg-slate-900 text-slate-200 flex flex-col shadow-xl">
+    <aside className="w-64 h-screen bg-slate-900  text-slate-200 flex flex-col overflow-hidden">
       {/* Brand */}
       <div className="px-6 py-5 text-xl font-semibold border-b border-slate-700">
         Admin Panel
       </div>
 
       {/* Menu */}
-      <nav className="flex-1 px-3 py-4 space-y-1">
+      <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
         {currentMenu.map((item) => (
           <Link
             key={item.key}
