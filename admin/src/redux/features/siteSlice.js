@@ -4,7 +4,7 @@ export const siteApi = indexSlice.injectEndpoints({
     // Trusted Customer APIs
     getTrustedCustomers: builder.query({
       query: () => ({
-        url: "/site/get-trusted-costumer",
+        url: "/site/get-customer",
         method: "GET",
       }),
       providesTags: ["partner"],
@@ -20,52 +20,6 @@ export const siteApi = indexSlice.injectEndpoints({
     deleteTrustedCustomer: builder.mutation({
       query: (id) => ({
         url: `/site/delete-trusted-costumer/${id}`,
-        method: "DELETE",
-      }),
-      invalidatesTags: ["partner"],
-    }),
-
-    // Partner APIs
-    getPartnerById: builder.query({
-      query: (id) => ({
-        url: `/site/get-partner/${id}`,
-        method: "GET",
-      }),
-      providesTags: (result, error, id) => [{ type: "partner", id }],
-    }),
-    getAllPartners: builder.query({
-      query: () => ({
-        url: "/site/get-allPartner",
-        method: "GET",
-      }),
-      providesTags: ["partner"],
-    }),
-    getPartnersByBranch: builder.query({
-      query: (branchId) => ({
-        url: `/site/branch/${branchId}/partner`,
-        method: "GET",
-      }),
-      providesTags: ["partner"],
-    }),
-    addPartner: builder.mutation({
-      query: (data) => ({
-        url: "/site/add-partner",
-        method: "POST",
-        body: data,
-      }),
-      invalidatesTags: ["partner"],
-    }),
-    updatePartner: builder.mutation({
-      query: ({ id, data }) => ({
-        url: `/site/update-partner/${id}`,
-        method: "PATCH",
-        body: data,
-      }),
-      invalidatesTags: ["partner"],
-    }),
-    deletePartner: builder.mutation({
-      query: (id) => ({
-        url: `/site/delete-partner/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["partner"],
@@ -180,14 +134,6 @@ export const {
   useGetTrustedCustomersQuery,
   useAddTrustedCustomerMutation,
   useDeleteTrustedCustomerMutation,
-
-  // Partner hooks
-  useGetPartnerByIdQuery,
-  useGetAllPartnersQuery,
-  useGetPartnersByBranchQuery,
-  useAddPartnerMutation,
-  useUpdatePartnerMutation,
-  useDeletePartnerMutation,
 
   // Review hooks
   useGetReviewsQuery,

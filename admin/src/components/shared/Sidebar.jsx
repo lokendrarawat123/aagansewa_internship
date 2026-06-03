@@ -14,6 +14,7 @@ import {
   Star,
   UserCircle,
   BarChart3,
+  Handshake,
 } from "lucide-react";
 
 import { useDispatch } from "react-redux";
@@ -91,7 +92,7 @@ const Sidebar = ({ active, setActive }) => {
     {
       name: "Our Partner",
       key: "partner",
-      icon: <Star size={18} />,
+      icon: <Handshake size={18} />,
       path: `${basePath}/partner`,
       roles: ["admin"],
     },

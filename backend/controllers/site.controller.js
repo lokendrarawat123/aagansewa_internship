@@ -47,7 +47,7 @@ export const getTrustedCustomers = async (req, res, next) => {
     );
 
     if (customers.length === 0) {
-      return res.status(404).json({ message: "No trusted customers found" });
+      return res.status(200).json({ message: "No trusted customers found" });
     }
 
     res.status(200).json({
@@ -507,58 +507,3 @@ export const getPartnerByBranch = async (req, res, next) => {
     next(error);
   }
 };
-
-// Add partner (alias for addTrustedCostumer)
-export const addPartner = addTrustedCostumer;
-
-// Update partner
-export const updatePartner = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const { name } = req.body;
-    const image = req.file;
-
-    if (!id) {
-      return res.status(400).json({ message: "Please provide partner ID" });
-    }
-
-    const [existing] = await db.execute(
-      "SELECT * FROM trusted_costumer WHERE costumer_id = ?",
-      [id],
-    );
-
-    if (existing.length === 0) {
-      if (req.file) {
-        removeImg(req.file.path);
-      }
-      return res.status(404).json({ message: "Partner not found" });
-    }
-
-    const oldPartner = existing[0];
-    let imagePath = oldPartner.image;
-
-    if (req.file) {
-      const outputPath = `uploads/costumer/school-${req.file.filename}`;
-      await compressImg(req.file.path, outputPath);
-      imagePath = outputPath;
-      if (oldPartner.image) {
-        removeImg(oldPartner.image);
-      }
-    }
-
-    await db.execute(
-      "UPDATE trusted_costumer SET name=?, image=? WHERE costumer_id=?",
-      [name || oldPartner.name, imagePath, id],
-    );
-
-    res.status(200).json({ message: "Partner updated successfully" });
-  } catch (error) {
-    if (req.file) {
-      removeImg(req.file.path);
-    }
-    next(error);
-  }
-};
-
-// Delete partner (alias for deleteTrustedCustomer)
-export const deletePartner = deleteTrustedCustomer;

@@ -12,12 +12,6 @@ import {
   getInquiryByBranch,
   updateInquiry,
   updateReview,
-  getPartnerById,
-  getAllPartner,
-  getPartnerByBranch,
-  addPartner,
-  updatePartner,
-  deletePartner,
   getBranchInquiry,
 } from "../controllers/site.controller.js";
 import { uploadCostumer } from "../utils/multerHandler.js";
@@ -32,29 +26,16 @@ siteRouter.post(
   isLogin,
   addTrustedCostumer,
 );
-siteRouter.get("/get-trusted-costumer", getTrustedCustomers);
+
 siteRouter.delete(
   "/delete-trusted-costumer/:id",
   isLogin,
   deleteTrustedCustomer,
 );
 // Partner routes (aliases for trusted customer)
-siteRouter.get("/get-partner/:id", getPartnerById);
-siteRouter.get("/get-allPartner", getAllPartner);
-siteRouter.get("/branch/:branch_id/partner", getPartnerByBranch);
-siteRouter.post(
-  "/add-partner",
-  uploadCostumer.single("image"),
-  isLogin,
-  addPartner,
-);
-siteRouter.patch(
-  "/update-partner/:id",
-  uploadCostumer.single("image"),
-  isLogin,
-  updatePartner,
-);
-siteRouter.delete("/delete-partner/:id", isLogin, deletePartner);
+
+siteRouter.get("/get-customer", getTrustedCustomers);
+
 // ...........Review routes......................
 siteRouter.post("/add-review", addReview);
 siteRouter.get("/get-review", getReview);
