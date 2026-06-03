@@ -213,13 +213,24 @@ const BranchManager = () => {
         <form onSubmit={handleAddSubmit} className="space-y-4">
           <LocationSelect formData={formData} setFormData={setFormData} />
 
-          <Input id="name" value={formData.name} onChange={handleChange} />
-          <Input id="email" value={formData.email} onChange={handleChange} />
+          <Input
+            id="name"
+            value={formData.name}
+            onChange={handleChange}
+            placeholder="e.g. Ram Bahadur Thapa"
+          />
+          <Input
+            id="email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="e.g., ram@branch.com"
+          />
           <Input
             id="password"
             type="password"
             value={formData.password}
             onChange={handleChange}
+            placeholder="Enter Password"
           />
 
           <div className="flex justify-end gap-3">
