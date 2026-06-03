@@ -32,6 +32,9 @@ const BranchDashboard = () => {
   const { data: branchData, isLoading, error } = useGetBranchQuery();
   const { data: districtData } = useGetDistrictByProvinceQuery(
     formData.province_id,
+    {
+      skip: !formData.province_id,
+    },
   );
   const { data: provinceData } = useGetProvinceQuery();
 
