@@ -208,7 +208,7 @@ const BranchManager = () => {
         show={showAddModal}
         onClose={() => setShowAddModal(false)}
         title="Add Manager"
-        size="lg"
+        size="xl"
       >
         <form onSubmit={handleAddSubmit} className="space-y-4">
           <LocationSelect formData={formData} setFormData={setFormData} />

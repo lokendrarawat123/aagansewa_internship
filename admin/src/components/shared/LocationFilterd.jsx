@@ -64,7 +64,7 @@ const LocationSelect = ({ formData, setFormData }) => {
         Filter Branch
       </h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr_1.3fr] gap-4">
+      <div className="grid sm:grid-col-2 grid-cols-1 md:grid-cols-[1fr_1fr_1.3fr] gap-4">
         {/* PROVINCE */}
         <div className="space-y-1">
           <label className="text-[11px] font-medium text-gray-600">
@@ -139,7 +139,7 @@ const LocationSelect = ({ formData, setFormData }) => {
                 }
                 placeholder={
                   !formData.district_id
-                    ? "Select District First"
+                    ? "Select District "
                     : hasBranches
                       ? "Select Branch"
                       : "No branches available"
