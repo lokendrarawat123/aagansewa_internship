@@ -56,7 +56,7 @@ export const addStaff = async (req, res, next) => {
         phone ?? null,
         description ?? null,
         service_id,
-
+        branch_id,
         hashedPassword,
       ],
     );

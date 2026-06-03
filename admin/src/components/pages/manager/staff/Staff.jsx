@@ -63,7 +63,6 @@ const StaffDashboard = () => {
       email: "",
       password: "",
       phone: "",
-      address: "",
       position: "",
       service_id: "",
     });
@@ -361,14 +360,39 @@ const StaffDashboard = () => {
             <div className="bg-gray-50 p-3 rounded">
               <b>Name:</b> {selectedStaff.name}
             </div>
+
             <div className="bg-gray-50 p-3 rounded">
               <b>Position:</b> {selectedStaff.position}
             </div>
+
             <div className="bg-gray-50 p-3 rounded">
               <b>Email:</b> {selectedStaff.email}
             </div>
+
             <div className="bg-gray-50 p-3 rounded">
               <b>Phone:</b> {selectedStaff.phone || "N/A"}
+            </div>
+
+            <div className="bg-gray-50 p-3 rounded">
+              <b>Role:</b> {selectedStaff.role || "N/A"}
+            </div>
+
+            <div className="bg-gray-50 p-3 rounded">
+              <b>Branch ID:</b> {selectedStaff.branch_id}
+            </div>
+
+            <div className="bg-gray-50 p-3 rounded col-span-2">
+              <b>Description:</b>{" "}
+              {selectedStaff.description || "No description available"}
+            </div>
+
+            <div className="bg-gray-50 p-3 rounded">
+              <b>Service ID:</b> {selectedStaff.service_id || "Not Assigned"}
+            </div>
+
+            <div className="bg-gray-50 p-3 rounded">
+              <b>Created At:</b>{" "}
+              {new Date(selectedStaff.created_at).toLocaleDateString()}
             </div>
           </div>
         )}

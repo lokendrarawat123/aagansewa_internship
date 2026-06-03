@@ -111,7 +111,7 @@ const Sidebar = ({ active, setActive }) => {
       key: "review",
       icon: <Star size={18} />,
       path: `${basePath}/review-dashboard`,
-      roles: ["manager", "admin"],
+      roles: ["admin"],
     },
     {
       name: "Profile",

@@ -18,7 +18,12 @@ const staffRouter = express.Router();
 // Staff CRUD operations
 staffRouter.post("/add-staff", isLogin, authorizeRoles("manager"), addStaff);
 
-staffRouter.patch("/update-staff/:id", isLogin, updateStaff);
+staffRouter.patch(
+  "/update-staff/:id",
+  isLogin,
+  authorizeRoles("manager"),
+  updateStaff,
+);
 staffRouter.delete(
   "/delete-staff/:id",
   isLogin,
