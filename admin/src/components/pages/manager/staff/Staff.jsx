@@ -13,7 +13,7 @@ import Button from "../../../shared/Button"; // Button component use gareko
 import DetailsModal from "../../../shared/Modal";
 import { Loading } from "../../../shared/IsLoading";
 import { Error } from "../../../shared/Error";
-import { useGetServicesByBranchQuery } from "../../../../redux/features/serviceSlice";
+import { useGetServicesQuery } from "../../../../redux/features/serviceSlice";
 import Select from "../../../shared/Select";
 
 const StaffDashboard = () => {
@@ -45,10 +45,10 @@ const StaffDashboard = () => {
     data: servicesData,
     isLoading: servicesLoading,
     isError: servicesError,
-  } = useGetServicesByBranchQuery();
+  } = useGetServicesQuery();
   const services = servicesData?.data || [];
 
-  const staff = staffData?.staff || staffData?.allStaff || [];
+  const staff = staffData?.data || [];
   const branches = branchData?.branch || [];
 
   // ================= HANDLERS =================

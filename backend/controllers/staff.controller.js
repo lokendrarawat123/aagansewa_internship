@@ -73,7 +73,15 @@ export const addStaff = async (req, res, next) => {
 export const getAllStaff = async (req, res, next) => {
   try {
     const [allStaff] = await db.execute(
-      "SELECT * FROM staff ORDER BY created_at DESC",
+      `
+      SELECT 
+        s.*,
+        b.branch_name
+      FROM staff s
+      LEFT JOIN branch b 
+        ON s.branch_id = b.branch_id
+      ORDER BY s.created_at DESC
+      `,
     );
 
     res.status(200).json({
@@ -85,7 +93,7 @@ export const getAllStaff = async (req, res, next) => {
   }
 };
 
-// Get staff by branch ID
+// Get staff by branch ID for manager
 export const getStaffByBranch = async (req, res, next) => {
   try {
     const branch_id = req.user.branch_id;
@@ -107,18 +115,37 @@ export const getStaffByBranch = async (req, res, next) => {
     next(error);
   }
 };
-
-// Get all staff (for authenticated users)
+//for public branch id
 export const getBranchStaff = async (req, res, next) => {
   try {
     const branch_id = req.query.branch_id;
 
     if (!branch_id) {
-      return res.status(400).json({ message: "Please provide branch ID" });
+      return res.status(400).json({
+        message: "Please provide branch ID",
+      });
     }
 
     const [result] = await db.execute(
-      "SELECT * FROM staff WHERE branch_id = ? ORDER BY created_at DESC",
+      `
+      SELECT 
+        s.staff_id,
+        s.name,
+        s.position,
+        s.email,
+        s.phone,
+        s.role,
+        s.description,
+        s.service_id,
+        s.branch_id,
+        s.created_at,
+        b.branch_name
+      FROM staff s
+      LEFT JOIN branch b 
+        ON s.branch_id = b.branch_id
+      WHERE s.branch_id = ?
+      ORDER BY s.created_at DESC
+      `,
       [branch_id],
     );
 

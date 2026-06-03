@@ -27,8 +27,9 @@ staffRouter.delete(
 );
 
 // Additional staff routes
-staffRouter.get("/get-brach-staff", getBranchStaff);
-staffRouter.get("/get-allStaff", getAllStaff);
+staffRouter.get("/get-branch-staff", getBranchStaff);
+staffRouter.get("/get-all-staff", getAllStaff);
+
 staffRouter.get("/get-staff-branch", isLogin, getStaffByBranch); // for manager
 
 // Authentication routes

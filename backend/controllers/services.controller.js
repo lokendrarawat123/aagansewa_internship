@@ -199,7 +199,7 @@ export const getServicesByBranch = async (req, res, next) => {
   }
 };
 
-// get branchService by branch id
+// get branchService by branch id for public
 export const getBranchService = async (req, res, next) => {
   try {
     const branchId = req.query.branch_id;

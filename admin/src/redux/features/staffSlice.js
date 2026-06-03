@@ -6,7 +6,7 @@ export const staffApi = indexSlice.injectEndpoints({
     // Get All Staff
     getAllStaff: builder.query({
       query: () => ({
-        url: "/staff/get-allStaff",
+        url: "/staff/get-all-staff",
         method: "GET",
       }),
       providesTags: ["staff"],
@@ -21,7 +21,7 @@ export const staffApi = indexSlice.injectEndpoints({
     }),
     getBranchStaff: builder.query({
       query: (branchId) => ({
-        url: `/staff/get-branch-staff/${branchId}/staff`,
+        url: `/staff/get-branch-staff?branch_id=${branchId}`,
         method: "GET",
       }),
       providesTags: ["staff"],
