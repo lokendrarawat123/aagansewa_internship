@@ -215,12 +215,14 @@ const BranchManager = () => {
 
           <Input
             id="name"
+            type="text"
             value={formData.name}
             onChange={handleChange}
             placeholder="e.g. Ram Bahadur Thapa"
           />
           <Input
             id="email"
+            type="email"
             value={formData.email}
             onChange={handleChange}
             placeholder="e.g., ram@branch.com"
@@ -250,7 +252,6 @@ const BranchManager = () => {
         </form>
       </DetailsModal>
 
-      {/* EDIT MODAL */}
       {/* ================= EDIT MODAL ================= */}
       <DetailsModal
         show={showEditModal}
@@ -278,6 +279,7 @@ const BranchManager = () => {
               </label>
               <Input
                 id="name"
+                type="text"
                 value={formData.name}
                 onChange={handleChange}
                 placeholder="Enter full name"
@@ -291,6 +293,7 @@ const BranchManager = () => {
               </label>
               <Input
                 id="email"
+                type="email"
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="Enter email"

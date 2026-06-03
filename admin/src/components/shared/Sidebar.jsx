@@ -119,6 +119,13 @@ const Sidebar = ({ active, setActive }) => {
       path: `${basePath}/staff-dashboard`,
       roles: ["admin", "manager"],
     },
+    {
+      name: "Gallery Management",
+      key: "service",
+      icon: <Settings size={18} />,
+      path: `${basePath}/gallery-dashboard`,
+      roles: ["admin", "manager"],
+    },
 
     // MANAGER ONLY
 
