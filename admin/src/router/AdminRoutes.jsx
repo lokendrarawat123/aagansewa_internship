@@ -8,6 +8,7 @@ import InquiryDashboard from "../components/pages/superAdmin/inquiry/InquiryDash
 import StaffDashboard from "../components/pages/superAdmin/staff/StaffDashboard";
 import Manager from "../components/pages/manager/Manager";
 import Review from "../components/pages/superAdmin/review/Review";
+import Partner from "../components/pages/superAdmin/partner/Partner";
 
 export const adminRoutes = [
   {
@@ -49,5 +50,9 @@ export const adminRoutes = [
   {
     path: "review-dashboard",
     element: <Review />,
+  },
+  {
+    path: "partner",
+    element: <Partner />,
   },
 ];

@@ -81,6 +81,20 @@ const Sidebar = ({ active, setActive }) => {
       path: `${basePath}/BranchManager-dashboard`,
       roles: ["admin"],
     },
+    {
+      name: "Review Management",
+      key: "review",
+      icon: <Star size={18} />,
+      path: `${basePath}/review-dashboard`,
+      roles: ["admin"],
+    },
+    {
+      name: "Our Partner",
+      key: "partner",
+      icon: <Star size={18} />,
+      path: `${basePath}/partner`,
+      roles: ["admin"],
+    },
 
     // ADMIN + MANAGER
     {
@@ -106,13 +120,7 @@ const Sidebar = ({ active, setActive }) => {
     },
 
     // MANAGER ONLY
-    {
-      name: "Review Management",
-      key: "review",
-      icon: <Star size={18} />,
-      path: `${basePath}/review-dashboard`,
-      roles: ["admin"],
-    },
+
     {
       name: "Profile",
       key: "profile",
