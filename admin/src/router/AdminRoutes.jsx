@@ -9,6 +9,7 @@ import StaffDashboard from "../components/pages/superAdmin/staff/StaffDashboard"
 import Manager from "../components/pages/manager/Manager";
 import Review from "../components/pages/superAdmin/review/Review";
 import Partner from "../components/pages/superAdmin/partner/Partner";
+import Gallery from "../components/pages/superAdmin/gallery/Gallery";
 
 export const adminRoutes = [
   {
@@ -54,5 +55,9 @@ export const adminRoutes = [
   {
     path: "partner",
     element: <Partner />,
+  },
+  {
+    path: "gallery-dashboard",
+    element: <Gallery />,
   },
 ];

@@ -79,10 +79,32 @@ export const getAllGallery = async (req, res, next) => {
   }
 };
 
-// Get gallery by branch ID
+// Get gallery by manager ID
 export const getGalleryByBranch = async (req, res, next) => {
   try {
     const { branch_id } = req.params;
+
+    if (!branch_id) {
+      return res.status(400).json({ message: "Please provide branch ID" });
+    }
+
+    const [result] = await db.execute(
+      "SELECT * FROM gallery WHERE branch_id = ? ORDER BY created_at DESC",
+      [branch_id],
+    );
+
+    res.status(200).json({
+      message: "Branch galleries fetched successfully",
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+// Get gallery by branch ID
+export const gerBranchGallery = async (req, res, next) => {
+  try {
+    const { branch_id } = req.user.branch_id;
 
     if (!branch_id) {
       return res.status(400).json({ message: "Please provide branch ID" });
@@ -169,43 +191,6 @@ export const updateGallery = async (req, res, next) => {
         removeImg(i.path);
       }
     }
-    next(error);
-  }
-};
-
-// Get all gallery entries (for authenticated users)
-export const getGallery = async (req, res, next) => {
-  try {
-    const { role, email } = req.user;
-    if (role === "manager") {
-      const [id] = await db.execute(
-        "select  branch_id from users where email=? ",
-        [email],
-      );
-      const userBranch_id = id[0].branch_id;
-      const [galleries] = await db.execute(
-        "SELECT * FROM gallery WHERE branch_id=? ORDER BY created_at DESC",
-        [userBranch_id],
-      );
-      return res.status(200).json({
-        message: "Gallery fetched successfully",
-        photots: galleries,
-      });
-    }
-    if (role === "admin") {
-      const [galleries] = await db.execute(
-        "SELECT * FROM gallery ORDER BY created_at DESC",
-      );
-
-      if (galleries.length === 0)
-        return res.status(404).json({ message: "No gallery entries found" });
-
-      return res.status(200).json({
-        message: "Gallery fetched successfully",
-        photots: galleries,
-      });
-    }
-  } catch (error) {
     next(error);
   }
 };
