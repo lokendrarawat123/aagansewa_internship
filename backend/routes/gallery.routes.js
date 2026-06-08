@@ -3,8 +3,6 @@ import { uploadGallery } from "../utils/multerHandler.js";
 import {
   addGallery,
   deleteGallery,
-  getGallery,
-
   getAllGallery,
   getGalleryByBranch,
   updateGallery,
@@ -25,12 +23,7 @@ galleryRouter.post(
   authorizeBranchAccess,
   addGallery,
 );
-galleryRouter.get(
-  "/get-gallery",
-  isLogin,
-  authorizeRoles("admin", "manager"),
-  getGallery,
-);
+
 galleryRouter.delete(
   "/delete-gallery/:id",
   isLogin,

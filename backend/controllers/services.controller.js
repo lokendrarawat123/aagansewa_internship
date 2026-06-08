@@ -1,10 +1,131 @@
 import db from "../config/db_connect.js";
 import { removeImg } from "../utils/removeImg.js";
 import { compressImg } from "../utils/sharphandler.js";
-
-// Add Service
 import { generateUniqueSlug } from "../utils/slugify.js";
+// ================= CREATE CATEGORY =================
+export const createCategory = async (req, res, next) => {
+  try {
+    const { category_name, description } = req.body;
 
+    if (!category_name) {
+      return res.status(400).json({
+        success: false,
+        message: "Category name is required",
+      });
+    }
+
+    const [exist] = await db.execute(
+      "SELECT category_id FROM category WHERE category_name = ?",
+      [category_name],
+    );
+
+    if (exist.length > 0) {
+      return res.status(409).json({
+        success: false,
+        message: "Category already exists",
+      });
+    }
+
+    const [result] = await db.execute(
+      `INSERT INTO category(category_name, description)
+       VALUES (?, ?)`,
+      [category_name, description || null],
+    );
+
+    res.status(201).json({
+      success: true,
+      message: "Category created successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// ================= GET ALL CATEGORY =================
+export const getAllCategories = async (req, res, next) => {
+  try {
+    const [rows] = await db.execute(
+      `SELECT *
+       FROM category
+       ORDER BY category_id DESC`,
+    );
+
+    res.status(200).json({
+      success: true,
+      count: rows.length,
+      data: rows,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// ================= UPDATE CATEGORY =================
+export const updateCategory = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { category_name, description } = req.body;
+
+    const [exist] = await db.execute(
+      "SELECT * FROM category WHERE category_id = ?",
+      [id],
+    );
+
+    if (exist.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Category not found",
+      });
+    }
+
+    await db.execute(
+      `UPDATE category
+       SET category_name = ?, description = ?
+       WHERE category_id = ?`,
+      [
+        category_name || exist[0].category_name,
+        description ?? exist[0].description,
+        id,
+      ],
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Category updated successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// ================= DELETE CATEGORY =================
+export const deleteCategory = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const [exist] = await db.execute(
+      "SELECT * FROM category WHERE category_id = ?",
+      [id],
+    );
+
+    if (exist.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Category not found",
+      });
+    }
+
+    await db.execute("DELETE FROM category WHERE category_id = ?", [id]);
+
+    res.status(200).json({
+      success: true,
+      message: "Category deleted successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+// ========add service =============
 export const addService = async (req, res, next) => {
   try {
     const branch_id = req.user.branch_id;
