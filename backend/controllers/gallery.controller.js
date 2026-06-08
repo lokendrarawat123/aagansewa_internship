@@ -67,11 +67,16 @@ export const addGallery = async (req, res, next) => {
 export const getAllGallery = async (req, res, next) => {
   try {
     const [galleries] = await db.execute(
-      "SELECT * FROM gallery ORDER BY created_at DESC",
+      `SELECT g.*, b.branch_name 
+       FROM gallery g 
+       LEFT JOIN branch b ON g.branch_id = b.branch_id 
+       ORDER BY g.created_at DESC`
     );
 
     res.status(200).json({
+      success: true,
       message: "All galleries fetched successfully",
+      count: galleries.length,
       data: galleries,
     });
   } catch (error) {
@@ -83,18 +88,40 @@ export const getAllGallery = async (req, res, next) => {
 export const getGalleryByBranch = async (req, res, next) => {
   try {
     const { branch_id } = req.params;
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
 
     if (!branch_id) {
       return res.status(400).json({ message: "Please provide branch ID" });
     }
 
+    // Get total count
+    const [countResult] = await db.query(
+      "SELECT COUNT(*) AS total FROM gallery WHERE branch_id = ?",
+      [branch_id]
+    );
+    const total = countResult[0].total;
+
+    // Get paginated results with branch name
     const [result] = await db.execute(
-      "SELECT * FROM gallery WHERE branch_id = ? ORDER BY created_at DESC",
-      [branch_id],
+      `SELECT g.*, b.branch_name 
+       FROM gallery g 
+       LEFT JOIN branch b ON g.branch_id = b.branch_id 
+       WHERE g.branch_id = ? 
+       ORDER BY g.created_at DESC
+       LIMIT ? OFFSET ?`,
+      [branch_id, limit, offset]
     );
 
     res.status(200).json({
+      success: true,
       message: "Branch galleries fetched successfully",
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+      count: result.length,
       data: result,
     });
   } catch (error) {

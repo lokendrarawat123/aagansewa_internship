@@ -17,6 +17,18 @@ export const galleryApi = indexSlice.injectEndpoints({
       }),
       providesTags: ["gallery"],
     }),
+    // Get Galleries by Branch with proper caching
+    getBranchGalleries: builder.query({
+      query: ({ branch_id, page = 1, limit = 10 }) => ({
+        url: `/gallery/branch/${branch_id}/gallery?page=${page}&limit=${limit}`,
+        method: "GET",
+      }),
+      providesTags: (result, error, { branch_id }) => [
+        { type: "gallery", id: `branch-${branch_id}` },
+        "gallery"
+      ],
+      keepUnusedDataFor: 0,
+    }),
     // Get Galleries by Branch
     getGalleriesByBranch: builder.query({
       query: (branchId) => ({
@@ -57,6 +69,7 @@ export const galleryApi = indexSlice.injectEndpoints({
 export const {
   useGetGalleryByIdQuery,
   useGetAllGalleriesQuery,
+  useGetBranchGalleriesQuery,
   useGetGalleriesByBranchQuery,
   useAddGalleryMutation,
   useUpdateGalleryMutation,
