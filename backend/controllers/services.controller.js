@@ -65,7 +65,9 @@ export const updateCategory = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { category_name, description } = req.body;
-
+    if (!category_name && !description) {
+      return res.status();
+    }
     const [exist] = await db.execute(
       "SELECT * FROM category WHERE category_id = ?",
       [id],
@@ -128,16 +130,12 @@ export const deleteCategory = async (req, res, next) => {
 // ========add service =============
 export const addService = async (req, res, next) => {
   try {
+    const query = req.query;
     const branch_id = req.user.branch_id;
 
-    const { service_name, description } = req.body;
+    const category_id = query.category_id;
 
-    if (!req.file || !service_name || !branch_id) {
-      if (req.file) removeImg(req.file.path);
-      return res
-        .status(400)
-        .json({ success: false, message: "Required fields missing" });
-    }
+    const { service_name, description } = req.body;
 
     // ✅ reusable slug call
     const slug = await generateUniqueSlug(db, "services", "slug", service_name);
@@ -149,19 +147,9 @@ export const addService = async (req, res, next) => {
       [service_name, branch_id],
     );
 
-    if (exist.length > 0) {
-      removeImg(req.file.path);
-      return res
-        .status(409)
-        .json({ success: false, message: "Service already exists" });
-    }
-
-    let imagePath = `uploads/services/school-${req.file.filename}`;
-    await compressImg(req.file.path, imagePath);
-
     await db.execute(
-      "INSERT INTO services (service_name,slug ,service_image, branch_id, description) VALUES (?,?,?,?,?)",
-      [service_name, slug, imagePath, branch_id, description || null],
+      "INSERT INTO services (service_name,slug ,category_id, branch_id, description) VALUES (?,?,?,?,?)",
+      [service_name, slug, category_id, branch_id, description || null],
     );
 
     res.status(201).json({

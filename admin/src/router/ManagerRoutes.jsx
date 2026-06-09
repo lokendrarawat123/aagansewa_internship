@@ -3,6 +3,7 @@ import Manager from "../components/pages/manager/Manager";
 import Profile from "../components/pages/manager/profile/Profile";
 import Report from "../components/pages/manager/report/Report";
 import Review from "../components/pages/manager/review/Review";
+import ServiceCategory from "../components/pages/manager/service/ServiceCategory";
 import ServiceDashboard from "../components/pages/manager/service/serviceDashboard";
 import StaffDashboard from "../components/pages/manager/staff/Staff";
 
@@ -36,5 +37,9 @@ export const managerRoutes = [
   {
     path: "service-dashboard",
     element: <ServiceDashboard />,
+  },
+  {
+    path: "service/category",
+    element: <ServiceCategory />,
   },
 ];

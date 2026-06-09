@@ -121,7 +121,7 @@ const Sidebar = ({ active, setActive }) => {
     },
     {
       name: "Gallery Management",
-      key: "service",
+      key: "gallery",
       icon: <Settings size={18} />,
       path: `${basePath}/gallery-dashboard`,
       roles: ["admin", "manager"],

@@ -17,7 +17,7 @@ import Button from "../../../shared/Button.jsx";
 import { Loading } from "../../../shared/IsLoading.jsx";
 import { Error } from "../../../shared/Error.jsx";
 import Pagination from "../../../shared/Pagignation.jsx";
-
+import { Link } from "react-router-dom";
 const ServiceDashboard = () => {
   const baseUrl = import.meta.env.VITE_IMG_URL;
 
@@ -177,7 +177,9 @@ const ServiceDashboard = () => {
       {/* HEADER */}
       <div className="flex justify-between mb-6">
         <h1 className="text-2xl font-bold">Service Management (Manager)</h1>
-
+        <Link to="/manager/service/category">
+          <h1 className="font-bold text-xl p-4">Category</h1>
+        </Link>
         <Button
           variant="success"
           size="lg"

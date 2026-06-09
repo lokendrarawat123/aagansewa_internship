@@ -8,6 +8,11 @@ import {
   getServicesBySlug,
   publicGetServices,
   updateService,
+  // category
+  createCategory,
+  getAllCategories,
+  updateCategory,
+  deleteCategory,
 } from "../controllers/services.controller.js";
 import { uploadService } from "../utils/multerHandler.js";
 import { isLogin } from "../middlewares/isLogin.js";
@@ -55,5 +60,11 @@ serviceRouter.delete(
   authorizeRoles("admin", "manager"),
   deleteService,
 );
+
+serviceRouter.post("/add-category", createCategory);
+serviceRouter.get("/get-category", getAllCategories);
+
+serviceRouter.patch("/update-category/:id", updateCategory);
+serviceRouter.delete("/delete-category/:id", deleteCategory);
 
 export default serviceRouter;
